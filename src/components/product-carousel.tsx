@@ -34,9 +34,10 @@ function ProductCard({ product }: { product: CatalogProduct }) {
 
       <div className="flex flex-col">
         <ProductTitle className="max-w-[30.75rem]">{product.name}</ProductTitle>
-        <Prose className="mt-[1.1875rem]">{product.cardDescription}</Prose>
+        <Prose className="mt-[1.1875rem]" size="product">{product.cardDescription}</Prose>
 
-        <div className="mt-auto flex items-center gap-5">
+        {/* Figma indents the CTA row 3px from the copy column (685 -> 688). */}
+        <div className="mt-auto ml-[3px] flex items-center gap-5">
           <ButtonLink
             className="w-[12.9375rem]"
             href="#contact"

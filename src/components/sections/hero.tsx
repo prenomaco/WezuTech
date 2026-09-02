@@ -100,7 +100,10 @@ export function Hero() {
         <div
           className="absolute flex items-center"
           data-motion="hero-ctas"
-          style={{ left: pct(103), top: pct(838, "height"), gap: pct(19) }}
+          /* A percentage gap resolves against this box's own width, which is
+             shrink-to-fit — the cycle collapses it during intrinsic sizing and
+             wraps "Contact Us" onto a second line. */
+          style={{ left: pct(103), top: pct(838, "height"), gap: "1.1875rem" }}
         >
           <ButtonLink href="#contact">Contact Us</ButtonLink>
           <ButtonLink href="#about" variant="ghost">

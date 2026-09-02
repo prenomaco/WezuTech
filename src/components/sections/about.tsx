@@ -38,7 +38,7 @@ function AboutArtwork() {
 export function About() {
   return (
     <Section id="about" zone="about" className="min-h-[31.25rem] pt-[4.375rem]" bleed={<AboutArtwork />}>
-      <SectionHeading data-motion="about-eyebrow">{about.eyebrow}</SectionHeading>
+      <SectionHeading data-motion="about-eyebrow" variant="about">{about.eyebrow}</SectionHeading>
 
       <div className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]" data-motion="about-copy">
         {about.paragraphs.map((paragraph) => (

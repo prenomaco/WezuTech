@@ -15,7 +15,13 @@ const GRID = "relative grid grid-cols-[repeat(2,minmax(0,21.625rem))] gap-x-4 ga
 /** Label 22px + 8px gap + 50px field = the 80px block Figma repeats. */
 const LABEL = "block text-base leading-[1.375rem] text-ice";
 const FIELD =
-  "field-underline mt-2 block w-full bg-transparent text-base text-ice outline-none placeholder:text-mist/45";
+  "field-underline block bg-transparent text-[1rem] leading-[1.375rem] text-ice outline-none placeholder:text-[rgb(218_233_202/0.4)]";
+
+/* The frame does not use one rhythm: row one leaves 30px between a label's top
+   and its field (label 3062 -> field 3092), rows two and three leave 27, and
+   the message block sits 10px lower again. Matching the design means matching
+   that irregularity rather than averaging it. */
+const FIELD_GAP = { first: "mt-2", rest: "mt-[0.3125rem]" } as const;
 
 interface FieldProps {
   readonly label: string;
@@ -23,14 +29,15 @@ interface FieldProps {
   readonly placeholder: string;
   readonly type?: string;
   readonly className?: string;
+  readonly gap?: keyof typeof FIELD_GAP;
 }
 
-function Field({ label, name, placeholder, type = "text", className }: FieldProps) {
+function Field({ label, name, placeholder, type = "text", className, gap = "first" }: FieldProps) {
   return (
     <label className={`${LABEL} ${className ?? ""}`}>
       {label}
       <input
-        className={`${FIELD} h-[3.125rem]`}
+        className={`${FIELD} ${FIELD_GAP[gap]} w-full`}
         minLength={type === "email" ? undefined : 2}
         name={name}
         placeholder={placeholder}
@@ -80,12 +87,12 @@ export function ContactForm() {
 
       <Field label="Name" name="name" placeholder="John Doe" />
       <Field label="Email Address" name="email" placeholder="john@company.com" type="email" />
-      <Field label="Subject" name="subject" placeholder="Project enquiry" />
+      <Field gap="rest" label="Subject" name="subject" placeholder="Project enquiry" />
 
       <label className={`${LABEL} col-span-2 mt-[0.5625rem]`}>
         Message
         <textarea
-          className={`${FIELD} h-[10rem] resize-none pt-[0.875rem] leading-[1.5]`}
+          className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-[43.5625rem] resize-none`}
           minLength={10}
           name="message"
           placeholder="Tell us about your site, application, or deployment requirements."
@@ -93,7 +100,7 @@ export function ContactForm() {
         />
       </label>
 
-      <div className="col-span-2 mt-[2.375rem] flex items-center gap-4">
+      <div className="col-span-2 -ml-1 mt-[2.625rem] flex items-center gap-4">
         <Button className="w-[10.625rem]" disabled={state === "sending"} type="submit">
           {state === "sending" ? "Sending…" : "Submit Message"}
         </Button>

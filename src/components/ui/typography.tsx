@@ -1,15 +1,22 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
 /**
- * The Figma type scale, measured off the design rather than approximated.
+ * The Figma type scale, read out of the file node by node.
  *
- * Line boxes are given in pixels on purpose: the file specifies CSS
- * `line-height: normal`, which Tailwind's `leading-normal` does NOT produce
- * (that utility is 1.5). Pinning the exact box keeps the rendered text metrics
- * identical to the frame.
+ * Two things are deliberate here. Sizes are the design's own fractional values
+ * rather than rounded ones — at 24px instead of 23.866px the product title
+ * wraps a word early. And line boxes are pinned explicitly, because the file
+ * specifies CSS `line-height: normal`, which Tailwind's `leading-normal` does
+ * NOT produce (that utility is 1.5).
+ *
+ * The eyebrows are not one style: "ABOUT US" is #f0f7fd while "OUR PRODUCTS"
+ * and "WHAT PEOPLE SAY" are #dafaf5, and the last is a size of its own. They
+ * are variants rather than `className` overrides, since an override would emit
+ * a competing utility of equal specificity and let Tailwind's output order,
+ * not the caller, decide the winner.
  */
 
-const DISPLAY = "font-display text-frost";
+const DISPLAY = "font-display";
 
 type Element = "h1" | "h2" | "h3" | "p";
 
@@ -24,10 +31,29 @@ function join(...values: (string | undefined)[]) {
   return values.filter(Boolean).join(" ");
 }
 
-/** Section label — Figma node 252:480: Centauri 23px / 26px, #f0f7fd. */
-export function SectionHeading({ children, className, as: Tag = "h2", ...rest }: TypeProps) {
+/** Section eyebrows — Figma nodes 252:480, 252:481, 252:511. */
+const HEADING_VARIANT = {
+  /** ABOUT US — 23px / 26px, #f0f7fd. */
+  about: "text-[1.4375rem] leading-[1.625rem] text-frost",
+  /** OUR PRODUCTS — 23px / 26px, #dafaf5. */
+  products: "text-[1.4375rem] leading-[1.625rem] text-ice",
+  /** WHAT PEOPLE SAY — 24.934px / 28.19px, #dafaf5. */
+  testimonials: "text-[1.558375rem] leading-[1.761875rem] text-ice",
+} as const;
+
+interface HeadingProps extends TypeProps {
+  readonly variant?: keyof typeof HEADING_VARIANT;
+}
+
+export function SectionHeading({
+  children,
+  className,
+  as: Tag = "h2",
+  variant = "products",
+  ...rest
+}: HeadingProps) {
   return (
-    <Tag className={join(DISPLAY, "text-[1.4375rem] leading-[1.625rem]", className)} {...rest}>
+    <Tag className={join(DISPLAY, HEADING_VARIANT[variant], className)} {...rest}>
       {children}
     </Tag>
   );
@@ -35,16 +61,12 @@ export function SectionHeading({ children, className, as: Tag = "h2", ...rest }:
 
 /**
  * Headline type — Figma node 252:470 (hero, 36px / 41px) and 252:528 (contact,
- * 34px / 39px). Centauri is an all-caps face, so the casing comes from the font
- * rather than a transform.
- *
- * The size is a prop rather than a `className` override: both would emit a
- * `text-[…]` utility of equal specificity, and which one wins would come down
- * to Tailwind's output order instead of the caller's intent.
+ * 33.741px / 39px). Centauri is an all-caps face, so the casing comes from the
+ * font rather than a transform.
  */
 const DISPLAY_SIZE = {
   hero: "text-[2.25rem] leading-[2.5625rem]",
-  section: "text-[2.125rem] leading-[2.4375rem]",
+  section: "text-[2.10880625rem] leading-[2.4375rem]",
 } as const;
 
 interface DisplayProps extends TypeProps {
@@ -65,19 +87,31 @@ export function DisplayTitle({
   );
 }
 
-/** Product name — Figma node 252:484: Centauri over a 27px line box. */
+/** Product name — Figma node 252:484: Centauri 23.866px / 26.98px, #dafaf5. */
 export function ProductTitle({ children, className, ...rest }: TypeProps) {
   return (
-    <h3 className={join(DISPLAY, "text-[1.5rem] leading-[1.6875rem]", className)} {...rest}>
+    <h3 className={join(DISPLAY, "text-[1.491625rem] leading-[1.68625rem] text-ice", className)} {...rest}>
       {children}
     </h3>
   );
 }
 
-/** Body copy — Figma node 252:479: Overused Grotesk 18px / 24px, #f0f7fd. */
-export function Prose({ children, className, ...rest }: TypeProps) {
+/**
+ * Body copy. The About column is 18px / #f0f7fd (node 252:479); the product
+ * card is 18.677px / #dafaf5 (node 252:482).
+ */
+const PROSE_SIZE = {
+  about: "text-[1.125rem] leading-[1.5rem] text-frost",
+  product: "text-[1.16731rem] leading-[1.5rem] text-ice",
+} as const;
+
+interface ProseProps extends TypeProps {
+  readonly size?: keyof typeof PROSE_SIZE;
+}
+
+export function Prose({ children, className, size = "about", ...rest }: ProseProps) {
   return (
-    <p className={join("text-[1.125rem] leading-[1.5rem] text-frost", className)} {...rest}>
+    <p className={join(PROSE_SIZE[size], className)} {...rest}>
       {children}
     </p>
   );
