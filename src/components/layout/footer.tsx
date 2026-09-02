@@ -55,9 +55,10 @@ export function Footer() {
       <Atmosphere zone="footer" />
 
       <div
-        /* The hairline is an inset ring rather than a border so it does not
-           consume a pixel of the panel's box and shift every child by 1. */
-        className="relative z-10 rounded-[1.5rem] bg-black/25 pt-[2.3125rem] pb-[1.3125rem] shadow-[inset_0_0_0_1px_rgb(218_250_245/0.16)] backdrop-blur-[2px]"
+        /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
+           radius with no stroke — the edge you can see in the render is the
+           light behind it showing through. */
+        className="relative z-10 rounded-[1.25rem] bg-black/20 pt-[2.3125rem] pb-[1.3125rem] backdrop-blur-[2px]"
         style={{ marginInline: PANEL_INSET }}
       >
         {/* Three even tracks across the full panel width, each indented 49px —

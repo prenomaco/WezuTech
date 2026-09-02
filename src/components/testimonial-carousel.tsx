@@ -30,7 +30,7 @@ const ARROW_LEFT = "left-[3.3125rem] top-[8.15625rem] -translate-y-1/2";
 const ARROW_RIGHT = "right-[2.1rem] top-[8.15625rem] -translate-y-1/2";
 
 /** Dots measured off the render: 11px circles, 5px apart, 30px active pill. */
-const DOT_BASE = "h-[0.6875rem] rounded-full transition-[width,background-color] duration-300 ease-out";
+const DOT_BASE = "h-[0.6775625rem] rounded-full transition-[width,background-color] duration-300 ease-out";
 
 interface OutlineProps {
   readonly gradientId: string;
@@ -133,14 +133,14 @@ export function TestimonialCarousel() {
 
       <div
         aria-label="Testimonial selection"
-        className="mt-[3.25rem] flex items-center justify-center gap-[0.3125rem]"
+        className="mt-[3.25rem] flex items-center justify-center gap-[0.33875rem]"
         role="tablist"
       >
         {testimonials.map((item, index) => (
           <button
             aria-label={`Show testimonial ${index + 1}`}
             aria-selected={activeIndex === index}
-            className={`${DOT_BASE} ${activeIndex === index ? "w-[1.875rem] bg-sky" : "w-[0.6875rem] bg-ice"}`}
+            className={`${DOT_BASE} ${activeIndex === index ? "w-[1.8971875rem] bg-sky" : "w-[0.6775625rem] bg-ice"}`}
             key={item.client}
             onClick={() => setActiveIndex(index)}
             role="tab"
