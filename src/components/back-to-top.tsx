@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const REVEAL_AFTER = 560;
 
 const BASE =
-  "fixed bottom-[22px] left-[22px] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised/80 text-ice backdrop-blur-[2px] transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
+  "fixed bottom-[1.375rem] left-[1.375rem] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised/80 text-ice backdrop-blur-[2px] transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);

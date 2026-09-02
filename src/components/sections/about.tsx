@@ -19,7 +19,7 @@ function AboutArtwork() {
   return (
     <Image
       alt="Connected mobility platforms around a control module"
-      className="absolute left-[50.6614%] top-[-64px] w-[55.5556%] max-w-none object-contain"
+      className="absolute left-[50.6614%] top-[-4rem] w-[55.5556%] max-w-none object-contain"
       data-motion="about-artwork"
       height={ARTWORK.height}
       sizes="(min-width: 1512px) 840px, 56vw"
@@ -37,10 +37,10 @@ function AboutArtwork() {
  */
 export function About() {
   return (
-    <Section id="about" zone="about" className="min-h-[500px] pt-[70px]" bleed={<AboutArtwork />}>
+    <Section id="about" zone="about" className="min-h-[31.25rem] pt-[4.375rem]" bleed={<AboutArtwork />}>
       <SectionHeading data-motion="about-eyebrow">{about.eyebrow}</SectionHeading>
 
-      <div className="mt-[26px] flex w-[45.0920%] flex-col gap-[24px]" data-motion="about-copy">
+      <div className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]" data-motion="about-copy">
         {about.paragraphs.map((paragraph) => (
           <Prose key={paragraph.slice(0, 32)}>{paragraph}</Prose>
         ))}

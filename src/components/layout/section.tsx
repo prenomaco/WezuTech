@@ -10,7 +10,7 @@ import type { AtmosphereZone } from "@/lib/design/atmosphere";
  * 1096px content box and pulled every Figma x-coordinate ~98px inward.
  * The gutter collapses towards 40px on narrower desktops.
  */
-export const CONTAINER = "mx-auto w-full max-w-[1512px] px-[clamp(40px,6.88vw,104px)]";
+export const CONTAINER = "mx-auto w-full max-w-[94.5rem] px-[clamp(2.5rem,6.88vw,6.5rem)]";
 
 interface SectionProps {
   readonly id?: string;

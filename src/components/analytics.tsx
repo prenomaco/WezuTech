@@ -51,22 +51,22 @@ export function AnalyticsConsent() {
       )}
       {consent === null && (
         <aside
-          className="fixed bottom-[18px] right-[18px] z-50 max-w-[420px] rounded-[16px] border border-[rgb(218_250_245/0.3)] bg-ink-raised p-[18px] shadow-[0_16px_50px_rgba(0,0,0,0.35)]"
+          className="fixed bottom-[1.125rem] right-[1.125rem] z-50 max-w-[26.25rem] rounded-[1rem] border border-[rgb(218_250_245/0.3)] bg-ink-raised p-[1.125rem] shadow-[0_1rem_3.125rem_rgba(0,0,0,0.35)]"
           role="dialog"
           aria-label="Analytics preference"
           aria-live="polite"
         >
-          <p className="font-display text-[15px] uppercase leading-none tracking-[0.06em] text-ice">
+          <p className="font-display text-[0.9375rem] uppercase leading-none tracking-[0.06em] text-ice">
             Privacy settings
           </p>
-          <p className="mt-3 text-[13px] leading-[1.4] text-mist">
+          <p className="mt-3 text-[0.8125rem] leading-[1.4] text-mist">
             Analytics are optional and help us understand how the website is used. We never send your form
             details to Google.{" "}
             <a className="text-sky underline underline-offset-2" href="/privacy-policy">
               Learn more
             </a>
           </p>
-          <div className="mt-4 flex justify-end gap-[14px]">
+          <div className="mt-4 flex justify-end gap-[0.875rem]">
             <Button variant="ghost" onClick={() => choose("declined")}>
               Only necessary
             </Button>

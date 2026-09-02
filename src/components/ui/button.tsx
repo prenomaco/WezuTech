@@ -7,7 +7,7 @@ type Variant = "primary" | "ghost";
  * padding, 14px radius, 18px label. With a 24px line box that resolves to the
  * 44px control height the design uses everywhere.
  */
-const BASE = "inline-flex items-center justify-center rounded-control px-5 py-[10px] text-[18px] leading-[24px]";
+const BASE = "inline-flex items-center justify-center rounded-control px-5 py-[0.625rem] text-[1.125rem] leading-[1.5rem]";
 
 const VARIANT: Record<Variant, string> = {
   primary:

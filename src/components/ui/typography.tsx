@@ -27,7 +27,7 @@ function join(...values: (string | undefined)[]) {
 /** Section label — Figma node 252:480: Centauri 23px / 26px, #f0f7fd. */
 export function SectionHeading({ children, className, as: Tag = "h2", ...rest }: TypeProps) {
   return (
-    <Tag className={join(DISPLAY, "text-[23px] leading-[26px]", className)} {...rest}>
+    <Tag className={join(DISPLAY, "text-[1.4375rem] leading-[1.625rem]", className)} {...rest}>
       {children}
     </Tag>
   );
@@ -43,8 +43,8 @@ export function SectionHeading({ children, className, as: Tag = "h2", ...rest }:
  * to Tailwind's output order instead of the caller's intent.
  */
 const DISPLAY_SIZE = {
-  hero: "text-[36px] leading-[41px]",
-  section: "text-[34px] leading-[39px]",
+  hero: "text-[2.25rem] leading-[2.5625rem]",
+  section: "text-[2.125rem] leading-[2.4375rem]",
 } as const;
 
 interface DisplayProps extends TypeProps {
@@ -68,7 +68,7 @@ export function DisplayTitle({
 /** Product name — Figma node 252:484: Centauri over a 27px line box. */
 export function ProductTitle({ children, className, ...rest }: TypeProps) {
   return (
-    <h3 className={join(DISPLAY, "text-[24px] leading-[27px]", className)} {...rest}>
+    <h3 className={join(DISPLAY, "text-[1.5rem] leading-[1.6875rem]", className)} {...rest}>
       {children}
     </h3>
   );
@@ -77,7 +77,7 @@ export function ProductTitle({ children, className, ...rest }: TypeProps) {
 /** Body copy — Figma node 252:479: Overused Grotesk 18px / 24px, #f0f7fd. */
 export function Prose({ children, className, ...rest }: TypeProps) {
   return (
-    <p className={join("text-[18px] leading-[24px] text-frost", className)} {...rest}>
+    <p className={join("text-[1.125rem] leading-[1.5rem] text-frost", className)} {...rest}>
       {children}
     </p>
   );

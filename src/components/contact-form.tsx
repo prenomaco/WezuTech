@@ -10,10 +10,10 @@ type FormState = "idle" | "sending" | "success" | "error";
  * Figma: two 346px columns with a 16px gutter. Name and Email share row one,
  * Subject occupies the left column only, and Message spans both at 160px tall.
  */
-const GRID = "relative grid grid-cols-[repeat(2,minmax(0,346px))] gap-x-4 gap-y-[13px]";
+const GRID = "relative grid grid-cols-[repeat(2,minmax(0,21.625rem))] gap-x-4 gap-y-[0.8125rem]";
 
 /** Label 22px + 8px gap + 50px field = the 80px block Figma repeats. */
-const LABEL = "block text-base leading-[22px] text-ice";
+const LABEL = "block text-base leading-[1.375rem] text-ice";
 const FIELD =
   "field-underline mt-2 block w-full bg-transparent text-base text-ice outline-none placeholder:text-mist/45";
 
@@ -30,7 +30,7 @@ function Field({ label, name, placeholder, type = "text", className }: FieldProp
     <label className={`${LABEL} ${className ?? ""}`}>
       {label}
       <input
-        className={`${FIELD} h-[50px]`}
+        className={`${FIELD} h-[3.125rem]`}
         minLength={type === "email" ? undefined : 2}
         name={name}
         placeholder={placeholder}
@@ -82,10 +82,10 @@ export function ContactForm() {
       <Field label="Email Address" name="email" placeholder="john@company.com" type="email" />
       <Field label="Subject" name="subject" placeholder="Project enquiry" />
 
-      <label className={`${LABEL} col-span-2 mt-[9px]`}>
+      <label className={`${LABEL} col-span-2 mt-[0.5625rem]`}>
         Message
         <textarea
-          className={`${FIELD} h-[160px] resize-none pt-[14px] leading-[1.5]`}
+          className={`${FIELD} h-[10rem] resize-none pt-[0.875rem] leading-[1.5]`}
           minLength={10}
           name="message"
           placeholder="Tell us about your site, application, or deployment requirements."
@@ -93,8 +93,8 @@ export function ContactForm() {
         />
       </label>
 
-      <div className="col-span-2 mt-[38px] flex items-center gap-4">
-        <Button className="w-[170px]" disabled={state === "sending"} type="submit">
+      <div className="col-span-2 mt-[2.375rem] flex items-center gap-4">
+        <Button className="w-[10.625rem]" disabled={state === "sending"} type="submit">
           {state === "sending" ? "Sending…" : "Submit Message"}
         </Button>
         {message ? (

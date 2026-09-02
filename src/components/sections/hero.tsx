@@ -90,7 +90,7 @@ export function Hero() {
         </DisplayTitle>
 
         <p
-          className="absolute text-[18px] leading-[24px] text-ice"
+          className="absolute text-[1.125rem] leading-[1.5rem] text-ice"
           data-motion="hero-intro"
           style={{ left: pct(104), top: pct(732, "height"), width: pct(709) }}
         >

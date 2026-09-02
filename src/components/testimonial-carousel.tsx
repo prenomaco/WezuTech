@@ -26,11 +26,11 @@ const CAPSULE_PATH =
 
 /* Chevron glyphs at x=169 and right edge x=1362 — 65px and 45.6px from the
    1304 content column's edges, less the arrow button's 12px hit padding. */
-const ARROW_LEFT = "left-[53px] top-[130.5px] -translate-y-1/2";
-const ARROW_RIGHT = "right-[33.6px] top-[130.5px] -translate-y-1/2";
+const ARROW_LEFT = "left-[3.3125rem] top-[8.15625rem] -translate-y-1/2";
+const ARROW_RIGHT = "right-[2.1rem] top-[8.15625rem] -translate-y-1/2";
 
 /** Dots measured off the render: 11px circles, 5px apart, 30px active pill. */
-const DOT_BASE = "h-[11px] rounded-full transition-[width,background-color] duration-300 ease-out";
+const DOT_BASE = "h-[0.6875rem] rounded-full transition-[width,background-color] duration-300 ease-out";
 
 interface OutlineProps {
   readonly gradientId: string;
@@ -77,7 +77,7 @@ export function TestimonialCarousel() {
     setActiveIndex((current) => (current + direction + testimonials.length) % testimonials.length);
 
   return (
-    <div className="relative mt-[47px]" data-motion="testimonial-stage">
+    <div className="relative mt-[2.9375rem]" data-motion="testimonial-stage">
       <CarouselArrow
         className={ARROW_LEFT}
         direction="prev"
@@ -86,7 +86,7 @@ export function TestimonialCarousel() {
         scale="testimonial"
       />
 
-      <div className="relative mx-auto h-[261px] w-[725px]">
+      <div className="relative mx-auto h-[16.3125rem] w-[45.3125rem]">
         <Outline
           fill="rgb(218 250 245 / 0.014)"
           gradientId="quote-frame-stroke"
@@ -96,7 +96,7 @@ export function TestimonialCarousel() {
 
         <blockquote
           aria-live="polite"
-          className="absolute left-1/2 top-[33px] w-[634px] -translate-x-1/2 text-center text-[17px] leading-[26px] text-ice"
+          className="absolute left-1/2 top-[2.0625rem] w-[39.625rem] -translate-x-1/2 text-center text-[1.0625rem] leading-[1.625rem] text-ice"
           ref={content}
         >
           <p>
@@ -105,15 +105,15 @@ export function TestimonialCarousel() {
           </p>
         </blockquote>
 
-        {/* top-[160px] = Figma y=2797 measured from the frame top at y=2637. */}
-        <div className="absolute left-1/2 top-[160px] h-[112px] w-[383px] -translate-x-1/2">
+        {/* top-[10rem] = Figma y=2797 measured from the frame top at y=2637. */}
+        <div className="absolute left-1/2 top-[10rem] h-[7rem] w-[23.9375rem] -translate-x-1/2">
           <Outline
             fill="var(--color-ink)"
             gradientId="quote-capsule-stroke"
             path={CAPSULE_PATH}
             viewBox={`0 0 ${CAPSULE.width} ${CAPSULE.height}`}
           />
-          <div className="relative grid h-full place-items-center text-center text-[17px] leading-[26px] text-ice">
+          <div className="relative grid h-full place-items-center text-center text-[1.0625rem] leading-[1.625rem] text-ice">
             <p>
               <strong className="font-semibold">{testimonial.client}</strong>
               <br />
@@ -133,14 +133,14 @@ export function TestimonialCarousel() {
 
       <div
         aria-label="Testimonial selection"
-        className="mt-[52px] flex items-center justify-center gap-[5px]"
+        className="mt-[3.25rem] flex items-center justify-center gap-[0.3125rem]"
         role="tablist"
       >
         {testimonials.map((item, index) => (
           <button
             aria-label={`Show testimonial ${index + 1}`}
             aria-selected={activeIndex === index}
-            className={`${DOT_BASE} ${activeIndex === index ? "w-[30px] bg-sky" : "w-[11px] bg-ice"}`}
+            className={`${DOT_BASE} ${activeIndex === index ? "w-[1.875rem] bg-sky" : "w-[0.6875rem] bg-ice"}`}
             key={item.client}
             onClick={() => setActiveIndex(index)}
             role="tab"

@@ -116,7 +116,7 @@ const aboutField: GlowSpec[] = [
     anchorY: "24%",
     band: "70%",
     tone: "mid",
-    alpha: 0.44,
+    alpha: 0.35,
     depth: 90,
   }),
   {
@@ -200,10 +200,10 @@ const contactField: GlowSpec[] = [
   wash("contact-light", {
     top: "0%",
     height: "100%",
-    anchorY: "50%",
-    band: "88%",
+    anchorY: "58%",
+    band: "96%",
     tone: "deep",
-    alpha: 0.34,
+    alpha: 0.44,
     depth: 68,
   }),
 ];

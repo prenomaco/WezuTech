@@ -12,8 +12,8 @@ export const ARROW_HIT_PADDING = 12;
 export type ArrowScale = "product" | "testimonial";
 
 const GLYPH: Record<ArrowScale, string> = {
-  product: "h-[39.4px] w-[19.7px]",
-  testimonial: "h-[41.2px] w-[20.6px]",
+  product: "h-[2.4625rem] w-[1.23125rem]",
+  testimonial: "h-[2.575rem] w-[1.2875rem]",
 };
 
 interface CarouselArrowProps {

@@ -10,14 +10,14 @@ import { contact } from "@/content/site-content";
  */
 /* Both tracks resolve to their exact Figma widths at 1512 and shrink below it,
    so the form is never clipped by the section on a 1280 desktop. */
-const LAYOUT = "grid grid-cols-[minmax(0,523px)_minmax(0,708px)]";
+const LAYOUT = "grid grid-cols-[minmax(0,32.6875rem)_minmax(0,44.25rem)]";
 
 /** The headline is optically centred against the form, not its first row. */
-const TITLE_OFFSET = "mt-[165px] pl-[73px]";
+const TITLE_OFFSET = "mt-[10.3125rem] pl-[4.5625rem]";
 
 export function Contact() {
   return (
-    <Section id="contact" zone="contact" className="pt-[51px] pb-[101px]">
+    <Section id="contact" zone="contact" className="pt-[3.1875rem] pb-[6.3125rem]">
       <div className={LAYOUT}>
         <DisplayTitle className={TITLE_OFFSET} data-motion="contact-title" size="section">
           {contact.title.map((line) => (

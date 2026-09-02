@@ -9,7 +9,7 @@ import { SectionHeading } from "@/components/ui/typography";
  */
 export function Testimonials() {
   return (
-    <Section zone="testimonials" className="pt-[73px] pb-[50px]">
+    <Section zone="testimonials" className="pt-[4.5625rem] pb-[3.125rem]">
       <SectionHeading className="text-center" data-motion="testimonials-heading">
         WHAT PEOPLE SAY
       </SectionHeading>

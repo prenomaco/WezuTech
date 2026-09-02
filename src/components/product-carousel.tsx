@@ -16,29 +16,29 @@ import type { CatalogProduct } from "@/lib/catalog";
  * `138px inset | 377px image | 66px gap | 610px copy`, 405px tall, with the
  * chevrons on the column edges and vertically centred on the card.
  */
-const CARD_GRID = "grid h-[405px] grid-cols-[377px_minmax(0,610px)] gap-x-[66px] pl-[138px]";
+const CARD_GRID = "grid h-[25.3125rem] grid-cols-[23.5625rem_minmax(0,38.125rem)] gap-x-[4.125rem] pl-[8.625rem]";
 
 /* Glyph x=169 / right edge x=1362.4 in the 1512 frame, i.e. 65px from the
    1304 column's left edge and 45.6px from its right, less the button padding. */
-const ARROW_LEFT = "left-[53px] top-1/2 -translate-y-1/2";
-const ARROW_RIGHT = "right-[33.6px] top-1/2 -translate-y-1/2";
+const ARROW_LEFT = "left-[3.3125rem] top-1/2 -translate-y-1/2";
+const ARROW_RIGHT = "right-[2.1rem] top-1/2 -translate-y-1/2";
 
 function ProductCard({ product }: { product: CatalogProduct }) {
   return (
     <article className={`w-full shrink-0 snap-start ${CARD_GRID}`} data-motion="products-card">
       <img
         alt={product.name}
-        className="h-[402px] w-[377px] object-contain"
+        className="h-[25.125rem] w-[23.5625rem] object-contain"
         src={product.imageUrl}
       />
 
       <div className="flex flex-col">
-        <ProductTitle className="max-w-[492px]">{product.name}</ProductTitle>
-        <Prose className="mt-[19px]">{product.cardDescription}</Prose>
+        <ProductTitle className="max-w-[30.75rem]">{product.name}</ProductTitle>
+        <Prose className="mt-[1.1875rem]">{product.cardDescription}</Prose>
 
         <div className="mt-auto flex items-center gap-5">
           <ButtonLink
-            className="w-[207px]"
+            className="w-[12.9375rem]"
             href="#contact"
             onClick={() => trackEvent("product_contact_click", { product_slug: product.slug })}
           >
@@ -47,7 +47,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           {/* Detail pages are not built yet, so this stays inert rather than
               becoming a link that goes nowhere. */}
           <span
-            className="inline-flex h-11 w-[269px] items-center justify-center rounded-control px-5 text-base leading-none text-mist"
+            className="inline-flex h-11 w-[16.8125rem] items-center justify-center rounded-control px-5 text-base leading-none text-mist"
             title="Product detail page is in development"
           >
             Learn more about the product

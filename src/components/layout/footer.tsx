@@ -13,14 +13,14 @@ import type { ContactDetail } from "@/content/site-content";
  * sit at 49 / 491.9 / 939.3.
  */
 const PANEL_INSET = "5.9524%"; /* 90 / 1512 */
-const COLUMN_INDENT = 49;
+const COLUMN_INDENT = "3.0625rem"; /* 49 */
 
 /* Type, taken from the design rather than rounded: headings are Centauri
    21.112px, links Overused Grotesk 18.766px on a 25.8px line with a 9.383px
    gap (a 35.19px row pitch), contact rows 18px on a 24px line. */
-const HEADING = "font-display text-[21.112px] leading-[24.63px] text-white";
-const LINK = "text-[18.766px] leading-[25.8px] text-white transition-colors hover:text-sky";
-const DETAIL = "flex items-center gap-[7px] text-[18px] leading-[24px] text-white";
+const HEADING = "font-display text-[1.3195rem] leading-[1.539375rem] text-white";
+const LINK = "text-[1.172875rem] leading-[1.6125rem] text-white transition-colors hover:text-sky";
+const DETAIL = "flex items-center gap-[0.4375rem] text-[1.125rem] leading-[1.5rem] text-white";
 
 const DETAIL_ICON = {
   name: IconUser,
@@ -39,7 +39,7 @@ function ContactRow({ detail }: { detail: ContactDetail }) {
   return (
     <li className={DETAIL}>
       {detail.href ? (
-        <a className="flex items-center gap-[7px] transition-colors hover:text-sky" href={detail.href}>
+        <a className="flex items-center gap-[0.4375rem] transition-colors hover:text-sky" href={detail.href}>
           {content}
         </a>
       ) : (
@@ -51,22 +51,22 @@ function ContactRow({ detail }: { detail: ContactDetail }) {
 
 export function Footer() {
   return (
-    <footer className="relative overflow-clip pb-[38px]" data-motion="footer">
+    <footer className="relative overflow-clip pb-[2.375rem]" data-motion="footer">
       <Atmosphere zone="footer" />
 
       <div
         /* The hairline is an inset ring rather than a border so it does not
            consume a pixel of the panel's box and shift every child by 1. */
-        className="relative z-10 rounded-[24px] bg-black/25 pt-[37px] pb-[21px] shadow-[inset_0_0_0_1px_rgb(218_250_245/0.16)] backdrop-blur-[2px]"
+        className="relative z-10 rounded-[1.5rem] bg-black/25 pt-[2.3125rem] pb-[1.3125rem] shadow-[inset_0_0_0_1px_rgb(218_250_245/0.16)] backdrop-blur-[2px]"
         style={{ marginInline: PANEL_INSET }}
       >
         {/* Three even tracks across the full panel width, each indented 49px —
             that lands their contents on x=49 / 493 / 937. */}
-        <div className="grid grid-cols-3" style={{ ["--indent" as string]: `${COLUMN_INDENT}px` }}>
+        <div className="grid grid-cols-3" style={{ ["--indent" as string]: COLUMN_INDENT }}>
           <div className="pl-(--indent)">
             <Logo size="footer" />
             {/* Contact rows start at y=124 — 14px below the 73px lockup. */}
-            <ul className="mt-[14px] flex flex-col gap-[8px] pl-[2px]">
+            <ul className="mt-[0.875rem] flex flex-col gap-[0.5rem] pl-[2px]">
               {contactDetails.map((detail) => (
                 <ContactRow key={detail.label} detail={detail} />
               ))}
@@ -74,10 +74,10 @@ export function Footer() {
           </div>
 
           <nav aria-label="Footer" className="pl-(--indent)">
-            <h2 className={`mt-[24px] ${HEADING}`}>Navigation</h2>
+            <h2 className={`mt-[1.5rem] ${HEADING}`}>Navigation</h2>
             {/* Five links as 3 rows x 2 columns, filled column-first, with the
                 second column starting 134.35px across. */}
-            <div className="mt-[19.37px] grid grid-flow-col grid-rows-3 justify-start gap-x-[86px] gap-y-[9.383px] pl-[4px]">
+            <div className="mt-[1.210625rem] grid grid-flow-col grid-rows-3 justify-start gap-x-[5.375rem] gap-y-[0.586437rem] pl-[0.25rem]">
               {footerNav.map(({ label, href }) => (
                 <a className={LINK} href={href} key={label}>
                   {label}
@@ -87,8 +87,8 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Legal" className="pl-(--indent)">
-            <h2 className={`mt-[24px] ${HEADING}`}>Legal</h2>
-            <div className="mt-[19.37px] flex flex-col gap-[8.58px]">
+            <h2 className={`mt-[1.5rem] ${HEADING}`}>Legal</h2>
+            <div className="mt-[1.210625rem] flex flex-col gap-[0.53625rem]">
               {legalNav.map(({ label, href }) => (
                 <a className={LINK} href={href} key={label}>
                   {label}
@@ -99,9 +99,9 @@ export function Footer() {
         </div>
 
         {/* Figma "Vector 53": x=176..1365.5, i.e. 86px in from the panel edge. */}
-        <hr className="mt-[27.48px] ml-[86px] w-[1189.5px] border-0 border-t border-[rgb(218_250_245/0.28)]" />
+        <hr className="mt-[1.7175rem] ml-[5.375rem] w-[74.34375rem] border-0 border-t border-[rgb(218_250_245/0.28)]" />
 
-        <p className="mt-[21.5px] ml-[375px] whitespace-nowrap text-[16px] leading-[22px] text-white">
+        <p className="mt-[1.34375rem] ml-[23.4375rem] whitespace-nowrap text-[1rem] leading-[1.375rem] text-white">
           {contact.copyright}{" "}
           <a className="text-sky underline decoration-solid" href={contact.agency.href}>
             {contact.agency.label}
