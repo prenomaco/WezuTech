@@ -19,7 +19,7 @@ export class PointerScene extends MotionScene {
   private detach: (() => void) | null = null;
 
   build({ root, reducedMotion }: SceneContext): void {
-    const hero = root.querySelector<HTMLElement>('[data-atmosphere="hero"]');
+    const hero = root.querySelector<HTMLElement>('[data-glow-depth="30"]');
     // The drift wrapper, so the image element stays owned by the intro timeline.
     const vehicles = this.first(root, "hero-vehicles-drift");
     if (reducedMotion || !hero || window.matchMedia("(pointer: coarse)").matches) return;

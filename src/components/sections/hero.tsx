@@ -1,6 +1,4 @@
 import Image from "next/image";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
-import { GlowField } from "@/components/atmosphere/glow-field";
 import { Header } from "@/components/layout/header";
 import { ButtonLink } from "@/components/ui/button";
 import { DisplayTitle } from "@/components/ui/typography";
@@ -40,14 +38,6 @@ function HeadlineLine({ children }: { children: string }) {
 export function Hero() {
   return (
     <section id="home" className="relative overflow-clip">
-      {/* Figma Group 12 sits at x=-176.7 y=-206.4, 1881.69 x 1327.81, which is
-          the group bounds plus the room its blur needs. */}
-      <GlowField
-        className="left-[-11.6865%] top-[-21.9574%] h-[141.2564%] w-[124.4504%]"
-        data-glow-depth="30"
-        id="hero"
-      />
-      <Atmosphere zone="hero" />
       <Header />
 
       <div className="relative z-10 aspect-[1512/940] w-full">

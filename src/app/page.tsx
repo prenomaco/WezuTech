@@ -1,3 +1,4 @@
+import { PageAtmosphere } from "@/components/atmosphere/page-atmosphere";
 import { Footer } from "@/components/layout/footer";
 import { About } from "@/components/sections/about";
 import { Contact } from "@/components/sections/contact";
@@ -23,8 +24,9 @@ export default async function Home() {
   const products = await getPublishedProducts();
 
   return (
-    <main>
+    <main className="relative">
       <SiteMotion />
+      <PageAtmosphere />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}

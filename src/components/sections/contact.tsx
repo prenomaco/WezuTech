@@ -17,7 +17,7 @@ const TITLE_OFFSET = "mt-[10.3125rem] pl-[4.5625rem]";
 
 export function Contact() {
   return (
-    <Section id="contact" zone="contact" className="pt-[3.1875rem] pb-[6.3125rem]">
+    <Section id="contact" className="pt-[3.1875rem] pb-[6.3125rem]">
       <div className={LAYOUT}>
         <DisplayTitle className={TITLE_OFFSET} data-motion="contact-title" size="section">
           {contact.title.map((line) => (

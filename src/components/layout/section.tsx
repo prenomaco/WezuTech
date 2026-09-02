@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
-import type { AtmosphereZone } from "@/lib/design/atmosphere";
 
 /**
  * Figma frame is 1512 wide with content between x=104 and x=1408.
@@ -14,7 +12,6 @@ export const CONTAINER = "mx-auto w-full max-w-[94.5rem] px-[clamp(2.5rem,6.88vw
 
 interface SectionProps {
   readonly id?: string;
-  readonly zone: AtmosphereZone;
   readonly children: ReactNode;
   /** Padding utilities for the section shell. */
   readonly className?: string;
@@ -33,10 +30,9 @@ interface SectionProps {
  * above it. `overflow-clip` is what keeps decorative layers from creating the
  * horizontal scrollbar the previous build had.
  */
-export function Section({ id, zone, children, className, innerClassName, bleed }: SectionProps) {
+export function Section({ id, children, className, innerClassName, bleed }: SectionProps) {
   return (
     <section id={id} className={`relative overflow-clip ${className ?? ""}`}>
-      <Atmosphere zone={zone} />
       {bleed}
       <div className={`relative z-10 ${CONTAINER} ${innerClassName ?? ""}`}>{children}</div>
     </section>

@@ -115,131 +115,48 @@
 }
 
 /* ==========================================================================
-   Atmosphere — every glow below is CSS. No images, no blend-mode hacks.
-   Geometry arrives as custom properties from `lib/design/atmosphere.ts`.
+   Atmosphere
+
+   The glow itself is vector (see `components/atmosphere`). All that lives here
+   is the vertical ray texture that runs over the whole page.
    ========================================================================== */
 
 @layer components {
-  .atmosphere {
+  /* A single light streak down one frame edge. The design runs several of
+     these (Figma Groups 17 / 21 / 22) past the page's left and right edges;
+     each is bright at the edge and decays inward over a few hundred pixels,
+     with a soft vertical falloff at both ends. */
+  .glow-streak {
     position: absolute;
-    inset: 0;
-    overflow: clip;
-    pointer-events: none;
-    /* Own stacking context so glows never paint over content. */
-    z-index: 0;
-    isolation: isolate;
-  }
-
-  .glow {
-    position: absolute;
-    top: var(--glow-top);
-    height: var(--glow-height);
-    width: var(--glow-width);
-    opacity: var(--glow-opacity, 1);
-    will-change: transform;
-  }
-
-  /* Elliptical light bleeding in from a viewport edge. The ellipse is anchored
-     outside the frame so only its falloff is visible — that is what produces
-     the pinched "hourglass" waist in the Figma render. */
-  .glow-edge {
-    /* Radii are percentages of this element's own box, so the ellipse always
-       fills the layer and the layer's width/height control the reach. */
-    background-image: radial-gradient(
-      ellipse 100% 52% at var(--glow-anchor-x) 50%,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 0%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.46)) 28%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.14)) 56%,
-      transparent 78%
-    );
-    filter: blur(var(--glow-blur, 40px));
-  }
-
-  /* Broad symmetric wash: light enters from both frame edges and falls off
-     towards the centre. Stop positions trace the brightness curve measured
-     across the Figma render, which decays far more slowly than an ellipse. */
-  .glow-wash {
-    /* Traced from the render along y=300/450/560: the light holds a near-flat
-       plateau from the frame edge to roughly x=150 (9% of 1512) and only then
-       decays. Modelling it as a simple exponential falloff — the obvious first
-       guess — leaves the whole outer third of the frame far too dark. */
+    top: var(--streak-top);
+    height: var(--streak-height);
+    width: var(--streak-reach);
     background-image: linear-gradient(
-      90deg,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 0%,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 9%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.86)) 12%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.77)) 15.2%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.68)) 18.5%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.38)) 22.5%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.15)) 30%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.06)) 40%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.045)) 50%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.06)) 60%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.15)) 70%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.38)) 77.5%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.68)) 81.5%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.77)) 84.8%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.86)) 88%,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 91%,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 100%
+      var(--streak-direction),
+      rgb(var(--streak-rgb) / var(--streak-alpha)) 0%,
+      rgb(var(--streak-rgb) / calc(var(--streak-alpha) * 0.55)) 12%,
+      rgb(var(--streak-rgb) / calc(var(--streak-alpha) * 0.3)) 26%,
+      rgb(var(--streak-rgb) / calc(var(--streak-alpha) * 0.14)) 44%,
+      rgb(var(--streak-rgb) / calc(var(--streak-alpha) * 0.05)) 68%,
+      transparent 100%
     );
-    /* Confines the wash to a horizontal band so the section reads as lit from
-       the sides at one height rather than uniformly top to bottom.
-       The horizontal radius is deliberately huge: at a realistic radius the
-       ellipse also fades the left and right edges, which is exactly where this
-       gradient is supposed to be at full strength. Only the vertical reach
-       (`--glow-band`) should shape the layer. */
     mask-image: radial-gradient(
-      ellipse 400% var(--glow-band, 58%) at 50% var(--glow-anchor-y, 48%),
-      #000 26%,
+      ellipse 140% var(--streak-band, 50%) at 50% var(--streak-anchor, 50%),
+      #000 22%,
       transparent 100%
     );
-    /* No blur by default. Blurring samples against transparency past the box,
-       which halves the very edge pixels — the stops above already carry the
-       falloff, so blur would only cost the brightness the design asks for. */
-    filter: blur(var(--glow-blur, 0));
   }
 
-  /* Tapered light streak: bright head, long narrowing tail.
-     The taper is a mask rather than a clip-path — clip-path is applied to the
-     filtered output, which leaves the blurred streak with hard cut edges. */
-  .glow-comet {
-    background-image: linear-gradient(
-      to bottom,
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 0%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.34)) 40%,
-      transparent 94%
-    );
-    mask-image: radial-gradient(ellipse 68% 118% at 50% -6%, #000 8%, transparent 72%);
-    filter: blur(var(--glow-blur, 26px));
-    transform: rotate(var(--glow-rotate, 0deg));
-    transform-origin: 50% 0%;
-  }
-
-  /* Soft ambient pool — used for the bloom under the footer. */
-  .glow-bloom {
-    background-image: radial-gradient(
-      ellipse var(--glow-radius-x, 62%) var(--glow-radius-y, 62%) at var(--glow-anchor-x)
-        var(--glow-anchor-y, 100%),
-      rgb(var(--glow-rgb) / var(--glow-alpha)) 0%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.88)) 28%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.62)) 48%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.32)) 68%,
-      rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.09)) 88%,
-      transparent 100%
-    );
-    filter: blur(var(--glow-blur, 56px));
-  }
-
-  /* Faint vertical light rays over the hero. They only read where the light
-     behind them is bright, so the centre of the frame is masked out. */
-  .glow-striations {
+  /* Measured off the render: a 20px period with roughly 7.5/255 of
+     peak-to-peak luminance, constant down the page rather than scaled to the
+     light behind it. A triangular ramp reads closer than hard 1px rules. */
+  .glow-rays {
     background-image: repeating-linear-gradient(
       90deg,
-      transparent 0 12px,
-      rgb(var(--glow-core) / 0.028) 12px 13px
+      rgb(180 214 245 / 0.037) 0px,
+      rgb(180 214 245 / 0) 10px,
+      rgb(180 214 245 / 0.037) 20px
     );
-    mask-image: radial-gradient(ellipse 62% 58% at 50% 46%, transparent 24%, #000 92%);
   }
 }
 

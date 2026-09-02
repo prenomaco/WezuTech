@@ -68,7 +68,7 @@ const ICON_NATURAL_WIDTH: Record<string, number> = {
 
 export function Industries() {
   return (
-    <Section id="gallery" zone="industries" className="pt-[5.0625rem] pb-[4.5625rem]">
+    <Section id="gallery" className="pt-[5.0625rem] pb-[4.5625rem]">
       <div className={GRID}>
         {industries.map((industry, index) => (
           <IndustryItem

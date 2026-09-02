@@ -1,4 +1,3 @@
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { IconMail, IconPhone, IconUser } from "@/components/ui/icons";
 import { Logo } from "@/components/ui/logo";
 import { contact, contactDetails, footerNav, legalNav } from "@/content/site-content";
@@ -52,7 +51,6 @@ function ContactRow({ detail }: { detail: ContactDetail }) {
 export function Footer() {
   return (
     <footer className="relative overflow-clip pb-[2.375rem]" data-motion="footer">
-      <Atmosphere zone="footer" />
 
       <div
         /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
