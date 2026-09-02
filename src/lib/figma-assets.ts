@@ -5,6 +5,7 @@ export const figmaAssets = {
   aboutMobility: "http://localhost:3845/assets/4ee4965ee44dd5484773156ad47d1b9d4690459e.png",
   productIllustration: "http://localhost:3845/assets/4e3fa066be6f748b58327aa09b039a99b2d14394.png",
   applicationSprite: "http://localhost:3845/assets/25199dbca022bc049469283e44c322ed6fca47a5.png",
+  headerPolygon: "http://localhost:3845/assets/90e4793c9d4e91f3f1c4239f033de09d8aeb24f6.svg",
   heroBeam: "http://localhost:3845/assets/33aa57a521eb8ce73d4330bec49874fbbac535dc.svg",
   sideBeamLeft: "http://localhost:3845/assets/3d292d756b822bef4fd74245a4f0ed2ca345fe4e.svg",
   sideBeamRight: "http://localhost:3845/assets/1ad74890966463dc569da37c86a10065a50201ab.svg",
