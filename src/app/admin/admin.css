@@ -1,0 +1,156 @@
+/**
+ * Back-office styling.
+ *
+ * The admin console is a light-on-white internal tool with no Figma design, so
+ * it keeps its own scoped stylesheet instead of living in `globals.css` beside
+ * the marketing site's design tokens.
+ */
+
+.admin-shell {
+  min-height: 100vh;
+  padding: 42px max(5vw, 24px);
+  color: #071426;
+  background: #edf5f9;
+}
+
+.admin-shell h1 {
+  color: #071426;
+}
+
+.admin-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.admin-card {
+  padding: 24px;
+  margin-bottom: 24px;
+  background: #fff;
+  border: 1px solid #d9e5ee;
+  border-radius: 16px;
+}
+
+.admin-card h2 {
+  margin-top: 0;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #2d4052;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #b8c9d6;
+  border-radius: 8px;
+}
+
+.admin-form .wide {
+  grid-column: span 2;
+}
+
+.admin-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid #e2eaf0;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: #e2f5ff;
+  color: #056fae;
+  font-size: 12px;
+}
+
+.login-wrap {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background: var(--color-ink);
+}
+
+.login-card {
+  width: min(440px, 90vw);
+  padding: 38px;
+  border-radius: 16px;
+  background: #fff;
+  color: #071426;
+}
+
+.login-card .eyebrow {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  color: #056fae;
+}
+
+.login-card form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-card label {
+  display: grid;
+  gap: 6px;
+}
+
+.login-card input {
+  padding: 12px;
+  border: 1px solid #a6b8c6;
+  border-radius: 8px;
+}
+
+.admin-shell .button,
+.login-card .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  background: var(--color-sky);
+  line-height: 1;
+}
+
+.admin-shell .button:disabled,
+.login-card .button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-error {
+  color: #b3261e;
+}
+
+@media (max-width: 800px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-form .wide {
+    grid-column: span 1;
+  }
+}

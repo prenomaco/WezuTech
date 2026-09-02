@@ -1,0 +1,32 @@
+/**
+ * Privacy policy and terms pages: long-form prose on the site's dark ground.
+ * Scoped here so `globals.css` stays design tokens plus the atmosphere system.
+ */
+
+.legal-page {
+  min-height: 100vh;
+  max-width: 840px;
+  margin: auto;
+  padding: 80px 30px;
+  color: var(--color-mist);
+  line-height: 1.65;
+}
+
+.legal-page > a {
+  color: var(--color-sky);
+}
+
+.legal-page h1 {
+  margin: 35px 0 20px;
+  color: var(--color-ice);
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.legal-page h2 {
+  margin-top: 35px;
+  color: var(--color-ice);
+}

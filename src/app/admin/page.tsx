@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { updateLead } from "@/app/admin/actions";
 import { SignOutButton } from "@/components/sign-out-button";
+import "@/app/admin/admin.css";
 
 export const dynamic = "force-dynamic";
 

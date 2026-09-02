@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import "@/app/legal.css";
 
 export const metadata: Metadata = { title: "Terms of Service", description: "Terms for using the Wezu Technologies website." };
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import "@/app/legal.css";
 
 export const metadata: Metadata = { title: "Privacy Policy", description: "How Wezu Technologies handles website enquiries and analytics preferences." };
 

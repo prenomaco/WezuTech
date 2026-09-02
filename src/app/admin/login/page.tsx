@@ -1,11 +1,28 @@
-"use client";
+import type { Metadata } from "next";
+import "@/app/admin/admin.css";
+import { LoginForm } from "@/app/admin/login/login-form";
 
-import { FormEvent, useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+/**
+ * `next-auth/react` resolves NEXTAUTH_URL when its module is evaluated. During
+ * a static export that variable is not present, so prerendering this route
+ * threw `TypeError: Invalid URL` and failed the build. A sign-in screen has
+ * nothing to prerender anyway, so the route opts out of static generation.
+ */
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  robots: { index: false, follow: false },
+};
 
 export default function AdminLogin() {
-  const router = useRouter(); const [error, setError] = useState("");
-  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const result = await signIn("credentials", { email: data.get("email"), password: data.get("password"), redirect: false }); if (result?.error) setError("Invalid email or password."); else router.replace("/admin"); }
-  return <main className="login-wrap"><section className="login-card"><p className="eyebrow">WEZU ADMIN</p><h1>Sign in</h1><form onSubmit={submit}><label>Email<input required type="email" name="email" autoComplete="email" /></label><label>Password<input required type="password" name="password" autoComplete="current-password" /></label>{error && <p className="form-error">{error}</p>}<button className="button">Sign in</button></form></section></main>;
+  return (
+    <main className="login-wrap">
+      <section className="login-card">
+        <p className="eyebrow">WEZU ADMIN</p>
+        <h1>Sign in</h1>
+        <LoginForm />
+      </section>
+    </main>
+  );
 }
