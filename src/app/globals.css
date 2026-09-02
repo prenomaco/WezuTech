@@ -56,55 +56,62 @@
 
 /* ==========================================================================
    Base
+
+   These live in `@layer base` on purpose. Rules written outside a layer beat
+   every layered rule regardless of specificity, so an unlayered `a { color:
+   inherit }` silently wins over `text-sky` and every other colour utility on
+   links.
    ========================================================================== */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-html {
-  scroll-behavior: smooth;
-  background-color: var(--color-ink);
-  /* `clip` (not `hidden`) keeps position:sticky working while killing the
-     horizontal scrollbar decorative layers would otherwise create. */
-  overflow-x: clip;
-}
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-ink);
+    /* `clip` (not `hidden`) keeps position:sticky working while killing the
+       horizontal scrollbar decorative layers would otherwise create. */
+    overflow-x: clip;
+  }
 
-body {
-  margin: 0;
-  overflow-x: clip;
-  background-color: var(--color-ink);
-  color: var(--color-mist);
-  font-family: var(--font-body);
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    margin: 0;
+    overflow-x: clip;
+    background-color: var(--color-ink);
+    color: var(--color-mist);
+    font-family: var(--font-body);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-button,
-input,
-textarea {
-  font: inherit;
-}
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
 
-button {
-  cursor: pointer;
-}
+  button {
+    cursor: pointer;
+  }
 
-::selection {
-  background-color: var(--color-sky);
-  color: #041022;
-}
+  ::selection {
+    background-color: var(--color-sky);
+    color: #041022;
+  }
 
-:focus-visible {
-  outline: 2px solid var(--color-sky);
-  outline-offset: 3px;
+  :focus-visible {
+    outline: 2px solid var(--color-sky);
+    outline-offset: 3px;
+  }
 }
 
 /* ==========================================================================

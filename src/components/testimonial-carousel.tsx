@@ -96,7 +96,7 @@ export function TestimonialCarousel() {
 
         <blockquote
           aria-live="polite"
-          className="absolute left-1/2 top-[2.0625rem] w-[39.625rem] -translate-x-1/2 text-center text-[1.0625rem] leading-[1.625rem] text-ice"
+          className="absolute left-1/2 top-[2.0625rem] w-[39.625rem] -translate-x-1/2 text-center text-[1.219625rem] leading-[1.625rem] text-ice"
           ref={content}
         >
           <p>
@@ -113,7 +113,7 @@ export function TestimonialCarousel() {
             path={CAPSULE_PATH}
             viewBox={`0 0 ${CAPSULE.width} ${CAPSULE.height}`}
           />
-          <div className="relative grid h-full place-items-center text-center text-[1.0625rem] leading-[1.625rem] text-ice">
+          <div className="relative grid h-full place-items-center text-center text-[1.219625rem] leading-[1.625rem] text-ice">
             <p>
               <strong className="font-semibold">{testimonial.client}</strong>
               <br />

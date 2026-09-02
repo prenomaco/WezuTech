@@ -200,8 +200,8 @@ const contactField: GlowSpec[] = [
   wash("contact-light", {
     top: "0%",
     height: "100%",
-    anchorY: "58%",
-    band: "96%",
+    anchorY: "74%",
+    band: "86%",
     tone: "deep",
     alpha: 0.44,
     depth: 68,
