@@ -116,7 +116,7 @@ const aboutField: GlowSpec[] = [
     anchorY: "24%",
     band: "70%",
     tone: "mid",
-    alpha: 0.35,
+    alpha: 0.26,
     depth: 90,
   }),
   {
@@ -141,7 +141,7 @@ const productsField: GlowSpec[] = [
     anchorY: "40%",
     band: "72%",
     tone: "deep",
-    alpha: 0.3,
+    alpha: 0.22,
     depth: 74,
   }),
   {
@@ -167,7 +167,7 @@ const industriesField: GlowSpec[] = [
     anchorY: "98%",
     band: "56%",
     tone: "mid",
-    alpha: 0.42,
+    alpha: 0.32,
     depth: 86,
   }),
 ];
@@ -179,7 +179,7 @@ const testimonialsField: GlowSpec[] = [
     anchorY: "8%",
     band: "58%",
     tone: "mid",
-    alpha: 0.34,
+    alpha: 0.24,
     depth: 46,
   }),
   {
