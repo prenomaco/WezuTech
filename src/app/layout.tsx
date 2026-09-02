@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { AnalyticsConsent } from "@/components/analytics";
+import { BackToTop } from "@/components/back-to-top";
 import { siteUrl } from "@/lib/env";
 
 export const metadata: Metadata = {
@@ -12,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}<AnalyticsConsent /></body></html>;
+  return <html lang="en"><body>{children}<AnalyticsConsent /><BackToTop /></body></html>;
 }
