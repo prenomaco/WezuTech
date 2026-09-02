@@ -15,6 +15,8 @@ export const figmaAssets = {
   quoteBottom: "http://localhost:3845/assets/a56aab1037641669c1db00751fd71c99a9bd17a4.svg",
   leftArrow: "http://localhost:3845/assets/e4965fbbdf1923bdef14aa3762da1f9b42075235.svg",
   rightArrow: "http://localhost:3845/assets/e4298407a44c9c908675a40bf357ef952db5b5ed.svg",
+  testimonialLeftArrow: "http://localhost:3845/assets/24008c14ba7f87fb2d9e680da4d0100ba7c53144.svg",
+  testimonialRightArrow: "http://localhost:3845/assets/e6eb121346395b0eb589c4b35d17f6d26d5c5093.svg",
   nameIcon: "http://localhost:3845/assets/1ad9a0d71d98466fc2c3c00cfb6aae4ea4dae3e1.svg",
   emailIcon: "http://localhost:3845/assets/7786274052ac9d938c723baf80570a79e5f2c0db.svg",
   phoneIcon: "http://localhost:3845/assets/15fa43a7382f23cca5927234c391f98b0a7baa9a.svg",
