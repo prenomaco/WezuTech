@@ -203,7 +203,7 @@ const contactField: GlowSpec[] = [
     anchorY: "74%",
     band: "86%",
     tone: "deep",
-    alpha: 0.44,
+    alpha: 0.35,
     depth: 68,
   }),
 ];
@@ -216,7 +216,7 @@ const footerField: GlowSpec[] = [
     anchorY: "106%",
     band: "58%",
     tone: "mid",
-    alpha: 0.13,
+    alpha: 0.09,
     depth: 18,
   }),
   {
