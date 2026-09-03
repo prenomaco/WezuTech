@@ -82,7 +82,7 @@ export function MobileMenu() {
         >
           {primaryNav.map(({ label, href }) => (
             <a
-              className="text-mist transition-colors duration-200 ease-out hover:text-sky"
+              className="nav-link text-mist transition-colors duration-200 ease-out hover:text-sky"
               href={href}
               key={label}
               onClick={() => setOpen(false)}

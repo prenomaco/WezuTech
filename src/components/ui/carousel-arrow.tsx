@@ -33,8 +33,10 @@ export function CarouselArrow({ direction, label, scale, onClick, className }: C
       onClick={onClick}
       type="button"
     >
+      {/* The glyph carries the hover, not the button: the button is mostly hit
+          area, so moving it would slide an invisible box around. */}
       <IconChevron
-        className={`${GLYPH[scale]} ${direction === "next" ? "scale-x-[-1]" : ""}`}
+        className={`${direction === "next" ? "chevron-next scale-x-[-1]" : "chevron-prev"} ${GLYPH[scale]}`}
         height={undefined}
         width={undefined}
       />

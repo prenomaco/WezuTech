@@ -35,7 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <header className="px-6 pt-8 pb-7 lg:px-10">
             {/* Centauri, as the site sets every display line. */}
             <h1 className="font-display text-[clamp(1.5rem,3.2vw,2.5rem)] leading-[1.1] text-[var(--dash-fg)]">
-              Wezutech Dashboard
+              Dashboard
             </h1>
             <p className="mt-2 h-px w-full max-w-[22rem] bg-gradient-to-r from-[var(--dash-primary)]/70 to-transparent" />
           </header>

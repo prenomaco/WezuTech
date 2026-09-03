@@ -46,7 +46,7 @@ interface IndustryItemProps {
 
 function IndustryItem({ industry, column, row, width, height }: IndustryItemProps) {
   return (
-    <article className={`flex items-start ${column.gap}`} data-motion="industry-item">
+    <article className={`lift flex items-start ${column.gap}`} data-motion="industry-item">
       <div className={ICON_SLOT}>
         <Image
           alt=""

@@ -67,24 +67,10 @@ export function Sidebar({ email }: { readonly email: string }) {
         collapsed ? "lg:w-[4.5rem]" : "lg:w-60",
       )}
     >
-      <div className="flex items-center gap-2 px-4 py-4">
-        <Link className="flex items-center gap-2 overflow-hidden" href="/admin">
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--dash-primary)] font-display text-sm text-white">
-            W
-          </span>
-          <span
-            className={cn(
-              "font-display text-sm whitespace-nowrap text-[var(--dash-fg)] transition-opacity duration-200",
-              collapsed && "lg:pointer-events-none lg:opacity-0",
-            )}
-          >
-            WEZUTECH
-          </span>
-        </Link>
-
+      <div className="flex items-center px-4 py-4">
         <button
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto hidden size-7 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-subtle)] hover:text-[var(--dash-fg)] lg:grid"
+          className="ml-auto hidden size-7 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)] lg:grid"
           onClick={toggle}
           type="button"
         >
@@ -100,7 +86,7 @@ export function Sidebar({ email }: { readonly email: string }) {
           const active = href === "/admin" ? pathname === href : pathname.startsWith(href);
           return (
             <Link
-              className="dashboard-link relative flex items-center gap-3 rounded-md px-3 py-2 text-sm whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-subtle)] hover:text-[var(--dash-fg)]"
+              className="dashboard-link relative flex items-center gap-3 rounded-md px-3 py-2 text-sm whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]"
               data-active={active}
               href={href}
               key={href}
@@ -116,25 +102,35 @@ export function Sidebar({ email }: { readonly email: string }) {
       </nav>
 
       {/* The account sits at the foot of the rail, where a dashboard puts it,
-          rather than in the page header where it competed with the title. */}
-      <div className="mt-auto border-t border-[var(--dash-border)] p-3">
-        <div className="flex items-center gap-2">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--dash-border-strong)] bg-[var(--dash-subtle)] text-xs font-semibold text-[var(--dash-fg)]">
+          rather than in the page header where it competed with the title. It is
+          given a panel of its own so it reads as the account control it is,
+          not as a caption under the navigation. */}
+      <div className="mt-auto p-3">
+        <div
+          className={cn(
+            "flex items-center gap-3 rounded-lg border border-[var(--dash-border-strong)] bg-[var(--dash-card)] p-2.5",
+            collapsed && "lg:justify-center lg:p-2",
+          )}
+        >
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--dash-primary)] text-sm font-semibold text-white">
             {email.slice(0, 1).toUpperCase()}
           </span>
 
           <div className={cn("min-w-0 flex-1", collapsed && "lg:hidden")}>
-            <p className="truncate text-xs text-[var(--dash-fg)]">{email}</p>
-            <p className="text-[0.6875rem] text-[var(--dash-muted)]">Administrator</p>
+            <p className="truncate text-[0.8125rem] font-medium text-[var(--dash-fg)]">
+              {email.split("@")[0]}
+            </p>
+            <p className="truncate text-[0.6875rem] text-[var(--dash-muted)]">{email}</p>
           </div>
 
           <button
             aria-label="Sign out"
             className={cn(
-              "grid size-7 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-subtle)] hover:text-[var(--dash-fg)]",
+              "grid size-8 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]",
               collapsed && "lg:hidden",
             )}
             onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            title="Sign out"
             type="button"
           >
             <LogOut aria-hidden className="size-4" />

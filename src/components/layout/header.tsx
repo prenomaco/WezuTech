@@ -54,7 +54,7 @@ export function Header() {
           <a
             key={label}
             href={href}
-            className="text-mist transition-colors duration-200 ease-out hover:text-sky"
+            className="nav-link text-mist transition-colors duration-200 ease-out hover:text-sky"
           >
             {label}
           </a>

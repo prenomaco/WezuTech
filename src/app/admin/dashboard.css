@@ -12,7 +12,10 @@
  */
 .dashboard-root {
   --dash-bg: #02071c;
-  --dash-rail: #040a20;
+  /* The rail is a lighter, bluer plane than the page, so the two separate by
+     value rather than by a border doing all the work. */
+  --dash-rail: #0a1733;
+  --dash-rail-hover: rgb(218 250 245 / 0.07);
   --dash-card: rgb(218 250 245 / 0.03);
   --dash-card-hover: rgb(218 250 245 / 0.055);
   --dash-fg: #dafaf5;
@@ -42,10 +45,34 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(48rem 60rem at -14% 30%, rgb(9 133 204 / 0.42), transparent 60%),
-    radial-gradient(44rem 55rem at 112% 68%, rgb(9 133 204 / 0.34), transparent 60%),
-    radial-gradient(60rem 26rem at 50% -10%, rgb(147 198 234 / 0.13), transparent 70%),
-    radial-gradient(50rem 24rem at 50% 108%, rgb(9 133 204 / 0.16), transparent 70%);
+    radial-gradient(42rem 55rem at -12% 78%, rgb(9 133 204 / 0.5), transparent 62%),
+    radial-gradient(40rem 52rem at 112% 22%, rgb(9 133 204 / 0.4), transparent 62%),
+    radial-gradient(64rem 22rem at 50% 104%, rgb(147 198 234 / 0.16), transparent 72%);
+}
+
+/*
+ * The ridges the site's shader puts through its light.
+ *
+ * On the marketing pages those come from a displacement filter, which Chrome
+ * rasters on the CPU. Here the light is flat colour rather than a blurred
+ * vector, so the same read is available as a repeating gradient: hard-edged
+ * strips on the shader's own 59.2px pitch, faded out across the middle of the
+ * screen where the site's light has nothing to modulate either.
+ */
+.dashboard-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(218 250 245 / 0.035) 0 29.6px,
+    transparent 29.6px 59.2px
+  );
+  mask-image: radial-gradient(
+    58rem 60rem at 50% 100%,
+    transparent 12%,
+    #000 78%
+  );
 }
 
 /* The rail sits a shade off the page so the two planes separate without a
@@ -64,8 +91,8 @@
   background: linear-gradient(
     to bottom,
     transparent,
-    rgb(9 133 204 / 0.45) 22%,
-    rgb(9 133 204 / 0.45) 78%,
+    rgb(9 133 204 / 0.55) 18%,
+    rgb(9 133 204 / 0.55) 82%,
     transparent
   );
 }
