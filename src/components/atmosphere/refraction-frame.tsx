@@ -14,11 +14,18 @@ import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
  *
  * These frames do not take part in the parallax. `feDisplacementMap` has no CSS
  * equivalent, so it stays an SVG filter graph, and Chrome rasters those on the
- * CPU — over a 1545 x 992 surface. Moving the element invalidates that raster,
- * so scrolling re-ran the displacement every frame and the page advanced in
- * steps. Left still, it is rastered once and the tiles are simply scrolled.
- * The drift the design asks for comes from the streaks and the hero subject,
- * which are cheap to move.
+ * CPU — 3.6 megapixels across the three of them, against a 1.4 megapixel
+ * viewport. Moving them re-ran the displacement on every scroll frame, which is
+ * what made the page advance in steps. Left still, each is rastered once and
+ * the tiles are simply scrolled.
+ *
+ * Unlike the glow, they are *not* rasterised small. The glow is a Gaussian and
+ * holds no detail to lose, but these ridges are the one piece of high-frequency
+ * detail in the background, and the displacement is a sawtooth with a sharp
+ * reset inside every 59px. Rasterising at half size and scaling back up halves
+ * the banding's amplitude — measured across the hero, the residual after
+ * detrending falls from 5.93 to 2.80 — because the resample smooths exactly the
+ * steep part of the ramp that produces the seams. The 3.6 megapixels stay.
  *
  * There is no screen blend. Figma marks the group `screen`, but its frames are
  * transparent, so the blend has nothing to act on and the result composites
