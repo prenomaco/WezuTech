@@ -39,41 +39,38 @@
  * read the same: the light gathers down both edges and falls away to ink
  * across the middle.
  */
-.dashboard-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    linear-gradient(
-      to right,
-      rgb(9 133 204 / 0.34) 0,
-      rgb(9 133 204 / 0.16) 12rem,
-      rgb(9 133 204 / 0.04) 24rem,
-      transparent 38rem
-    ),
-    radial-gradient(24rem 40rem at 0% 6%, rgb(147 198 234 / 0.3), transparent 72%),
-    radial-gradient(30rem 44rem at 100% 88%, rgb(9 133 204 / 0.22), transparent 68%);
-}
-
-/* The rail sits a shade off the page so the two planes separate without a
-   hard line doing the work. */
+/*
+ * The rail, given the header plate's edge.
+ *
+ * The site's navigation is a chamfered plate whose stroke is a gradient fading
+ * to nothing at both ends rather than a flat border. The rail is the same plate
+ * stood on its side: a shade off the page so the two planes separate by value,
+ * its outer corners rounded, and a stroke down its right edge that arrives and
+ * leaves the same way the navigation's does.
+ */
 .dashboard-rail {
   background: var(--dash-rail);
-  border-color: var(--dash-border);
+  border-color: transparent;
+}
+
+@media (width >= 64rem) {
+  .dashboard-rail {
+    border-start-end-radius: 1.75rem;
+    border-end-end-radius: 1.75rem;
+  }
 }
 
 .dashboard-rail::after {
   content: "";
   position: absolute;
   inset-block: 0;
-  right: -1px;
+  right: 0;
   width: 1px;
   background: linear-gradient(
     to bottom,
     transparent,
-    rgb(9 133 204 / 0.55) 18%,
-    rgb(9 133 204 / 0.55) 82%,
+    rgb(218 250 245 / 0.5) 22%,
+    rgb(218 250 245 / 0.5) 78%,
     transparent
   );
 }
@@ -127,10 +124,40 @@
   box-shadow: 0 0 0 3px rgb(9 133 204 / 0.22);
 }
 
+/*
+ * Autofill.
+ *
+ * Chrome paints its own background *and* its own border on a field it filled,
+ * and neither `background-color` nor `border-color` alone will move them: the
+ * background needs an inset shadow the size of the field, and the border has to
+ * be restated at the same specificity. Left alone on a dark page the result is
+ * the browser's light-theme yellow, which is what showed up here.
+ *
+ * `:autofill` is the standard selector and `:-webkit-autofill` the one Chrome
+ * has always understood; they are listed apart because a browser that does not
+ * know one of them will throw away the whole rule.
+ */
 .dash-input:-webkit-autofill,
 .dash-input:-webkit-autofill:hover,
-.dash-input:-webkit-autofill:focus {
+.dash-input:-webkit-autofill:focus,
+.dash-input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--dash-fg);
   -webkit-box-shadow: 0 0 0 40rem rgb(2 7 28 / 0.92) inset;
+  box-shadow: 0 0 0 40rem rgb(2 7 28 / 0.92) inset;
+  border-color: var(--dash-border-strong);
   caret-color: var(--dash-fg);
+}
+
+.dash-input:autofill,
+.dash-input:autofill:hover,
+.dash-input:autofill:focus {
+  -webkit-text-fill-color: var(--dash-fg);
+  box-shadow: 0 0 0 40rem rgb(2 7 28 / 0.92) inset;
+  border-color: var(--dash-border-strong);
+  caret-color: var(--dash-fg);
+}
+
+.dash-input:-webkit-autofill:focus,
+.dash-input:autofill:focus {
+  border-color: var(--dash-primary);
 }

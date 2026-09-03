@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "@/app/admin/login/login-form";
+import { EdgeGlow } from "@/components/dashboard/edge-glow";
 import { Logo } from "@/components/ui/logo";
 import "@/app/admin/dashboard.css";
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default function AdminLogin() {
   return (
     <div className="dashboard-root relative grid min-h-screen place-items-center overflow-hidden px-6">
-      <div aria-hidden className="dashboard-glow" />
+      <EdgeGlow className="w-[34rem]" />
 
       <main className="relative z-10 w-full max-w-[26rem]">
         <Logo className="mx-auto" href="/" />
@@ -32,10 +33,6 @@ export default function AdminLogin() {
 
           <LoginForm />
         </section>
-
-        <p className="mt-5 text-center text-xs text-[var(--dash-muted)]">
-          Wezu Technologies
-        </p>
       </main>
     </div>
   );

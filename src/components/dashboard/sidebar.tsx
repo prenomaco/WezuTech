@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useSyncExternalStore } from "react";
@@ -13,6 +12,7 @@ import {
   Package,
   type LucideIcon,
 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
 
 const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
@@ -69,16 +69,11 @@ export function Sidebar({ email }: { readonly email: string }) {
       )}
     >
       <div className="flex items-center gap-2 px-4 py-4">
-        <Link className="shrink-0 overflow-hidden" href="/admin">
-          <Image
-            alt="Wezu Technologies"
-            className={cn("h-7 w-auto transition-all duration-200", collapsed && "lg:h-8")}
-            height={44}
-            priority
-            src="/brand/mark.svg"
-            width={45}
-          />
-        </Link>
+        {/* The site's own lockup. Collapsed, the rail keeps the mark and lets
+            the wordmark run past its edge, which the overflow then hides. */}
+        <div className={cn("shrink-0 overflow-hidden", collapsed && "lg:w-11")}>
+          <Logo className="origin-left scale-[0.86]" href="/admin" />
+        </div>
 
         <button
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -93,18 +88,18 @@ export function Sidebar({ email }: { readonly email: string }) {
         </button>
       </div>
 
-      <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible">
+      <nav className="flex gap-1.5 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === "/admin" ? pathname === href : pathname.startsWith(href);
           return (
             <Link
-              className="dashboard-link relative flex items-center gap-3 rounded-md px-3 py-2 text-sm whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]"
+              className="dashboard-link relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.9375rem] whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]"
               data-active={active}
               href={href}
               key={href}
               title={collapsed ? label : undefined}
             >
-              <Icon aria-hidden className="size-4 shrink-0" />
+              <Icon aria-hidden className="size-[1.125rem] shrink-0" />
               <span className={cn("transition-opacity duration-200", collapsed && "lg:hidden")}>
                 {label}
               </span>
