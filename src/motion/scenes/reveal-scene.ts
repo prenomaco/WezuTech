@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionScene, type SceneContext } from "@/motion/motion-scene";
 
 interface Recipe {
@@ -133,8 +134,7 @@ const DEFAULT_START = "top 96%";
  * element happens to be at when the tween is built, and re-infers it whenever
  * ScrollTrigger refreshes — which the page does on resize and on any height
  * change. A refresh after a section had already played would re-apply its
- * starting `autoAlpha: 0`, leaving whole sections of the page blank until they
- * were scrolled past again.
+ * starting `autoAlpha: 0`, leaving whole sections of the page blank.
  */
 const RESTING: gsap.TweenVars = {
   autoAlpha: 1,
@@ -164,25 +164,43 @@ export class RevealScene extends MotionScene {
       const targets = this.query(root, motion);
       if (!targets.length) continue;
 
-      gsap.fromTo(targets, recipe.from, {
-        ...restingFor(recipe.from),
-        duration: recipe.duration,
-        ease: recipe.ease,
-        stagger: recipe.stagger,
-        scrollTrigger: {
-          trigger: targets[0],
-          start: recipe.start ?? DEFAULT_START,
-          once: true,
-          /* A section that is already on screen when its trigger initialises —
-             a reload part-way down, or a scroll fast enough that the trigger is
-             passed before it is built — is put straight into its resting state
-             rather than played. Without this it can be left holding the
-             starting `autoAlpha: 0` and never appear at all. */
-          onRefreshInit: (self) => {
-            if (self.progress > 0 || self.scroll() > self.start) {
-              gsap.set(targets, restingFor(recipe.from));
-            }
-          },
+      const resting = restingFor(recipe.from);
+
+      /*
+       * A plain `set` for the starting state and a plain `to` for the reveal,
+       * rather than one `fromTo` owned by the trigger.
+       *
+       * A tween that a ScrollTrigger owns is re-rendered whenever the trigger
+       * refreshes, and the page refreshes on resize, on any height change, and
+       * twice on mount in development, where React invokes effects twice. Each
+       * of those could put a section back to `autoAlpha: 0` after it had
+       * already played — on the dev server that left fifteen elements
+       * permanently invisible. Nothing here is re-rendered: the trigger only
+       * starts a tween, and once it has run there is no from-state left to
+       * reapply.
+       */
+      gsap.set(targets, recipe.from);
+
+      const play = () => {
+        gsap.to(targets, {
+          ...resting,
+          duration: recipe.duration,
+          ease: recipe.ease,
+          stagger: recipe.stagger,
+          overwrite: "auto",
+        });
+      };
+
+      ScrollTrigger.create({
+        trigger: targets[0],
+        start: recipe.start ?? DEFAULT_START,
+        once: true,
+        onEnter: play,
+        /* Covers the element already being past its start when the trigger is
+           built or rebuilt — a reload part-way down the page, or a scroll fast
+           enough to outrun it. */
+        onRefresh: (self) => {
+          if (self.progress > 0) play();
         },
       });
     }
