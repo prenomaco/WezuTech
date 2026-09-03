@@ -43,7 +43,8 @@ const HEADING_VARIANT = {
   /** OUR PRODUCTS — 23px / 26px, #dafaf5. */
   products: `${HEADING_SM} text-ice lg:text-[1.4375rem] lg:leading-[1.625rem]`,
   /** WHAT PEOPLE SAY — 24.934px / 28.19px, #dafaf5. */
-  testimonials: `${HEADING_SM} text-ice lg:text-[1.558375rem] lg:leading-[1.761875rem]`,
+  /* Node 374:51 is 16 tall on the 402 frame, against 28.19 at 1512. */
+  testimonials: "text-[0.875rem] leading-[1rem] text-ice lg:text-[1.558375rem] lg:leading-[1.761875rem]",
 } as const;
 
 interface HeadingProps extends TypeProps {
@@ -83,7 +84,8 @@ export function SectionHeading({
  */
 const DISPLAY_SIZE = {
   hero: "text-[2.25rem] leading-[2.5625rem]",
-  section: "text-[2.10880625rem] leading-[2.4375rem]",
+  /* Node 374:69 is 56 tall over two lines on the 402 frame. */
+  section: "text-[1.5rem] leading-[1.75rem] lg:text-[2.10880625rem] lg:leading-[2.4375rem]",
 } as const;
 
 interface DisplayProps extends TypeProps {
@@ -136,7 +138,7 @@ const PROSE_SIZE = {
   /* Node 252:482 is 249.032 tall for nine lines and the blank line
      between its two paragraphs — a 24.9032px line, not the flat 24 the rest
      of the page uses. */
-  product: "text-[1rem] leading-normal text-ice lg:text-[1.16731rem] lg:leading-[1.5565rem]",
+  product: "text-[1rem] leading-[1.3125rem] text-ice lg:text-[1.16731rem] lg:leading-[1.5565rem]",
 } as const;
 
 interface ProseProps extends TypeProps {

@@ -162,10 +162,12 @@
   /* Figma node 252:529: a solid #dafaf5 rule, 14px of vertical padding and a
      soft warm shadow under the field — not the 60% hairline used elsewhere. */
   .field-underline {
-    /* 14px + the field's 22px line + 13px + the 1px rule = the 50px container
-       height the frame repeats. The line box is set by a utility on the
-       element, since utilities outrank this component layer. */
-    padding-block: 0.875rem 0.8125rem;
+    /* The 402 frame's containers are 24 tall against the 1512 frame's 50, so
+       the padding is the breakpoint's, not a constant: 2px + a 19px line + 2px
+       + the 1px rule on the small frame, 14px + 22px + 13px + 1px on the large
+       one. The line box is set by a utility on the element, since utilities
+       outrank this component layer. */
+    padding-block: 0.125rem;
     padding-inline-end: 1.25rem;
     border-bottom: 1px solid var(--color-ice);
     /* The inspector lists a 0 4px 14px rgba(255,72,48,0.11) shadow on this
@@ -175,6 +177,12 @@
     transition:
       border-color 0.25s ease,
       box-shadow 0.25s ease;
+  }
+
+  @media (width >= 64rem) {
+    .field-underline {
+      padding-block: 0.875rem 0.8125rem;
+    }
   }
 
   .field-underline:focus {

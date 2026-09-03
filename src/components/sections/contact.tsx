@@ -15,13 +15,20 @@ const LAYOUT =
   "lg:grid-cols-[minmax(0,32.6875rem)_minmax(0,44.25rem)]";
 
 /** The headline is optically centred against the form, not its first row. */
-const TITLE_OFFSET = "mb-[2.5rem] text-center lg:mb-0 lg:mt-[10.3125rem] lg:pl-[4.5625rem] lg:text-left";
+/* 402 frame: the title is 56 tall over two lines at x=90, y=3882. */
+const TITLE_OFFSET =
+  "mb-[0.8125rem] text-center lg:mb-0 lg:mt-[10.3125rem] lg:pl-[4.5625rem] lg:text-left";
 
 /**
  * The About page places this block on its own rhythm, so the spacing above and
  * below it is the caller's to set; the values here are the home frame's.
  */
-export function Contact({ className = "pt-[3.1875rem] pb-[6.3125rem]" }: { readonly className?: string }) {
+export function Contact({
+  /* 402 frame: 54 above the title and 58 below the submit button. */
+  className = "pt-[3.375rem] pb-[3.625rem] lg:pt-[3.1875rem] lg:pb-[6.3125rem]",
+}: {
+  readonly className?: string;
+}) {
   return (
     <Section id="contact" className={className}>
       <div className={LAYOUT}>

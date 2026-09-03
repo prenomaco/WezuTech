@@ -7,21 +7,22 @@ import { industries, type Industry } from "@/content/site-content";
  * x=274 / 693 / 1091, so the columns are 430 / 392 / rest wide inside the
  * 1304px content column, offset 32px from its left edge.
  */
+/* The 402 frame stacks these as six rows on a 151px pitch, each 121 tall. */
 const GRID =
-  "grid grid-cols-1 gap-y-[2rem] " +
-  "lg:grid-cols-[26.875rem_24.5rem_minmax(0,1fr)] lg:gap-y-[2.0625rem] lg:pl-8";
+  "-mx-[1.625rem] grid grid-cols-1 gap-y-[1.3125rem] " +
+  "lg:mx-0 lg:grid-cols-[26.875rem_24.5rem_minmax(0,1fr)] lg:gap-y-[2.0625rem] lg:pl-8";
 
 /** Every icon renders 146px tall; Figma varies the width with the artwork. */
-const ICON_SLOT = "flex w-[5.5rem] shrink-0 justify-end lg:w-[7.625rem]";
+const ICON_SLOT = "flex w-[6.3125rem] shrink-0 justify-end lg:w-[7.625rem]";
 
 /**
  * Per-column measurements from the frame: the gap between the icon slot and
  * the copy, and the text-box width that decides where each body wraps.
  */
 const COLUMN = [
-  { gap: "gap-4", body: "lg:max-w-[15.0625rem]" },
-  { gap: "gap-4 lg:gap-[0.3125rem]", body: "lg:max-w-[15.125rem]" },
-  { gap: "gap-4 lg:gap-[0.6875rem]", body: "lg:max-w-[17.75rem]" },
+  { gap: "gap-[0.8125rem]", body: "max-w-[16.1875rem] lg:max-w-[15.0625rem]" },
+  { gap: "gap-[0.8125rem] lg:gap-[0.3125rem]", body: "max-w-[16.1875rem] lg:max-w-[15.125rem]" },
+  { gap: "gap-[0.8125rem] lg:gap-[0.6875rem]", body: "max-w-[16.1875rem] lg:max-w-[17.75rem]" },
 ] as const;
 
 /**
@@ -33,7 +34,7 @@ const COLUMN = [
  * again at 2293, on its own — that one is a stray nudge rather than a rhythm,
  * so the row follows the two cells that agree.
  */
-const ROW_OFFSET = ["pt-[0.875rem]", "pt-[1.0625rem]"] as const;
+const ROW_OFFSET = ["pt-[0.25rem] lg:pt-[0.875rem]", "pt-[0.25rem] lg:pt-[1.0625rem]"] as const;
 
 interface IndustryItemProps {
   readonly industry: Industry;
@@ -49,7 +50,7 @@ function IndustryItem({ industry, column, row, width, height }: IndustryItemProp
       <div className={ICON_SLOT}>
         <Image
           alt=""
-          className="h-[6.5rem] w-auto max-w-none object-contain lg:h-[9.125rem]"
+          className="h-[7.5625rem] w-auto max-w-none object-contain lg:h-[9.125rem]"
           height={height}
           sizes="122px"
           src={industry.image}
@@ -60,7 +61,7 @@ function IndustryItem({ industry, column, row, width, height }: IndustryItemProp
           #dafaf5 — at 16px the body wraps a word early in every column. */}
       <div className={row}>
         <h3 className="text-[1.125rem] font-bold leading-[1.5rem] text-ice">{industry.title}</h3>
-        <p className={`mt-1.5 text-[1.125rem] font-book leading-[1.5rem] text-ice ${column.body}`}>
+        <p className={`mt-[0.4375rem] text-[1.125rem] font-book leading-[1.5rem] text-ice lg:mt-1.5 ${column.body}`}>
           {industry.body}
         </p>
       </div>

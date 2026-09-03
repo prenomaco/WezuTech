@@ -11,7 +11,10 @@ import type { ContactDetail } from "@/content/site-content";
  * their starts at x=49 / 493 / 937 — the logo, "Navigation" and "Legal" nodes
  * sit at 49 / 491.9 / 939.3.
  */
-const PANEL_INSET = "5.9524%"; /* 90 / 1512 */
+/* The panel is inset 16 of 402 on the small frame and 90 of 1512 on the large
+   one, so the inset is a custom property the breakpoint swaps rather than a
+   value the component picks. */
+const PANEL_INSET = "[--panel-inset:3.9801%] lg:[--panel-inset:5.9524%]";
 const COLUMN_INDENT = "3.0625rem"; /* 49 */
 
 /* Type, taken from the design rather than rounded: headings are Centauri
@@ -50,7 +53,7 @@ function ContactRow({ detail }: { detail: ContactDetail }) {
 
 export function Footer() {
   return (
-    <footer className="relative overflow-clip pb-[2.375rem]">
+    <footer className={`relative overflow-clip pb-[0.8125rem] lg:pb-[2.375rem] ${PANEL_INSET}`}>
 
       <div
         /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
@@ -62,7 +65,7 @@ export function Footer() {
            plays, so the page loads 26px taller than the frame and settles
            afterwards. */
         data-motion="footer"
-        style={{ marginInline: PANEL_INSET }}
+        style={{ marginInline: "var(--panel-inset)" }}
       >
         {/* Three even tracks across the full panel width, each indented 49px —
             that lands their contents on x=49 / 493 / 937. */}

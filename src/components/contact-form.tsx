@@ -10,20 +10,24 @@ type FormState = "idle" | "sending" | "success" | "error";
  * Figma: two 346px columns with a 16px gutter. Name and Email share row one,
  * Subject occupies the left column only, and Message spans both at 160px tall.
  */
+/* 402 frame: one 342-wide column, its rows on a 76px pitch. */
 const GRID =
-  "relative grid grid-cols-1 gap-x-4 gap-y-[0.8125rem] " +
-  "lg:grid-cols-[repeat(2,minmax(0,21.625rem))]";
+  "relative grid grid-cols-1 gap-x-4 gap-y-[1.875rem] " +
+  "lg:grid-cols-[repeat(2,minmax(0,21.625rem))] lg:gap-y-[0.8125rem]";
 
 /** Label 22px + 8px gap + 50px field = the 80px block Figma repeats. */
-const LABEL = "block text-base leading-[1.375rem] text-ice";
+/* 402 frame: labels are 18 tall against the 1512 frame's 22. */
+const LABEL = "block text-[0.875rem] leading-[1.125rem] text-ice lg:text-base lg:leading-[1.375rem]";
 const FIELD =
-  "field-underline block bg-transparent text-[1rem] leading-[1.375rem] text-ice outline-none placeholder:text-[rgb(218_233_202/0.4)]";
+  "field-underline block bg-transparent text-[0.875rem] leading-[1.1875rem] text-ice outline-none placeholder:text-[rgb(218_233_202/0.4)] lg:text-[1rem] lg:leading-[1.375rem]";
 
 /* The frame does not use one rhythm: row one leaves 30px between a label's top
    and its field (label 3062 -> field 3092), rows two and three leave 27, and
    the message block sits 10px lower again. Matching the design means matching
    that irregularity rather than averaging it. */
-const FIELD_GAP = { first: "mt-2", rest: "mt-[0.3125rem]" } as const;
+/* 402 frame: 5px between a label and its container, against the 1512
+   frame's 8 and 5. */
+const FIELD_GAP = { first: "mt-[0.3125rem] lg:mt-2", rest: "mt-[0.3125rem]" } as const;
 
 interface FieldProps {
   readonly label: string;
@@ -96,7 +100,7 @@ export function ContactForm() {
       <label className={`${LABEL} col-span-full mt-[0.5625rem]`} data-motion="contact-field">
         Message
         <textarea
-          className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-full resize-none lg:w-[43.5625rem]`}
+          className={`${FIELD} ${FIELD_GAP.rest} h-[4.125rem] w-full resize-none lg:h-[10rem] lg:w-[43.5625rem]`}
           minLength={10}
           name="message"
           placeholder="Lorem ipsum dolor siet amet"
@@ -104,8 +108,8 @@ export function ContactForm() {
         />
       </label>
 
-      <div className="col-span-full -ml-1 mt-[2.625rem] flex flex-wrap items-center gap-4" data-motion="contact-field">
-        <Button className="w-full lg:w-[10.625rem]" disabled={state === "sending"} type="submit">
+      <div className="col-span-full -ml-1 mt-[1.8125rem] flex flex-wrap items-center gap-4 lg:mt-[2.625rem]" data-motion="contact-field">
+        <Button className="h-8 w-full lg:h-11 lg:w-[10.625rem]" disabled={state === "sending"} type="submit">
           {state === "sending" ? "Sending…" : "Submit Message"}
         </Button>
         {message ? (
