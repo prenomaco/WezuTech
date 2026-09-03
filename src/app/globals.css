@@ -208,3 +208,104 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Interactions
+
+   Hover and press states are CSS, not GSAP. They have to start on the frame
+   the pointer arrives and stop the frame it leaves, which a tween cannot do
+   without a listener per element, and every one of these is a transform or a
+   colour on a small element — nothing here can invalidate the background.
+
+   Each transition names its properties. `transition-all` on a page GSAP is
+   also driving will animate whatever GSAP happens to be writing at the time.
+   ========================================================================== */
+
+@layer components {
+  /* Navigation: a rule that grows from the side the pointer came from. */
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.3125rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* A row lifts a little and its artwork leans in, so the grid answers the
+     pointer without anything moving far enough to disturb the reading. */
+  .lift {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lift:hover {
+    transform: translateY(-3px);
+  }
+
+  .lift img {
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lift:hover img {
+    transform: scale(1.045);
+  }
+
+  /* Carousel chevrons: the glyph slides the way it will take you. */
+  .chevron-prev,
+  .chevron-next {
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
+    opacity: 0.75;
+  }
+
+  .chevron-prev:hover,
+  .chevron-next:hover {
+    opacity: 1;
+  }
+
+  .chevron-prev:hover {
+    transform: translateX(-3px);
+  }
+
+  .chevron-next:hover {
+    transform: translateX(3px);
+  }
+
+  /* Buttons already lift on hover; this is the other half of the gesture. */
+  .press:active {
+    transform: translateY(1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link::after,
+  .lift,
+  .lift img,
+  .chevron-prev,
+  .chevron-next,
+  .press {
+    transition: none;
+  }
+
+  .lift:hover,
+  .lift:hover img,
+  .chevron-prev:hover,
+  .chevron-next:hover,
+  .press:active {
+    transform: none;
+  }
+}

@@ -7,18 +7,10 @@ import { Industries } from "@/components/sections/industries";
 import { Products } from "@/components/sections/products";
 import { Testimonials } from "@/components/sections/testimonials";
 import { getPublishedProducts } from "@/lib/catalog";
-import { siteUrl } from "@/lib/env";
+import { jsonLd, organisationSchema, websiteSchema } from "@/lib/structured-data";
 import { SiteMotion } from "@/motion/site-motion";
 
 export const dynamic = "force-dynamic";
-
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Wezu Technologies",
-  url: siteUrl,
-  description: "Intelligent mobility hardware and software systems.",
-};
 
 export default async function Home() {
   const products = await getPublishedProducts();
@@ -27,10 +19,8 @@ export default async function Home() {
     <main className="relative">
       <SiteMotion />
       <PageAtmosphere />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
+      <script dangerouslySetInnerHTML={jsonLd(organisationSchema())} type="application/ld+json" />
+      <script dangerouslySetInnerHTML={jsonLd(websiteSchema())} type="application/ld+json" />
 
       <Hero />
       <About />

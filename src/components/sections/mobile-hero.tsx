@@ -37,16 +37,18 @@ export function MobileHero() {
         data-motion="hero-vehicles-drift"
         style={{ left: x(17), top: "9.2375rem", width: x(370), height: "15.4167rem" }}
       >
-        <Image
-          alt="Electric car, freight truck and passenger train"
-          className="h-full w-full object-contain"
-          data-motion="hero-vehicles"
-          height={VEHICLES.height}
-          priority
-          sizes="370px"
-          src={VEHICLES.src}
-          width={VEHICLES.width}
-        />
+        <div className="size-full" data-motion="hero-vehicles-float">
+          <Image
+            alt="Electric car, freight truck and passenger train"
+            className="h-full w-full object-contain"
+            data-motion="hero-vehicles"
+            height={VEHICLES.height}
+            priority
+            sizes="370px"
+            src={VEHICLES.src}
+            width={VEHICLES.width}
+          />
+        </div>
       </div>
 
       {/* 305:98 — set left, its own two lines. */}

@@ -53,11 +53,6 @@ export default async function OverviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-lg font-semibold">Overview</h1>
-        <p className="text-sm text-[var(--dash-muted)]">Enquiries and catalogue at a glance.</p>
-      </div>
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat icon={Inbox} label="Enquiries" value={leadCount} />
         <Stat icon={Send} label="New" value={newLeads} />

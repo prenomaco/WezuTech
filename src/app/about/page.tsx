@@ -5,12 +5,18 @@ import { Footer } from "@/components/layout/footer";
 import { AboutIntro } from "@/components/sections/about-page";
 import { Contact } from "@/components/sections/contact";
 import { Testimonials } from "@/components/sections/testimonials";
+import { jsonLd, webPageSchema } from "@/lib/structured-data";
 import { SiteMotion } from "@/motion/site-motion";
+
+const DESCRIPTION =
+  "Wezu Technologies builds software, hardware and engineering solutions for the future of " +
+  "transportation, logistics and mobility.";
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "Wezu Technologies builds software, hardware and engineering solutions for the future of transportation, logistics and mobility.",
+  description: DESCRIPTION,
+  alternates: { canonical: "/about" },
+  openGraph: { type: "website", url: "/about", title: "About Wezu Technologies", description: DESCRIPTION },
 };
 
 /**
@@ -25,6 +31,12 @@ export default function AboutPage() {
     <main className="relative">
       <SiteMotion />
       <AboutAtmosphere />
+      <script
+        dangerouslySetInnerHTML={jsonLd(
+          webPageSchema({ path: "/about", name: "About Wezu Technologies", description: DESCRIPTION }),
+        )}
+        type="application/ld+json"
+      />
 
       {/* The home page mounts its header inside the hero, which owns the plate
           and the frame it is placed against; this page has no hero, so it sits

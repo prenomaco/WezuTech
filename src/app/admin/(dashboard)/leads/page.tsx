@@ -16,7 +16,7 @@ export default async function LeadsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-lg font-semibold">Enquiries</h1>
+        <h2 className="font-display text-xl text-[var(--dash-fg)]">Enquiries</h2>
         <p className="text-sm text-[var(--dash-muted)]">
           Everything submitted through the contact form, newest first.
         </p>

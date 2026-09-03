@@ -21,7 +21,7 @@ export default async function ProductsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-lg font-semibold">Products</h1>
+        <h2 className="font-display text-xl text-[var(--dash-fg)]">Products</h2>
         <p className="text-sm text-[var(--dash-muted)]">
           What the catalogue shows on the home page, in its running order.
         </p>

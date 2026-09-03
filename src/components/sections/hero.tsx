@@ -63,16 +63,21 @@ export function Hero() {
             height: pct(783, "height"),
           }}
         >
-          <Image
-            alt="Electric car, freight truck and passenger train"
-            className="h-full w-full object-cover"
-            data-motion="hero-vehicles"
-            height={VEHICLES.height}
-            priority
-            sizes="(min-width: 1512px) 1175px, 78vw"
-            src={VEHICLES.src}
-            width={VEHICLES.width}
-          />
+          {/* A third wrapper: the drift above is scroll-scrubbed and the image
+              below is owned by the intro timeline, so the idle float needs a
+              transform of its own rather than a share of either. */}
+          <div className="size-full" data-motion="hero-vehicles-float">
+            <Image
+              alt="Electric car, freight truck and passenger train"
+              className="h-full w-full object-cover"
+              data-motion="hero-vehicles"
+              height={VEHICLES.height}
+              priority
+              sizes="(min-width: 1512px) 1175px, 78vw"
+              src={VEHICLES.src}
+              width={VEHICLES.width}
+            />
+          </div>
         </div>
 
         <DisplayTitle as="h1" className="absolute" style={{ left: pct(166), top: pct(231, "height") }}>

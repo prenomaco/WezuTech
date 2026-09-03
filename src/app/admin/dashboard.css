@@ -5,29 +5,84 @@
  * their own tokens globally and are matched pixel for pixel against a design,
  * so a second theme on the document would repaint them. Everything the admin
  * primitives read is declared here and nowhere else.
+ *
+ * The values are the site's own — the same ink, sky and ice — so the two halves
+ * of the product read as one thing rather than a marketing site with a stock
+ * admin panel bolted to it.
  */
 .dashboard-root {
-  --dash-bg: #f7f8fa;
-  --dash-card: #ffffff;
-  --dash-fg: #0d1220;
-  --dash-muted: #6b7280;
-  --dash-border: #e4e7ec;
-  --dash-subtle: #f0f2f5;
+  --dash-bg: #02071c;
+  --dash-rail: #040a20;
+  --dash-card: rgb(218 250 245 / 0.03);
+  --dash-card-hover: rgb(218 250 245 / 0.055);
+  --dash-fg: #dafaf5;
+  --dash-muted: #8fa3bd;
+  --dash-border: rgb(218 250 245 / 0.1);
+  --dash-border-strong: rgb(218 250 245 / 0.18);
+  --dash-subtle: rgb(218 250 245 / 0.06);
   --dash-primary: #0985cc;
-  --dash-primary-hover: #0a76b4;
+  --dash-primary-hover: #1b9ae4;
 
-  color-scheme: light;
+  color-scheme: dark;
+  background: var(--dash-bg);
 }
 
-@media (prefers-color-scheme: dark) {
-  .dashboard-root {
-    --dash-bg: #0b0f1a;
-    --dash-card: #111726;
-    --dash-fg: #e8eef7;
-    --dash-muted: #94a3b8;
-    --dash-border: #1e2637;
-    --dash-subtle: #161d2c;
+/*
+ * The site's edge light, at a fraction of its cost.
+ *
+ * The marketing pages build this from the design's own blurred vectors, which
+ * is 15 megapixels of Gaussian; a dashboard does not need the silhouette, only
+ * the impression of it. Two painted gradients cost the compositor nothing and
+ * read the same: the light gathers down both edges and falls away to ink
+ * across the middle.
+ */
+.dashboard-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(48rem 60rem at -14% 30%, rgb(9 133 204 / 0.42), transparent 60%),
+    radial-gradient(44rem 55rem at 112% 68%, rgb(9 133 204 / 0.34), transparent 60%),
+    radial-gradient(60rem 26rem at 50% -10%, rgb(147 198 234 / 0.13), transparent 70%),
+    radial-gradient(50rem 24rem at 50% 108%, rgb(9 133 204 / 0.16), transparent 70%);
+}
 
-    color-scheme: dark;
-  }
+/* The rail sits a shade off the page so the two planes separate without a
+   hard line doing the work. */
+.dashboard-rail {
+  background: var(--dash-rail);
+  border-color: var(--dash-border);
+}
+
+.dashboard-rail::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: -1px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(9 133 204 / 0.45) 22%,
+    rgb(9 133 204 / 0.45) 78%,
+    transparent
+  );
+}
+
+/* The active route keeps a lit edge, the way the design lights its panels. */
+.dashboard-link[data-active="true"] {
+  background: var(--dash-subtle);
+  color: var(--dash-fg);
+}
+
+.dashboard-link[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--dash-primary);
 }

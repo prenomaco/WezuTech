@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { MotionScene } from "@/motion/motion-scene";
 import { HeroScene } from "@/motion/scenes/hero-scene";
+import { IdleScene } from "@/motion/scenes/idle-scene";
 import { ParallaxScene } from "@/motion/scenes/parallax-scene";
 import { RevealScene } from "@/motion/scenes/reveal-scene";
 
@@ -27,6 +28,7 @@ export class MotionRegistry {
       new ParallaxScene(),
       new HeroScene(),
       new RevealScene(),
+      new IdleScene(),
     ]);
   }
 
