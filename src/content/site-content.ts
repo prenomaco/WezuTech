@@ -160,6 +160,8 @@ export const testimonials: readonly Testimonial[] = [
 export interface AboutParagraph {
   /** Set in bold ahead of the body, as node 307:233 does for two of them. */
   readonly lead?: string;
+  /** The lead takes a line of its own, still inside this paragraph's block. */
+  readonly leadOwnLine?: boolean;
   readonly body: string;
 }
 
@@ -168,8 +170,7 @@ export const aboutPage = {
   intro: [
     { lead: "Wezu Technologies", body: " builds software, hardware, and engineering solutions for the future of transportation, logistics, and mobility." },
     { body: "We work at the intersection of engineering, technology, and mobility to solve complex challenges across the vehicle and transportation ecosystem. From intelligent connectivity and electrification to safer, greener mobility systems, we turn ideas into solutions that are built for the real world." },
-    { lead: "Built for mobility. Engineered for what\u2019s next.", body: "" },
-    { body: "The future of mobility isn\u2019t defined by a single technology. It is shaped by how software, electronics, hardware, and engineering come together." },
+    { lead: "Built for mobility. Engineered for what\u2019s next.", leadOwnLine: true, body: "The future of mobility isn\u2019t defined by a single technology. It is shaped by how software, electronics, hardware, and engineering come together." },
     { body: "At Wezu, we bring these disciplines together to develop solutions that make transportation smarter, safer, more connected, and more sustainable." },
     { body: "Whether it is an OEM/ODM program, a turnkey product, or an R&D challenge, we work closely with our partners from concept to execution \u2014 combining technical expertise with a practical understanding of the mobility industry." },
   ] as readonly AboutParagraph[],

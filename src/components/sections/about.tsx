@@ -12,16 +12,21 @@ const ARTWORK = {
 };
 
 /**
- * Figma node 252:478 places the artwork at x=766 with a width of 840 — it runs
- * 94px past the 1512 frame. That bleed is intentional, so the image is
- * positioned against the section and clipped by it rather than being squeezed
- * into the text column.
+ * Figma node 252:478 places the artwork in an 840 x 560 box at x=766, running
+ * 94px past the 1512 frame. That bleed is deliberate, so the image is clipped
+ * by the section rather than squeezed into the text column.
+ *
+ * The transparent original is 746 x 560, a tighter crop than the flattened
+ * export that filled the box, so it is drawn at its own width rather than
+ * stretched to the box, where it stood 631 tall against the design's 560. Its
+ * left edge is 759, found by correlating the render against Figma's export:
+ * the crop is tighter on the right than the left, so it is not centred.
  */
 function AboutArtwork() {
   return (
     <Image
       alt="Connected mobility platforms around a control module"
-      className="absolute left-[50.6614%] top-[-4rem] w-[55.5556%] max-w-none object-contain"
+      className="absolute top-[-4rem] left-[50.1984%] w-[49.3386%] max-w-none object-contain"
       data-motion="about-artwork"
       height={ARTWORK.height}
       sizes="(min-width: 1512px) 840px, 56vw"

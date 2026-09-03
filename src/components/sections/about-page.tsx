@@ -36,11 +36,14 @@ function Intro() {
   /* The heading sits at y=198 in the frame, and the header box above this
      section already accounts for its first 106. */
   return (
-    <Section className="pt-[5.75rem]" innerClassName="relative">
+    /* The next section begins at y=751 in the frame, a fixed distance the copy
+       used to reach by accident: the lead paragraph carried a block gap under
+       it that is now a line break inside its own paragraph. */
+    <Section className="pt-[5.75rem] pb-[1.5625rem]" innerClassName="relative">
       {/* x=875, y=256 against a section starting at y=0 — 58px above the copy. */}
       <Image
         alt="An electric truck, car, tram and bus"
-        className="absolute top-[3.625rem] left-[57.8704%] hidden w-[39.7487%] max-w-none lg:block"
+        className="absolute top-[3.625rem] left-[57.3413%] hidden w-[39.7487%] max-w-none lg:block"
         data-motion="about-artwork"
         height={FLEET.height}
         priority
@@ -61,6 +64,10 @@ function Intro() {
         {aboutPage.intro.map((paragraph) => (
           <p className={BODY} key={(paragraph.lead ?? "") + paragraph.body.slice(0, 24)}>
             {paragraph.lead ? <strong className="font-bold">{paragraph.lead}</strong> : null}
+            {/* Node 307:233 breaks after this lead but does not open a new
+                block: the paragraph below it follows on the next line, not
+                after the 25px the other paragraphs are separated by. */}
+            {paragraph.leadOwnLine ? <br /> : null}
             {paragraph.body}
           </p>
         ))}

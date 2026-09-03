@@ -33,7 +33,15 @@ interface SectionProps {
 export function Section({ id, children, className, innerClassName, bleed }: SectionProps) {
   return (
     <section id={id} className={`relative overflow-clip ${className ?? ""}`}>
-      {bleed}
+      {/* Bleed art is placed in percentages of the design frame, so it has to
+          resolve against the same 1512 column the content does. Left against
+          the section it grew with the window: at 1920 the about artwork came
+          out a quarter too large and a hundred pixels off its mark. */}
+      {bleed ? (
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="relative mx-auto h-full w-full max-w-[94.5rem]">{bleed}</div>
+        </div>
+      ) : null}
       <div className={`relative z-10 ${CONTAINER} ${innerClassName ?? ""}`}>{children}</div>
     </section>
   );

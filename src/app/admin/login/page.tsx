@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 export default function AdminLogin() {
   return (
     <div className="dashboard-root relative grid min-h-screen place-items-center overflow-hidden px-6">
-      <EdgeGlow className="w-[34rem]" />
+      <EdgeGlow className="w-[19rem]" />
+      <EdgeGlow className="w-[15rem]" side="right" />
 
       <main className="relative z-10 w-full max-w-[26rem]">
         <Logo className="mx-auto" href="/" />

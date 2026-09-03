@@ -43,21 +43,13 @@
  * The rail, given the header plate's edge.
  *
  * The site's navigation is a chamfered plate whose stroke is a gradient fading
- * to nothing at both ends rather than a flat border. The rail is the same plate
- * stood on its side: a shade off the page so the two planes separate by value,
- * its outer corners rounded, and a stroke down its right edge that arrives and
- * leaves the same way the navigation's does.
+ * to nothing at both ends rather than a flat border. The rail takes the stroke
+ * but not the chamfer: rounding a full-height edge put a curve halfway down the
+ * screen, where the plate's corners only ever read as corners.
  */
 .dashboard-rail {
   background: var(--dash-rail);
   border-color: transparent;
-}
-
-@media (width >= 64rem) {
-  .dashboard-rail {
-    border-start-end-radius: 1.75rem;
-    border-end-end-radius: 1.75rem;
-  }
 }
 
 .dashboard-rail::after {
