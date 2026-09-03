@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
 
 /**
@@ -19,7 +19,24 @@ import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
  * what made the page advance in steps. Left still, each is rastered once and
  * the tiles are simply scrolled.
  *
- * Unlike the glow, they are *not* rasterised small. The glow is a Gaussian and
+ * They are rasterised at CSS resolution rather than at the display's. A
+ * filter's result is produced in device pixels, so a 2x screen does four times
+ * the area for the same layer: measured over an identical scripted scroll of
+ * the landing page, the compositor's own ScrollLayer work was 94ms across 110
+ * frames at 1x and 350ms across 109 at 2x — the same frames, 3.7x the time.
+ * That is the whole of the difference between this page being smooth on an
+ * external monitor and stepping on a laptop's built-in screen.
+ *
+ * So a 2x display draws the frame at half size and scales the result back up,
+ * which is exactly what the 1x display already renders and what does not
+ * stutter. The content inside is counter-scaled so its coordinates stay in
+ * design pixels, and the ridge period and displacement are divided to match,
+ * since both are measured in the filtered element's own user units. The
+ * variants are switched by a media query rather than by reading
+ * `devicePixelRatio`, which would make the whole background tree client-side
+ * for one number.
+ *
+ * Unlike the glow, they are *not* rasterised below that. The glow is a Gaussian and
  * holds no detail to lose, but these ridges are the one piece of high-frequency
  * detail in the background, and the displacement is a sawtooth with a sharp
  * reset inside every 59px. Rasterising at half size and scaling back up halves
@@ -59,6 +76,9 @@ interface RefractionFrameProps {
  */
 const RAMP_COVER = 4000;
 
+/** The divisors a display might need. 3x exists; anything higher is capped. */
+const RASTER_DIVISORS = [1, 2, 3] as const;
+
 export function RefractionFrame({ id, box, flipY, relativeTo, children }: RefractionFrameProps) {
   const filterId = `refraction-${id}`;
   const across = (value: number) =>
@@ -71,38 +91,50 @@ export function RefractionFrame({ id, box, flipY, relativeTo, children }: Refrac
     >
       <svg aria-hidden="true" className="absolute size-0">
         <defs>
-          <filter
-            colorInterpolationFilters="sRGB"
-            filterUnits="objectBoundingBox"
-            height="1"
-            id={filterId}
-            primitiveUnits="userSpaceOnUse"
-            width="1"
-            x="0"
-            y="0"
-          >
-            <feImage
-              height={box.height}
-              href={refractionMapUri(box.width, RAMP_COVER)}
-              preserveAspectRatio="none"
-              result="ridges"
-              width={RAMP_COVER}
+          {RASTER_DIVISORS.map((divisor) => (
+            <filter
+              colorInterpolationFilters="sRGB"
+              filterUnits="objectBoundingBox"
+              height="1"
+              id={`${filterId}-${divisor}x`}
+              key={divisor}
+              primitiveUnits="userSpaceOnUse"
+              width="1"
               x="0"
               y="0"
-            />
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="ridges"
-              scale={DISPLACEMENT_SCALE}
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
+            >
+              <feImage
+                height={box.height / divisor}
+                href={refractionMapUri(box.width, RAMP_COVER, divisor)}
+                preserveAspectRatio="none"
+                result="ridges"
+                width={RAMP_COVER}
+                x="0"
+                y="0"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="ridges"
+                scale={DISPLACEMENT_SCALE / divisor}
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          ))}
         </defs>
       </svg>
       <div className="size-full" style={{ transform: flipY ? "scaleY(-1)" : undefined }}>
-        <div className="relative size-full overflow-hidden" style={{ filter: `url(#${filterId})` }}>
-          {children}
+        <div
+          className="refraction-raster relative overflow-hidden"
+          style={
+            {
+              "--refraction-filter": `url(#${filterId}-1x)`,
+              "--refraction-filter-2x": `url(#${filterId}-2x)`,
+              "--refraction-filter-3x": `url(#${filterId}-3x)`,
+            } as CSSProperties
+          }
+        >
+          <div className="refraction-content">{children}</div>
         </div>
       </div>
     </div>

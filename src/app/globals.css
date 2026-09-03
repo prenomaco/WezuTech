@@ -309,3 +309,60 @@
     transform: none;
   }
 }
+
+/*
+ * The refraction frames, rasterised at CSS resolution rather than the screen's.
+ *
+ * A filter's result is produced in device pixels, so the same frame costs four
+ * times the area on a 2x display. The frame is therefore laid out at 1/n and
+ * scaled back up, with its contents counter-scaled so they stay in design
+ * pixels; the matching filter divides the ridge period and the displacement,
+ * both of which are measured in the filtered element's own user units.
+ *
+ * `transform-origin` has to be stated: scaling about the default centre would
+ * move both edges of the frame.
+ */
+@layer components {
+  .refraction-raster {
+    width: 100%;
+    height: 100%;
+    transform-origin: 0 0;
+    filter: var(--refraction-filter);
+  }
+
+  .refraction-content {
+    width: 100%;
+    height: 100%;
+    transform-origin: 0 0;
+  }
+
+  @media (min-resolution: 2dppx) {
+    .refraction-raster {
+      width: 50%;
+      height: 50%;
+      transform: scale(2);
+      filter: var(--refraction-filter-2x);
+    }
+
+    .refraction-content {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+    }
+  }
+
+  @media (min-resolution: 3dppx) {
+    .refraction-raster {
+      width: calc(100% / 3);
+      height: calc(100% / 3);
+      transform: scale(3);
+      filter: var(--refraction-filter-3x);
+    }
+
+    .refraction-content {
+      width: 300%;
+      height: 300%;
+      transform: scale(calc(1 / 3));
+    }
+  }
+}

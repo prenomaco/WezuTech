@@ -95,7 +95,19 @@ export function refractionDisplacement(x: number): number {
  * Red carries the horizontal displacement and green sits at the neutral 0.5,
  * since the vertical component is always zero.
  */
-export function refractionMapSvg(frameWidth: number, coverWidth = frameWidth): string {
+export function refractionMapSvg(
+  frameWidth: number,
+  coverWidth = frameWidth,
+  /**
+   * How much smaller than the design the frame is being rasterised.
+   *
+   * The ramp is measured in the filtered element's own user units, so drawing
+   * that element at half size needs a ridge period of half as many units to
+   * come back the same width once it is scaled up again.
+   */
+  rasterDivisor = 1,
+): string {
+  const period = PATTERN_SIZE / rasterDivisor;
   const stops: string[] = [];
   for (let i = 0; i <= STOPS_PER_PERIOD; i += 1) {
     const offset = i / STOPS_PER_PERIOD;
@@ -107,15 +119,15 @@ export function refractionMapSvg(frameWidth: number, coverWidth = frameWidth): s
   /* Phase is anchored on the design frame's centre, as the shader anchors it,
      but the ramp is drawn wider so it still covers the frame once the frame is
      stretched to a viewport wider than the design. */
-  const phase = ((frameWidth / 2) % PATTERN_SIZE) - PATTERN_SIZE;
+  const phase = ((frameWidth / 2) % PATTERN_SIZE) / rasterDivisor - period;
 
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${coverWidth}" height="1">`,
     "<defs>",
     `<linearGradient id="r" x1="0" y1="0" x2="1" y2="0">${stops.join("")}</linearGradient>`,
-    `<pattern id="p" x="${phase.toFixed(4)}" y="0" width="${PATTERN_SIZE}" height="1"`,
+    `<pattern id="p" x="${phase.toFixed(4)}" y="0" width="${period}" height="1"`,
     ' patternUnits="userSpaceOnUse">',
-    `<rect width="${PATTERN_SIZE}" height="1" fill="url(#r)"/>`,
+    `<rect width="${period}" height="1" fill="url(#r)"/>`,
     "</pattern>",
     "</defs>",
     `<rect width="${coverWidth}" height="1" fill="url(#p)"/>`,
@@ -124,6 +136,12 @@ export function refractionMapSvg(frameWidth: number, coverWidth = frameWidth): s
 }
 
 /** The same document as a data URI, ready for `feImage`'s href. */
-export function refractionMapUri(frameWidth: number, coverWidth = frameWidth): string {
-  return `data:image/svg+xml;utf8,${encodeURIComponent(refractionMapSvg(frameWidth, coverWidth))}`;
+export function refractionMapUri(
+  frameWidth: number,
+  coverWidth = frameWidth,
+  rasterDivisor = 1,
+): string {
+  return `data:image/svg+xml;utf8,${encodeURIComponent(
+    refractionMapSvg(frameWidth, coverWidth, rasterDivisor),
+  )}`;
 }
