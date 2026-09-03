@@ -14,8 +14,8 @@ import { testimonials } from "@/content/site-content";
  */
 /* Chevron glyphs at x=169 and right edge x=1362 — 65px and 45.6px from the
    1304 content column's edges, less the arrow button's 12px hit padding. */
-const ARROW_LEFT = "left-[3.3125rem] top-[8.15625rem] -translate-y-1/2";
-const ARROW_RIGHT = "right-[2.1rem] top-[8.15625rem] -translate-y-1/2";
+const ARROW_LEFT = "left-0 top-[8.15625rem] -translate-y-1/2 lg:left-[3.3125rem]";
+const ARROW_RIGHT = "right-0 top-[8.15625rem] -translate-y-1/2 lg:right-[2.1rem]";
 
 /** Dots measured off the render: 11px circles, 5px apart, 30px active pill. */
 const DOT_BASE = "h-[0.6775625rem] rounded-full transition-[width,background-color] duration-300 ease-out";
@@ -42,6 +42,9 @@ function Outline({ shape, gradientId }: { shape: FramePath; gradientId: string }
     <svg
       aria-hidden="true"
       className="absolute inset-0 h-full w-full"
+      /* Below `lg` the box is no longer the shape's own aspect ratio, so the
+         frame has to stretch to it rather than letterbox inside it. */
+      preserveAspectRatio="none"
       viewBox={`0 0 ${shape.width} ${shape.height}`}
     >
       <defs>
@@ -130,12 +133,16 @@ export function TestimonialCarousel() {
         scale="testimonial"
       />
 
-      <div className="relative mx-auto h-[16.3293125rem] w-[45.3290625rem]">
+      {/* The frame is a fixed composition at 1512 — 725.27 x 16.33rem with the
+          quote and capsule placed inside it. Narrower than that the quote needs
+          more lines than the frame is tall, so below `lg` the box grows with
+          its content, the capsule follows in flow, and the frame stretches. */}
+      <div className="relative mx-auto w-full max-w-[45.3290625rem] px-9 pt-[2.0625rem] pb-[2.5rem] lg:h-[16.3293125rem] lg:w-[45.3290625rem] lg:px-0 lg:pt-0 lg:pb-0">
         <Outline gradientId="quote-frame-stroke" shape={QUOTE_FRAME} />
 
         <blockquote
           aria-live="polite"
-          className="absolute left-1/2 top-[2.0625rem] w-[39.625rem] -translate-x-1/2 text-center text-[1.219625rem] font-book leading-[1.625rem] text-ice"
+          className="relative text-center text-[1rem] font-book leading-[1.5rem] text-ice lg:absolute lg:left-1/2 lg:top-[2.0625rem] lg:w-[39.625rem] lg:-translate-x-1/2 lg:text-[1.219625rem] lg:leading-[1.625rem]"
           ref={content}
         >
           <p>
@@ -145,9 +152,9 @@ export function TestimonialCarousel() {
         </blockquote>
 
         {/* Figma y=2797.25 against the frame top at y=2636.80 = 160.45px. */}
-        <div className="absolute left-1/2 top-[10.028125rem] h-[6.9789375rem] w-[23.9180625rem] -translate-x-1/2">
+        <div className="relative mx-auto mt-[1.75rem] h-[6.9789375rem] w-full max-w-[23.9180625rem] lg:absolute lg:left-1/2 lg:top-[10.028125rem] lg:mt-0 lg:w-[23.9180625rem] lg:-translate-x-1/2">
           <Outline gradientId="quote-capsule-stroke" shape={QUOTE_CAPSULE} />
-          <div className="relative grid h-full place-items-center text-center text-[1.219625rem] font-book leading-[1.625rem] text-ice">
+          <div className="relative grid h-full place-items-center px-4 text-center text-[1rem] font-book leading-[1.5rem] text-ice lg:px-0 lg:text-[1.219625rem] lg:leading-[1.625rem]">
             <p>
               <strong className="font-semibold">{testimonial.client}</strong>
               <br />

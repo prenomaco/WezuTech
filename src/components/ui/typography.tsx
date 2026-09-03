@@ -104,10 +104,22 @@ export function DisplayTitle({
   );
 }
 
-/** Product name — Figma node 252:484: Centauri 23.866px / 26.98px, #dafaf5. */
+/**
+ * Product name — node 252:484 on the 1512 frame (Centauri 23.866 / 26.98) and
+ * node 305:124 on the 402 one, which drops to 15px in a 275-wide box that is
+ * 54 tall for its two lines.
+ */
 export function ProductTitle({ children, className, ...rest }: TypeProps) {
   return (
-    <h3 className={join(DISPLAY, "text-[1.491625rem] leading-[1.68625rem] text-ice", className)} {...rest}>
+    <h3
+      className={join(
+        DISPLAY,
+        "text-[0.9375rem] leading-[1.6875rem] text-ice",
+        "lg:text-[1.491625rem] lg:leading-[1.68625rem]",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </h3>
   );

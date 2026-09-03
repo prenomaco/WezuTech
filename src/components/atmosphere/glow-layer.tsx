@@ -23,15 +23,23 @@ interface GlowLayerProps {
   readonly id: string;
   /** The node's box, in the coordinates of whatever contains it. */
   readonly box: GlowBox;
+  /**
+   * Size to draw the export at, when the design instances it at something
+   * other than the size it was exported from — the 402 frame reuses the same
+   * groups at roughly a third of the scale.
+   */
+  readonly render?: { readonly width: number; readonly height: number };
   /** Figma screens this group over its backdrop. */
   readonly screen?: boolean;
   /** Parallax travel in pixels, read by the motion layer. */
   readonly depth?: number;
 }
 
-export function GlowLayer({ vector, id, box, screen, depth }: GlowLayerProps) {
+export function GlowLayer({ vector, id, box, render, screen, depth }: GlowLayerProps) {
   const spec = GLOW_VECTORS[vector];
   const filterId = `glow-${id}`;
+  const width = render?.width ?? spec.width;
+  const height = render?.height ?? spec.height;
 
   return (
     <svg
@@ -39,14 +47,14 @@ export function GlowLayer({ vector, id, box, screen, depth }: GlowLayerProps) {
       className={`pointer-events-none absolute${screen ? " mix-blend-screen" : ""}`}
       data-glow-depth={depth}
       fill="none"
-      height={spec.height}
+      height={height}
       preserveAspectRatio="none"
       style={{
-        left: box.left + (box.width - spec.width) / 2,
-        top: box.top + (box.height - spec.height) / 2,
+        left: box.left + (box.width - width) / 2,
+        top: box.top + (box.height - height) / 2,
       }}
       viewBox={`0 0 ${spec.width} ${spec.height}`}
-      width={spec.width}
+      width={width}
     >
       <g filter={`url(#${filterId})`}>
         {spec.shapes.map((shape) => (

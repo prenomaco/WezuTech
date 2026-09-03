@@ -7,19 +7,21 @@ import { industries, type Industry } from "@/content/site-content";
  * x=274 / 693 / 1091, so the columns are 430 / 392 / rest wide inside the
  * 1304px content column, offset 32px from its left edge.
  */
-const GRID = "grid grid-cols-[26.875rem_24.5rem_minmax(0,1fr)] gap-y-[2.0625rem] pl-8";
+const GRID =
+  "grid grid-cols-1 gap-y-[2rem] " +
+  "lg:grid-cols-[26.875rem_24.5rem_minmax(0,1fr)] lg:gap-y-[2.0625rem] lg:pl-8";
 
 /** Every icon renders 146px tall; Figma varies the width with the artwork. */
-const ICON_SLOT = "flex w-[7.625rem] shrink-0 justify-end";
+const ICON_SLOT = "flex w-[5.5rem] shrink-0 justify-end lg:w-[7.625rem]";
 
 /**
  * Per-column measurements from the frame: the gap between the icon slot and
  * the copy, and the text-box width that decides where each body wraps.
  */
 const COLUMN = [
-  { gap: "gap-4", body: "max-w-[15.0625rem]" },
-  { gap: "gap-[0.3125rem]", body: "max-w-[15.125rem]" },
-  { gap: "gap-[0.6875rem]", body: "max-w-[17.75rem]" },
+  { gap: "gap-4", body: "lg:max-w-[15.0625rem]" },
+  { gap: "gap-4 lg:gap-[0.3125rem]", body: "lg:max-w-[15.125rem]" },
+  { gap: "gap-4 lg:gap-[0.6875rem]", body: "lg:max-w-[17.75rem]" },
 ] as const;
 
 /**
@@ -47,7 +49,7 @@ function IndustryItem({ industry, column, row, width, height }: IndustryItemProp
       <div className={ICON_SLOT}>
         <Image
           alt=""
-          className="h-[9.125rem] w-auto max-w-none object-contain"
+          className="h-[6.5rem] w-auto max-w-none object-contain lg:h-[9.125rem]"
           height={height}
           sizes="122px"
           src={industry.image}

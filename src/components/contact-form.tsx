@@ -10,7 +10,9 @@ type FormState = "idle" | "sending" | "success" | "error";
  * Figma: two 346px columns with a 16px gutter. Name and Email share row one,
  * Subject occupies the left column only, and Message spans both at 160px tall.
  */
-const GRID = "relative grid grid-cols-[repeat(2,minmax(0,21.625rem))] gap-x-4 gap-y-[0.8125rem]";
+const GRID =
+  "relative grid grid-cols-1 gap-x-4 gap-y-[0.8125rem] " +
+  "lg:grid-cols-[repeat(2,minmax(0,21.625rem))]";
 
 /** Label 22px + 8px gap + 50px field = the 80px block Figma repeats. */
 const LABEL = "block text-base leading-[1.375rem] text-ice";
@@ -91,10 +93,10 @@ export function ContactForm() {
       <Field label="Email Address" name="email" placeholder="john@prenoma.co" type="email" />
       <Field gap="rest" label="Subject" name="subject" placeholder="Project query" />
 
-      <label className={`${LABEL} col-span-2 mt-[0.5625rem]`} data-motion="contact-field">
+      <label className={`${LABEL} col-span-full mt-[0.5625rem]`} data-motion="contact-field">
         Message
         <textarea
-          className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-[43.5625rem] resize-none`}
+          className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-full resize-none lg:w-[43.5625rem]`}
           minLength={10}
           name="message"
           placeholder="Lorem ipsum dolor siet amet"
@@ -102,8 +104,8 @@ export function ContactForm() {
         />
       </label>
 
-      <div className="col-span-2 -ml-1 mt-[2.625rem] flex items-center gap-4" data-motion="contact-field">
-        <Button className="w-[10.625rem]" disabled={state === "sending"} type="submit">
+      <div className="col-span-full -ml-1 mt-[2.625rem] flex flex-wrap items-center gap-4" data-motion="contact-field">
+        <Button className="w-full lg:w-[10.625rem]" disabled={state === "sending"} type="submit">
           {state === "sending" ? "Sending…" : "Submit Message"}
         </Button>
         {message ? (

@@ -36,9 +36,11 @@ interface Streak {
   readonly rotate: number;
   readonly flipY?: boolean;
   readonly depth: number;
+  /** Size to draw the export at, when the frame instances it smaller. */
+  readonly render?: { readonly width: number; readonly height: number };
 }
 
-function StreakLayer({ id, vector, box, inner, rotate, flipY, depth }: Streak) {
+function StreakLayer({ id, vector, box, inner, rotate, flipY, depth, render }: Streak) {
   return (
     <div
       className="pointer-events-none absolute flex items-center justify-center"
@@ -56,6 +58,7 @@ function StreakLayer({ id, vector, box, inner, rotate, flipY, depth }: Streak) {
           <GlowLayer
             box={{ left: 0, top: 0, width: inner.width, height: inner.height }}
             id={id}
+            render={render}
             vector={vector}
           />
         </div>
@@ -64,11 +67,78 @@ function StreakLayer({ id, vector, box, inner, rotate, flipY, depth }: Streak) {
   );
 }
 
-export function PageAtmosphere() {
+/**
+ * The 402 frame's own background (node 305:48).
+ *
+ * It is not the desktop field scaled: the frame instances the same groups at
+ * different sizes and puts them somewhere else, and the desktop coordinates
+ * dropped into a 402 viewport land the edge streaks across the middle of the
+ * page, washing the copy out. Positions are the frame's own pixels, which is
+ * the right unit here — the design width and a phone viewport are the same
+ * order of magnitude, so there is nothing to scale between them.
+ */
+function MobileAtmosphere() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-clip"
+      className="pointer-events-none absolute inset-0 overflow-clip lg:hidden"
+    >
+      {/* Frame 5 (305:64) — the hero tile. */}
+      <RefractionFrame box={{ left: -127, top: 125, width: 608, height: 390.455 }} depth={18} id="m-hero">
+        <GlowLayer
+          box={{ left: -25.33, top: -36.99, width: 652.032, height: 434.062 }}
+          id="m-hero"
+          render={{ width: 740.45, height: 522.53 }}
+          vector="field"
+        />
+      </RefractionFrame>
+
+      {/* Frame 9 (307:157) — the tile again over the products band, dimmed. */}
+      <RefractionFrame box={{ left: 0, top: 2279, width: 402, height: 233 }} depth={34} id="m-products">
+        <GlowLayer
+          box={{ left: 0, top: 93.61, width: 423.334, height: 292.49 }}
+          id="m-products"
+          render={{ width: 482.94, height: 352.12 }}
+          vector="fieldDim"
+        />
+      </RefractionFrame>
+
+      {/* Frame 7 (305:142) — the same tile mirrored, picking up where 9 clips. */}
+      <RefractionFrame
+        box={{ left: 0, top: 2512, width: 402, height: 233 }}
+        depth={34}
+        flipY
+        id="m-contact"
+      >
+        <GlowLayer
+          box={{ left: 0, top: 93.61, width: 423.334, height: 292.49 }}
+          id="m-contact"
+          render={{ width: 482.94, height: 352.12 }}
+          vector="fieldDim"
+        />
+      </RefractionFrame>
+
+      {/* Group 21 (305:112) — the streak down the left edge. */}
+      <StreakLayer
+        box={{ left: -410, top: 647, width: 721.008, height: 2146.84 }}
+        depth={22}
+        flipY
+        id="m-streak"
+        inner={{ width: 2107.153, height: 530.548 }}
+        render={{ width: 2268.14, height: 691.62 }}
+        rotate={-95.25}
+        vector="streakUpper"
+      />
+    </div>
+  );
+}
+
+/** Node 362:46 — the 1512 frame's background, layer for layer. */
+function DesktopAtmosphere() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 hidden overflow-clip lg:block"
       style={{ width: FRAME_WIDTH }}
     >
       {/* Frame 5 (362:47) — the hero tile. */}
@@ -151,5 +221,14 @@ export function PageAtmosphere() {
         vector="streakUpper"
       />
     </div>
+  );
+}
+
+export function PageAtmosphere() {
+  return (
+    <>
+      <MobileAtmosphere />
+      <DesktopAtmosphere />
+    </>
   );
 }

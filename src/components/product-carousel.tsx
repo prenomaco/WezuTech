@@ -46,7 +46,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </ProductTitle>
         {/* The frame separates the description's paragraphs with a blank line
             (node 252:482), so a blank line in the copy becomes a paragraph. */}
-        <div className="mt-[0.9375rem] flex w-[21.25rem] flex-col gap-[1.5565rem] text-center lg:mt-[1.1875rem] lg:w-auto lg:text-left">
+        <div className="mt-0 flex w-[21.25rem] flex-col gap-[1.5565rem] text-center lg:mt-[1.1875rem] lg:w-auto lg:text-left">
           {(product.cardDescription ?? "").split(/\n\s*\n/).map((paragraph) => (
             <Prose key={paragraph.slice(0, 32)} size="product">
               {paragraph}
@@ -83,8 +83,9 @@ export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
   const move = (direction: number) =>
     rail.current?.scrollBy({ left: direction * rail.current.clientWidth, behavior: "smooth" });
 
+  /* 402 frame: eyebrow 1615 -> card 1660, i.e. 24. The 1512 frame puts 32. */
   return (
-    <div className="relative mt-8">
+    <div className="relative mt-6 lg:mt-8">
       <CarouselArrow
         className={`hidden lg:flex ${ARROW_LEFT}`}
         direction="prev"

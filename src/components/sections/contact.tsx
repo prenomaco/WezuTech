@@ -10,10 +10,12 @@ import { contact } from "@/content/site-content";
  */
 /* Both tracks resolve to their exact Figma widths at 1512 and shrink below it,
    so the form is never clipped by the section on a 1280 desktop. */
-const LAYOUT = "grid grid-cols-[minmax(0,32.6875rem)_minmax(0,44.25rem)]";
+const LAYOUT =
+  "grid grid-cols-1 " +
+  "lg:grid-cols-[minmax(0,32.6875rem)_minmax(0,44.25rem)]";
 
 /** The headline is optically centred against the form, not its first row. */
-const TITLE_OFFSET = "mt-[10.3125rem] pl-[4.5625rem]";
+const TITLE_OFFSET = "mb-[2.5rem] text-center lg:mb-0 lg:mt-[10.3125rem] lg:pl-[4.5625rem] lg:text-left";
 
 export function Contact() {
   return (

@@ -56,7 +56,7 @@ export function Footer() {
         /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
            radius with no stroke — the edge you can see in the render is the
            light behind it showing through. */
-        className="relative z-10 rounded-[1.25rem] bg-black/20 pt-[2.3125rem] pb-[1.3125rem] backdrop-blur-[2px]"
+        className="relative z-10 rounded-[1.25rem] bg-black/20 px-6 pt-[2.3125rem] pb-[1.3125rem] backdrop-blur-[2px] lg:px-0"
         /* The entrance moves the panel rather than the footer. Translating the
            footer itself grows the document by the tween's offset until it
            plays, so the page loads 26px taller than the frame and settles
@@ -66,8 +66,8 @@ export function Footer() {
       >
         {/* Three even tracks across the full panel width, each indented 49px —
             that lands their contents on x=49 / 493 / 937. */}
-        <div className="grid grid-cols-3" style={{ ["--indent" as string]: COLUMN_INDENT }}>
-          <div className="pl-(--indent)">
+        <div className="grid grid-cols-1 gap-y-[2.25rem] lg:grid-cols-3 lg:gap-y-0" style={{ ["--indent" as string]: COLUMN_INDENT }}>
+          <div className="lg:pl-(--indent)">
             <Logo size="footer" />
             {/* Contact rows start at y=124 — 14px below the 73px lockup. */}
             <ul className="mt-[0.875rem] flex flex-col gap-[0.5rem] pl-[2px]">
@@ -77,8 +77,8 @@ export function Footer() {
             </ul>
           </div>
 
-          <nav aria-label="Footer" className="pl-(--indent)">
-            <h2 className={`mt-[1.5rem] ${HEADING}`}>Navigation</h2>
+          <nav aria-label="Footer" className="lg:pl-(--indent)">
+            <h2 className={`lg:mt-[1.5rem] ${HEADING}`}>Navigation</h2>
             {/* Five links as 3 rows x 2 columns, filled column-first, with the
                 second column starting 134.35px across. */}
             <div className="mt-[1.210625rem] grid grid-flow-col grid-rows-3 justify-start gap-x-[5.375rem] gap-y-[0.586437rem] pl-[0.25rem]">
@@ -90,8 +90,8 @@ export function Footer() {
             </div>
           </nav>
 
-          <nav aria-label="Legal" className="pl-(--indent)">
-            <h2 className={`mt-[1.5rem] ${HEADING}`}>Legal</h2>
+          <nav aria-label="Legal" className="lg:pl-(--indent)">
+            <h2 className={`lg:mt-[1.5rem] ${HEADING}`}>Legal</h2>
             <div className="mt-[1.210625rem] flex flex-col gap-[0.53625rem]">
               {legalNav.map(({ label, href }) => (
                 <a className={LINK} href={href} key={label}>
@@ -103,9 +103,9 @@ export function Footer() {
         </div>
 
         {/* Figma "Vector 53": x=176..1365.5, i.e. 86px in from the panel edge. */}
-        <hr className="mt-[1.7175rem] ml-[5.375rem] w-[74.34375rem] border-0 border-t border-[rgb(218_250_245/0.28)]" />
+        <hr className="mt-[1.7175rem] w-full border-0 border-t border-[rgb(218_250_245/0.28)] lg:ml-[5.375rem] lg:w-[74.34375rem]" />
 
-        <p className="mt-[1.34375rem] ml-[23.4375rem] whitespace-nowrap text-[1rem] leading-[1.375rem] text-white">
+        <p className="mt-[1.34375rem] text-center text-[1rem] leading-[1.375rem] text-white lg:ml-[23.4375rem] lg:whitespace-nowrap lg:text-left">
           {contact.copyright}{" "}
           <a className="text-sky underline decoration-solid" href={contact.agency.href}>
             {contact.agency.label}
