@@ -29,14 +29,16 @@ export interface ContactDetail {
 }
 
 export const primaryNav: readonly NavLink[] = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
+  { label: "Home", href: "/" },
+  /* There is a dedicated About page (Figma node 307:165), so the nav goes to
+     it rather than to the home page's about section. */
+  { label: "About", href: "/about" },
   { label: "Products", href: "#products" },
   { label: "Gallery", href: "#gallery" },
 ];
 
 export const footerNav: readonly NavLink[] = [
-  { label: "Home", href: "#home" },
+  { label: "Home", href: "/" },
   { label: "About", href: "#about" },
   { label: "Product", href: "#products" },
   { label: "Gallery", href: "#gallery" },
@@ -147,6 +149,43 @@ export const testimonials: readonly Testimonial[] = [
     title: "Built to Keep Developing",
   },
 ];
+
+/**
+ * The About page (Figma node 307:165).
+ *
+ * The frame sets `text-transform: capitalize` on the whole page, so the copy is
+ * stored in sentence case and the casing comes from CSS — storing it
+ * pre-capitalised would fight every screen reader and every copy edit.
+ */
+export interface AboutParagraph {
+  /** Set in bold ahead of the body, as node 307:233 does for two of them. */
+  readonly lead?: string;
+  readonly body: string;
+}
+
+export const aboutPage = {
+  title: "Engineering what moves the world forward.",
+  intro: [
+    { lead: "Wezu Technologies", body: " builds software, hardware, and engineering solutions for the future of transportation, logistics, and mobility." },
+    { body: "We work at the intersection of engineering, technology, and mobility to solve complex challenges across the vehicle and transportation ecosystem. From intelligent connectivity and electrification to safer, greener mobility systems, we turn ideas into solutions that are built for the real world." },
+    { lead: "Built for mobility. Engineered for what\u2019s next.", body: "" },
+    { body: "The future of mobility isn\u2019t defined by a single technology. It is shaped by how software, electronics, hardware, and engineering come together." },
+    { body: "At Wezu, we bring these disciplines together to develop solutions that make transportation smarter, safer, more connected, and more sustainable." },
+    { body: "Whether it is an OEM/ODM program, a turnkey product, or an R&D challenge, we work closely with our partners from concept to execution \u2014 combining technical expertise with a practical understanding of the mobility industry." },
+  ] as readonly AboutParagraph[],
+  capabilitiesEyebrow: "HOW WE WORK",
+  capabilities: [
+    { title: "Intelligent Mobility", body: "Technology that enables vehicles and transportation systems to communicate, adapt, and perform better." },
+    { title: "Electrification", body: "Engineering solutions supporting the transition towards cleaner and more efficient mobility." },
+    { title: "Connected Systems", body: "Hardware and software that connect vehicles, infrastructure, and data into intelligent ecosystems." },
+    { title: "Safer Transportation", body: "Solutions designed around reliability, intelligence, and the evolving safety needs of modern mobility." },
+    { title: "Green Technologies", body: "Engineering approaches that help reduce environmental impact while improving efficiency and performance." },
+    { title: "Product Engineering", body: "End-to-end development capabilities spanning software, hardware, electronics, and engineering" },
+  ],
+  process: "Research \u2192 Design \u2192 Engineer \u2192 Validate \u2192 Deploy",
+  processBody:
+    "From early-stage research and prototyping to engineering, validation, and deployment, our teams collaborate with OEMs, technology companies, and mobility businesses to turn complex requirements into production-ready solutions.",
+} as const;
 
 export const contact = {
   title: ["LET’S", "CONNECT"],

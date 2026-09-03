@@ -14,23 +14,14 @@
  * 0.237 and 0.225 of #dafaf5, measured off the render.
  */
 
-export interface FramePath {
-  readonly width: number;
-  readonly height: number;
-  readonly d: string;
-  /** Peak stroke alpha, reached across the middle of the lit edge. */
-  readonly strokeAlpha: number;
-  /** Which edge the render actually lights; the other three carry no stroke. */
-  readonly litEdge: "top" | "bottom";
-  /** The design draws this shape flipped from how it was exported. */
-  readonly flipY: boolean;
-}
+import type { FramePath } from "@/lib/design/notched-frame";
+
+export type { FramePath };
 
 export const QUOTE_FRAME: FramePath = {
   width: 725.265,
   height: 261.269,
-  strokeAlpha: 0.237,
-  litEdge: "top",
+  lit: [{ edge: "top", alpha: 0.237 }],
   flipY: true,
   d:
     "M364.306 0H625.906C630.576 0 635.192 1.00578 639.438 2.94894L674.836 19.1458" +
@@ -44,8 +35,7 @@ export const QUOTE_FRAME: FramePath = {
 export const QUOTE_CAPSULE: FramePath = {
   width: 382.689,
   height: 111.663,
-  strokeAlpha: 0.225,
-  litEdge: "bottom",
+  lit: [{ edge: "bottom", alpha: 0.225 }],
   flipY: false,
   d:
     "M192.227 0H328.168C332.026 0 335.853 0.686389 339.471 2.02708L356.171 8.21645" +
