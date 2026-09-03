@@ -43,7 +43,12 @@ export function Hero() {
 
       <MobileHero />
 
-      <div className="relative z-10 hidden aspect-[1512/940] w-full lg:block">
+      {/* The hero is a fixed composition, so it stops at the design's own width
+          and centres beyond it — the same 1512 column every section below uses.
+          Letting it grow with the viewport made the stage taller than the frame
+          (1194 against 940 at a 1920 monitor) while the type stayed 36px, so
+          the page ran 254px long and the composition opened up. */}
+      <div className="relative z-10 mx-auto hidden aspect-[1512/940] w-full max-w-[94.5rem] lg:block">
         {/* Two layers on purpose: the wrapper owns the scroll-scrubbed drift and
             the image owns the entrance. Animating `y` on one element from both
             scenes lets ScrollTrigger latch the mid-entrance value on refresh and

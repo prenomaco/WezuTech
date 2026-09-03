@@ -49,12 +49,26 @@ interface GlowLayerProps {
   readonly render?: { readonly width: number; readonly height: number };
   /** Parallax travel in pixels, read by the motion layer. */
   readonly depth?: number;
+  /**
+   * Frame width to express horizontal placement against, as a percentage.
+   *
+   * The design is a 1512 frame, but the light is meant to reach the edges of
+   * whatever it is shown on — the border glow was the whole point of it. So the
+   * layers that span the frame are placed proportionally and stretch with the
+   * viewport, while the edge streaks stay pinned to the edge they belong to.
+   * Left unset, placement is in design pixels.
+   */
+  readonly relativeTo?: number;
 }
 
-export function GlowLayer({ vector, box, render, depth }: GlowLayerProps) {
+export function GlowLayer({ vector, box, render, depth, relativeTo }: GlowLayerProps) {
   const spec = GLOW_VECTORS[vector];
   const width = render?.width ?? spec.width;
   const height = render?.height ?? spec.height;
+  const left = box.left + (box.width - width) / 2;
+  const top = box.top + (box.height - height) / 2;
+  const across = (value: number) =>
+    relativeTo === undefined ? value : `${(value / relativeTo) * 100}%`;
 
   /*
    * The blur is a CSS filter on the `<svg>` rather than an `feGaussianBlur`
@@ -74,20 +88,23 @@ export function GlowLayer({ vector, box, render, depth }: GlowLayerProps) {
       className="pointer-events-none absolute origin-top-left"
       data-glow-depth={depth}
       style={{
-        left: box.left + (box.width - width) / 2,
-        top: box.top + (box.height - height) / 2,
+        left: across(left),
+        top,
+        width:
+          relativeTo === undefined
+            ? width / RASTER_SCALE
+            : `calc(${(width / relativeTo) * 100}% / ${RASTER_SCALE})`,
+        height: height / RASTER_SCALE,
         transform: `scale(${RASTER_SCALE})`,
       }}
     >
       <svg
         aria-hidden="true"
-        className="block"
+        className="block size-full"
         fill="none"
-        height={height / RASTER_SCALE}
         preserveAspectRatio="none"
         style={{ filter: `blur(${blur.toFixed(4)}px)` }}
         viewBox={`0 0 ${spec.width} ${spec.height}`}
-        width={width / RASTER_SCALE}
       >
         {spec.shapes.map((shape) => (
           <path d={shape.d} fill={shape.fill} key={shape.d.slice(0, 24)} />

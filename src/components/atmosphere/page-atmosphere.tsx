@@ -28,8 +28,18 @@ const FRAME_WIDTH = 1512;
  */
 interface Streak {
   readonly vector: "streakLower" | "streakUpper" | "streakRight";
-  /** The placement box the rotated child is centred in. */
-  readonly box: { readonly left: number; readonly top: number; readonly width: number; readonly height: number };
+  /**
+   * The placement box the rotated child is centred in. A streak decorates one
+   * edge, so it is pinned to that edge and keeps its size rather than being
+   * stretched: `left` measures from the left edge, `right` from the right.
+   */
+  readonly box: {
+    readonly left?: number;
+    readonly right?: number;
+    readonly top: number;
+    readonly width: number;
+    readonly height: number;
+  };
   /** The child's own box, before rotation. */
   readonly inner: { readonly width: number; readonly height: number };
   readonly rotate: number;
@@ -44,7 +54,13 @@ function StreakLayer({ vector, box, inner, rotate, flipY, depth, render }: Strea
     <div
       className="pointer-events-none absolute flex items-center justify-center"
       data-glow-depth={depth}
-      style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+      style={{
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        width: box.width,
+        height: box.height,
+      }}
     >
       {/* Figma composes rotation before scale, so a mirrored streak reads as
           rotate-then-flip. Swapping the two flips the sign of the angle and
@@ -132,12 +148,16 @@ function DesktopAtmosphere() {
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 hidden overflow-clip lg:block"
-      style={{ width: FRAME_WIDTH }}
     >
       {/* Frame 5 (362:47) — the hero tile. */}
-      <RefractionFrame box={{ left: -13, top: -10.6, width: 1545, height: 992.192 }} id="hero">
+      <RefractionFrame
+        box={{ left: -13, top: -10.6, width: 1545, height: 992.192 }}
+        id="hero"
+        relativeTo={FRAME_WIDTH}
+      >
         <GlowLayer
           box={{ left: -64.38, top: -94.01, width: 1656.89, height: 1103.004 }}
+          relativeTo={1545}
           vector="field"
         />
       </RefractionFrame>
@@ -153,7 +173,7 @@ function DesktopAtmosphere() {
 
       {/* Group 22 (362:58) — the streak down the right edge. */}
       <StreakLayer
-        box={{ left: 1128.54, top: 2583.49, width: 698.618, height: 1476.808 }}
+        box={{ right: -315.158, top: 2583.49, width: 698.618, height: 1476.808 }}
         depth={45}
         flipY
         inner={{ width: 1418.65, height: 478.33 }}
@@ -165,13 +185,19 @@ function DesktopAtmosphere() {
       <GlowLayer
         box={{ left: -166, top: 3524, width: 1852, height: 1101.905 }}
         depth={20}
+        relativeTo={FRAME_WIDTH}
         vector="footer"
       />
 
       {/* Frame 6 (362:85) — the tile again over the products band, dimmed. */}
-      <RefractionFrame box={{ left: -22, top: 1816, width: 1565, height: 648 }} id="products">
+      <RefractionFrame
+        box={{ left: -22, top: 1816, width: 1565, height: 648 }}
+        id="products"
+        relativeTo={FRAME_WIDTH}
+      >
         <GlowLayer
           box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
+          relativeTo={1565}
           vector="fieldDim"
         />
       </RefractionFrame>
@@ -189,9 +215,15 @@ function DesktopAtmosphere() {
         banded step across the industries grid, which is what the isolated copy
         shows and the design does not.
       */}
-      <RefractionFrame box={{ left: -21, top: 2464, width: 1565, height: 648 }} flipY id="contact">
+      <RefractionFrame
+        box={{ left: -21, top: 2464, width: 1565, height: 648 }}
+        flipY
+        id="contact"
+        relativeTo={FRAME_WIDTH}
+      >
         <GlowLayer
           box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
+          relativeTo={1565}
           vector="fieldDim"
         />
       </RefractionFrame>

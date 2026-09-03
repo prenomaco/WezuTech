@@ -32,7 +32,7 @@ const NAV_TOP = "1.9375rem"; /* 31 */
 export function Header() {
   return (
     <header
-      className="absolute inset-x-0 top-0 z-30"
+      className="absolute inset-x-0 top-0 z-30 mx-auto w-full max-w-[94.5rem]"
       style={{ height: HEADER_HEIGHT }}
       data-motion="header"
     >

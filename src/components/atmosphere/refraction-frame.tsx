@@ -43,16 +43,31 @@ interface RefractionFrameProps {
   };
   /** Frame 7 draws the same tile mirrored down the page. */
   readonly flipY?: boolean;
+  /** Frame width to place against proportionally, so the tile can stretch. */
+  readonly relativeTo?: number;
   readonly children: ReactNode;
 }
 
-export function RefractionFrame({ id, box, flipY, children }: RefractionFrameProps) {
+/**
+ * How wide the ridge ramp is drawn.
+ *
+ * The frame stretches with the viewport, but `feImage` is placed in the
+ * element's own pixels, so a ramp only as wide as the design frame would run
+ * out part-way across a wider one. Drawing it well past any plausible viewport
+ * costs nothing — it is a tiled gradient — and keeps the ridges on their 59.2px
+ * pitch rather than stretching with the frame.
+ */
+const RAMP_COVER = 4000;
+
+export function RefractionFrame({ id, box, flipY, relativeTo, children }: RefractionFrameProps) {
   const filterId = `refraction-${id}`;
+  const across = (value: number) =>
+    relativeTo === undefined ? value : `${(value / relativeTo) * 100}%`;
 
   return (
     <div
       className="pointer-events-none absolute"
-      style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+      style={{ left: across(box.left), top: box.top, width: across(box.width), height: box.height }}
     >
       <svg aria-hidden="true" className="absolute size-0">
         <defs>
@@ -68,10 +83,10 @@ export function RefractionFrame({ id, box, flipY, children }: RefractionFramePro
           >
             <feImage
               height={box.height}
-              href={refractionMapUri(box.width)}
+              href={refractionMapUri(box.width, RAMP_COVER)}
               preserveAspectRatio="none"
               result="ridges"
-              width={box.width}
+              width={RAMP_COVER}
               x="0"
               y="0"
             />

@@ -95,7 +95,7 @@ export function refractionDisplacement(x: number): number {
  * Red carries the horizontal displacement and green sits at the neutral 0.5,
  * since the vertical component is always zero.
  */
-export function refractionMapSvg(frameWidth: number): string {
+export function refractionMapSvg(frameWidth: number, coverWidth = frameWidth): string {
   const stops: string[] = [];
   for (let i = 0; i <= STOPS_PER_PERIOD; i += 1) {
     const offset = i / STOPS_PER_PERIOD;
@@ -104,10 +104,13 @@ export function refractionMapSvg(frameWidth: number): string {
     stops.push(`<stop offset="${(offset * 100).toFixed(3)}%" stop-color="rgb(${red},128,0)"/>`);
   }
 
+  /* Phase is anchored on the design frame's centre, as the shader anchors it,
+     but the ramp is drawn wider so it still covers the frame once the frame is
+     stretched to a viewport wider than the design. */
   const phase = ((frameWidth / 2) % PATTERN_SIZE) - PATTERN_SIZE;
 
   return [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${frameWidth}" height="1">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${coverWidth}" height="1">`,
     "<defs>",
     `<linearGradient id="r" x1="0" y1="0" x2="1" y2="0">${stops.join("")}</linearGradient>`,
     `<pattern id="p" x="${phase.toFixed(4)}" y="0" width="${PATTERN_SIZE}" height="1"`,
@@ -115,12 +118,12 @@ export function refractionMapSvg(frameWidth: number): string {
     `<rect width="${PATTERN_SIZE}" height="1" fill="url(#r)"/>`,
     "</pattern>",
     "</defs>",
-    `<rect width="${frameWidth}" height="1" fill="url(#p)"/>`,
+    `<rect width="${coverWidth}" height="1" fill="url(#p)"/>`,
     "</svg>",
   ].join("");
 }
 
 /** The same document as a data URI, ready for `feImage`'s href. */
-export function refractionMapUri(frameWidth: number): string {
-  return `data:image/svg+xml;utf8,${encodeURIComponent(refractionMapSvg(frameWidth))}`;
+export function refractionMapUri(frameWidth: number, coverWidth = frameWidth): string {
+  return `data:image/svg+xml;utf8,${encodeURIComponent(refractionMapSvg(frameWidth, coverWidth))}`;
 }
