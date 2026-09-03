@@ -1,4 +1,5 @@
 import { GlowField, type GlowRect } from "@/components/atmosphere/glow-field";
+import { PageBand } from "@/components/atmosphere/page-band";
 import { PageRim } from "@/components/atmosphere/page-rim";
 import type { GlowVectorName } from "@/lib/design/glow-vectors";
 
@@ -48,21 +49,6 @@ const FRACTAL_TILES: readonly FractalInstance[] = [
     opacity: 0.94,
     depth: 30,
   },
-  {
-    id: "products",
-    frame: { x: -22, y: 1816, width: 1565, height: 648 },
-    /* Here Group 12 sits at (0, 353) and the export pads by 112.4 each way. */
-    tile: { x: -112.4, y: 240.6, width: 1821.23, height: 1327.81 },
-    vector: "fieldDim",
-    depth: 62,
-  },
-  {
-    id: "contact",
-    frame: { x: -21, y: 3112, width: 1565, height: 648 },
-    tile: { x: -112.4, y: 240.6, width: 1821.23, height: 1327.81 },
-    vector: "fieldDim",
-    depth: 48,
-  },
 ];
 
 /** Group 13 (node 252:438), the footer band. Its highlight is #F0F7FD. */
@@ -84,7 +70,7 @@ function pct(value: number) {
 function FractalTile({ id, frame, tile, vector, opacity, depth }: FractalInstance) {
   return (
     <div
-      className="absolute overflow-clip"
+      className="absolute"
       style={{ left: pct(frame.x), top: frame.y, width: pct(frame.width), height: frame.height }}
     >
       <GlowField
@@ -113,6 +99,7 @@ export function PageAtmosphere() {
         vector="footer"
       />
 
+      <PageBand />
       <PageRim />
     </div>
   );

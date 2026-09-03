@@ -53,14 +53,15 @@
 /* Glow ramp for the atmosphere layers. Kept as raw channels so each layer can
    set its own alpha without duplicating the colour. */
 :root {
-  /* Alternates between full and 0.92. The design's ripple is not a fixed
-     fraction of the light — 7.5/255 over a 150-luminance band but 13.7 over a
-     51 one — so a single depth cannot serve both. It is set from the bright
-     case, since over-striping the hero is the more visible failure. */
+  /* Alternates between full and 0.78. The rays are a signature of the design
+     and read clearly wherever the light does, so the modulation is set deep
+     enough to be legible rather than to minimise a residual. It still falls to
+     nothing on unlit ground, because it multiplies the light instead of adding
+     to it. */
   --glow-ray-mask: repeating-linear-gradient(
     90deg,
     #000 0px,
-    rgb(0 0 0 / 0.92) 25px,
+    rgb(0 0 0 / 0.78) 25px,
     #000 50px
   );
 

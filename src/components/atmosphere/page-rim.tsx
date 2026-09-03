@@ -46,10 +46,12 @@ export function PageRim() {
     <>
       <div
         className="pointer-events-none absolute inset-y-0 mix-blend-screen"
+        data-glow="rim"
         style={rimStyle("left", RIM_LEFT)}
       />
       <div
         className="pointer-events-none absolute inset-y-0 mix-blend-screen"
+        data-glow="rim"
         style={rimStyle("right", RIM_RIGHT)}
       />
     </>
