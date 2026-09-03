@@ -26,13 +26,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="dashboard-root relative min-h-screen text-[var(--dash-fg)]">
-      <div aria-hidden className="dashboard-glow" />
-
-      <div className="relative z-10 flex min-h-screen flex-col lg:flex-row">
+      <div className="flex min-h-screen flex-col lg:flex-row">
         <Sidebar email={session.user.email ?? ""} />
 
-        <div className="min-w-0 flex-1">
-          <header className="px-6 pt-8 pb-7 lg:px-10">
+        {/* The light belongs to the content column, not to the window: anchored
+            to the page it would spend its brightest part behind the rail, which
+            is opaque. Here its left edge is the rail's right edge, which is
+            where the site gathers its own. */}
+        <div className="relative min-w-0 flex-1">
+          <div aria-hidden className="dashboard-glow" />
+          <header className="relative z-10 px-6 pt-8 pb-7 lg:px-10">
             {/* Centauri, as the site sets every display line. */}
             <h1 className="font-display text-[clamp(1.5rem,3.2vw,2.5rem)] leading-[1.1] text-[var(--dash-fg)]">
               Dashboard
@@ -40,7 +43,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <p className="mt-2 h-px w-full max-w-[22rem] bg-gradient-to-r from-[var(--dash-primary)]/70 to-transparent" />
           </header>
 
-          <main className="px-6 pb-14 lg:px-10">{children}</main>
+          <main className="relative z-10 px-6 pb-14 lg:px-10">{children}</main>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "@/app/admin/admin.css";
 import { LoginForm } from "@/app/admin/login/login-form";
+import { Logo } from "@/components/ui/logo";
+import "@/app/admin/dashboard.css";
 
 /**
  * `next-auth/react` resolves NEXTAUTH_URL when its module is evaluated. During
@@ -11,18 +12,31 @@ import { LoginForm } from "@/app/admin/login/login-form";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Sign in",
+  title: "Admin login",
   robots: { index: false, follow: false },
 };
 
 export default function AdminLogin() {
   return (
-    <main className="login-wrap">
-      <section className="login-card">
-        <p className="eyebrow">WEZU ADMIN</p>
-        <h1>Sign in</h1>
-        <LoginForm />
-      </section>
-    </main>
+    <div className="dashboard-root relative grid min-h-screen place-items-center overflow-hidden px-6">
+      <div aria-hidden className="dashboard-glow" />
+
+      <main className="relative z-10 w-full max-w-[26rem]">
+        <Logo className="mx-auto" href="/" />
+
+        <section className="mt-8 rounded-2xl border border-[var(--dash-border-strong)] bg-[var(--dash-card)] p-7 backdrop-blur-sm">
+          <h1 className="font-display text-2xl leading-tight text-[var(--dash-fg)]">Admin login</h1>
+          <p className="mt-1.5 text-sm text-[var(--dash-muted)]">
+            Enter your details to reach the dashboard.
+          </p>
+
+          <LoginForm />
+        </section>
+
+        <p className="mt-5 text-center text-xs text-[var(--dash-muted)]">
+          Wezu Technologies
+        </p>
+      </main>
+    </div>
   );
 }

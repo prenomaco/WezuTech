@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useSyncExternalStore } from "react";
@@ -67,7 +68,18 @@ export function Sidebar({ email }: { readonly email: string }) {
         collapsed ? "lg:w-[4.5rem]" : "lg:w-60",
       )}
     >
-      <div className="flex items-center px-4 py-4">
+      <div className="flex items-center gap-2 px-4 py-4">
+        <Link className="shrink-0 overflow-hidden" href="/admin">
+          <Image
+            alt="Wezu Technologies"
+            className={cn("h-7 w-auto transition-all duration-200", collapsed && "lg:h-8")}
+            height={44}
+            priority
+            src="/brand/mark.svg"
+            width={45}
+          />
+        </Link>
+
         <button
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className="ml-auto hidden size-7 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)] lg:grid"

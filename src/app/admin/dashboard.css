@@ -40,39 +40,20 @@
  * across the middle.
  */
 .dashboard-glow {
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(42rem 55rem at -12% 78%, rgb(9 133 204 / 0.5), transparent 62%),
-    radial-gradient(40rem 52rem at 112% 22%, rgb(9 133 204 / 0.4), transparent 62%),
-    radial-gradient(64rem 22rem at 50% 104%, rgb(147 198 234 / 0.16), transparent 72%);
-}
-
-/*
- * The ridges the site's shader puts through its light.
- *
- * On the marketing pages those come from a displacement filter, which Chrome
- * rasters on the CPU. Here the light is flat colour rather than a blurred
- * vector, so the same read is available as a repeating gradient: hard-edged
- * strips on the shader's own 59.2px pitch, faded out across the middle of the
- * screen where the site's light has nothing to modulate either.
- */
-.dashboard-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    rgb(218 250 245 / 0.035) 0 29.6px,
-    transparent 29.6px 59.2px
-  );
-  mask-image: radial-gradient(
-    58rem 60rem at 50% 100%,
-    transparent 12%,
-    #000 78%
-  );
+    linear-gradient(
+      to right,
+      rgb(9 133 204 / 0.34) 0,
+      rgb(9 133 204 / 0.16) 12rem,
+      rgb(9 133 204 / 0.04) 24rem,
+      transparent 38rem
+    ),
+    radial-gradient(24rem 40rem at 0% 6%, rgb(147 198 234 / 0.3), transparent 72%),
+    radial-gradient(30rem 44rem at 100% 88%, rgb(9 133 204 / 0.22), transparent 68%);
 }
 
 /* The rail sits a shade off the page so the two planes separate without a
@@ -112,4 +93,44 @@
   width: 2px;
   border-radius: 2px;
   background: var(--dash-primary);
+}
+
+/*
+ * Fields.
+ *
+ * Chrome repaints an autofilled input with its own background and will not let
+ * `background-color` override it; the way through is an inset shadow the size
+ * of the field, which paints over what the browser drew. Without this the
+ * fields came back olive on a dark page — the browser's light-theme yellow
+ * behind our own text colour.
+ */
+.dash-input {
+  height: 2.75rem;
+  padding-inline: 0.875rem;
+  border: 1px solid var(--dash-border-strong);
+  border-radius: 0.5rem;
+  background: rgb(2 7 28 / 0.6);
+  color: var(--dash-fg);
+  font-size: 0.9375rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dash-input::placeholder {
+  color: rgb(143 163 189 / 0.7);
+}
+
+.dash-input:focus {
+  outline: none;
+  border-color: var(--dash-primary);
+  box-shadow: 0 0 0 3px rgb(9 133 204 / 0.22);
+}
+
+.dash-input:-webkit-autofill,
+.dash-input:-webkit-autofill:hover,
+.dash-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--dash-fg);
+  -webkit-box-shadow: 0 0 0 40rem rgb(2 7 28 / 0.92) inset;
+  caret-color: var(--dash-fg);
 }
