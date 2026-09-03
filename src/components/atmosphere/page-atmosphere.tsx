@@ -120,16 +120,19 @@ export function PageAtmosphere() {
       </RefractionFrame>
 
       {/*
-        Frame 7 (362:92) — the same tile mirrored, overlapping the one above.
+        Frame 7 (267:598) — the same tile mirrored, picking up exactly where
+        Frame 6 clips.
 
-        Figma reports this frame's position three different ways: the metadata
-        gives y=3112, the generated code gives top=2464, and the rendered
-        background puts it at 2304. The render wins, and it is checkable — the
-        export has exactly two hard horizontal edges, +85/255 at y=2304 where
-        this frame switches on and -11/255 at y=2464 where Frame 6 clips off.
-        Only a top of 2304 produces both.
+        Figma reports this frame three ways: the page's metadata says y=3112,
+        the generated code says 2464, and the isolated-background copy of the
+        page (node 362:46) renders it at 2304. The page itself settles it — its
+        left edge runs smooth from 1800 to 2700 with no hard step anywhere,
+        rising to 67/255 right where Frame 6 clips at 2464 and decaying from
+        there. Only a top of 2464 joins without a seam; 2304 puts a visible
+        banded step across the industries grid, which is what the isolated copy
+        shows and the design does not.
       */}
-      <RefractionFrame box={{ left: -21, top: 2304, width: 1565, height: 648 }} depth={70} flipY id="contact">
+      <RefractionFrame box={{ left: -21, top: 2464, width: 1565, height: 648 }} depth={70} flipY id="contact">
         <GlowLayer
           box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
           id="contact"
