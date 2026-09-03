@@ -8,3 +8,6 @@ src/generated/prisma
 
 # local visual QA
 .shots/
+
+# figma reference exports used for visual measurement only
+.figma/

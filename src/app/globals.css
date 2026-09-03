@@ -53,18 +53,6 @@
 /* Glow ramp for the atmosphere layers. Kept as raw channels so each layer can
    set its own alpha without duplicating the colour. */
 :root {
-  /* Alternates between full and 0.78. The rays are a signature of the design
-     and read clearly wherever the light does, so the modulation is set deep
-     enough to be legible rather than to minimise a residual. It still falls to
-     nothing on unlit ground, because it multiplies the light instead of adding
-     to it. */
-  --glow-ray-mask: repeating-linear-gradient(
-    90deg,
-    #000 0px,
-    rgb(0 0 0 / 0.78) 25px,
-    #000 50px
-  );
-
   --glow-core: 148 176 201;
   --glow-mid: 13 132 204;
   --glow-deep: 24 76 119;
@@ -164,18 +152,7 @@
     );
   }
 
-  /* Vertical light rays.
-     They are not an overlay: in the design they modulate the light rather than
-     adding to it. Measured across the contact section's dark middle, the ray
-     amplitude there is 0.00 — a flat additive layer put 13/255 of striping
-     over ground that should be plain ink. So the pattern is a mask on the
-     light layers instead, which makes it vanish wherever there is no light.
-     ~50px period, measured by FFT across the lit edge bands. */
-  .glow-rayed {
-    mask-image: var(--glow-ray-mask);
-    -webkit-mask-image: var(--glow-ray-mask);
   }
-}
 
 /* ==========================================================================
    Primitives Tailwind cannot express cleanly

@@ -7,6 +7,11 @@ import { MotionScene, type SceneContext } from "@/motion/motion-scene";
  * Each glow carries a `data-glow-depth` in pixels. The field spans the whole
  * page rather than sitting inside sections, so every layer is scrubbed against
  * the document's own scroll range and drifts by its own amount.
+ *
+ * The drift starts at zero rather than straddling it. Splitting the travel
+ * either side of the design position looks the same in motion but leaves every
+ * layer offset by half its depth at the top of the page, where the background
+ * is most visible and is supposed to sit exactly where the design puts it.
  */
 export class ParallaxScene extends MotionScene {
   readonly name = "parallax";
@@ -23,9 +28,9 @@ export class ParallaxScene extends MotionScene {
 
       gsap.fromTo(
         layer,
-        { y: -depth / 2 },
+        { y: 0 },
         {
-          y: depth / 2,
+          y: depth,
           ease: "none",
           scrollTrigger: { start: 0, end: "max", scrub: 0.6 },
         },
