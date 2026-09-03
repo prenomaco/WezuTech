@@ -12,6 +12,17 @@ interface Recipe {
 }
 
 /**
+ * Two eases, used consistently.
+ *
+ * `EASE_TYPE` is for anything sliding out from behind a clip: nearly all of
+ * the travel happens immediately and the tail is long, so the letters appear
+ * already moving. `EASE_SETTLE` is gentler and is what everything that fades
+ * uses, so the page has two speeds rather than a dozen.
+ */
+const EASE_TYPE = "expo.out";
+const EASE_SETTLE = "power3.out";
+
+/**
  * Each element type gets its own entrance instead of one shared fade-up.
  *
  * Headings arrive from behind a clip, copy drifts in from the side it is
@@ -19,67 +30,88 @@ interface Recipe {
  * the point: uniform reveals are what make a page read as templated.
  */
 const RECIPES: Record<string, Recipe> = {
+  /* Eyebrows are clipped by their own element, so they slide up from behind it
+     rather than fading — the same move the hero makes with its headline, which
+     is what keeps the two reading as one page. */
   "about-eyebrow": {
-    from: { xPercent: -12, autoAlpha: 0 },
-    duration: 0.7,
-    ease: "power3.out",
-  },
-  "about-copy": {
-    from: { y: 26, autoAlpha: 0 },
-    duration: 0.8,
-    ease: "power2.out",
-  },
-  "about-artwork": {
-    from: { x: 54, scale: 1.04, autoAlpha: 0 },
-    duration: 1.15,
-    ease: "power2.out",
-    start: "top 88%",
+    from: { yPercent: 115 },
+    duration: 0.85,
+    ease: EASE_TYPE,
   },
   "products-heading": {
-    from: { y: 18, autoAlpha: 0 },
-    duration: 0.65,
-    ease: "power3.out",
-  },
-  "products-card": {
-    from: { y: 34, autoAlpha: 0 },
-    duration: 0.9,
-    ease: "power3.out",
-  },
-  "industry-item": {
-    from: { y: 30, autoAlpha: 0 },
-    duration: 0.6,
-    ease: "power2.out",
-    stagger: 0.07,
+    from: { yPercent: 115 },
+    duration: 0.85,
+    ease: EASE_TYPE,
   },
   "testimonials-heading": {
-    from: { y: 16, autoAlpha: 0 },
-    duration: 0.6,
-    ease: "power3.out",
-  },
-  "testimonial-stage": {
-    from: { scale: 0.97, autoAlpha: 0 },
+    from: { yPercent: 115 },
     duration: 0.85,
-    ease: "power2.out",
+    ease: EASE_TYPE,
+  },
+
+  /* Copy rises a short way. The distance is small on purpose: long travel on a
+     block of text drags the eye down the page just as it is trying to read. */
+  "about-copy": {
+    from: { y: 22, autoAlpha: 0 },
+    duration: 0.9,
+    ease: EASE_SETTLE,
+    stagger: 0.09,
+  },
+  "products-card": {
+    from: { y: 28, autoAlpha: 0 },
+    duration: 0.95,
+    ease: EASE_SETTLE,
+  },
+
+  /* Artwork settles out of depth, so the section has a foreground and a
+     background rather than one flat plane arriving together. */
+  "about-artwork": {
+    from: { x: 48, scale: 1.045, autoAlpha: 0 },
+    duration: 1.2,
+    ease: EASE_SETTLE,
+    start: "top 88%",
+  },
+
+  /* The grid cascades along the reading order; the stagger is short enough
+     that the row still lands as a row. */
+  "industry-item": {
+    from: { y: 26, scale: 0.985, autoAlpha: 0 },
+    duration: 0.7,
+    ease: EASE_SETTLE,
+    stagger: 0.06,
+  },
+
+  /* Panels scale up a hair as they arrive, which reads as the frame drawing
+     itself rather than a card being pasted in. */
+  "testimonial-stage": {
+    from: { scale: 0.975, autoAlpha: 0 },
+    duration: 0.9,
+    ease: EASE_SETTLE,
   },
   "testimonial-dots": {
-    from: { y: 12, autoAlpha: 0 },
-    duration: 0.45,
-    ease: "power2.out",
+    from: { y: 10, autoAlpha: 0 },
+    duration: 0.5,
+    ease: EASE_SETTLE,
   },
+
   "contact-title": {
-    from: { xPercent: -14, autoAlpha: 0 },
-    duration: 0.85,
-    ease: "power3.out",
+    from: { xPercent: -12, autoAlpha: 0 },
+    duration: 0.95,
+    ease: EASE_TYPE,
   },
-  "contact-form": {
-    from: { y: 30, autoAlpha: 0 },
-    duration: 0.8,
-    ease: "power2.out",
-  },
-  footer: {
-    from: { y: 26, autoAlpha: 0 },
+  /* Fields arrive one after another so the form reads as a sequence to fill
+     in, not a block that appears. */
+  "contact-field": {
+    from: { y: 20, autoAlpha: 0 },
     duration: 0.7,
-    ease: "power2.out",
+    ease: EASE_SETTLE,
+    stagger: 0.07,
+  },
+
+  footer: {
+    from: { y: 24, autoAlpha: 0 },
+    duration: 0.8,
+    ease: EASE_SETTLE,
     start: "top 94%",
   },
 };

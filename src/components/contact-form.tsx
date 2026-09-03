@@ -34,7 +34,7 @@ interface FieldProps {
 
 function Field({ label, name, placeholder, type = "text", className, gap = "first" }: FieldProps) {
   return (
-    <label className={`${LABEL} ${className ?? ""}`}>
+    <label className={`${LABEL} ${className ?? ""}`} data-motion="contact-field">
       {label}
       <input
         className={`${FIELD} ${FIELD_GAP[gap]} w-full`}
@@ -75,7 +75,9 @@ export function ContactForm() {
   }
 
   return (
-    <form className={GRID} data-motion="contact-form" onSubmit={submit}>
+    /* The fields carry the reveal, not the form: staggering them reads as a
+       sequence to fill in, and animating both would double the movement. */
+    <form className={GRID} onSubmit={submit}>
       {/* Bot trap: never shown, never focusable, submitted with the payload. */}
       <input
         aria-hidden="true"
@@ -89,7 +91,7 @@ export function ContactForm() {
       <Field label="Email Address" name="email" placeholder="john@prenoma.co" type="email" />
       <Field gap="rest" label="Subject" name="subject" placeholder="Project query" />
 
-      <label className={`${LABEL} col-span-2 mt-[0.5625rem]`}>
+      <label className={`${LABEL} col-span-2 mt-[0.5625rem]`} data-motion="contact-field">
         Message
         <textarea
           className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-[43.5625rem] resize-none`}
@@ -100,7 +102,7 @@ export function ContactForm() {
         />
       </label>
 
-      <div className="col-span-2 -ml-1 mt-[2.625rem] flex items-center gap-4">
+      <div className="col-span-2 -ml-1 mt-[2.625rem] flex items-center gap-4" data-motion="contact-field">
         <Button className="w-[10.625rem]" disabled={state === "sending"} type="submit">
           {state === "sending" ? "Sending…" : "Submit Message"}
         </Button>

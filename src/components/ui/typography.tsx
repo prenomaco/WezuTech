@@ -50,16 +50,28 @@ interface HeadingProps extends TypeProps {
   readonly variant?: keyof typeof HEADING_VARIANT;
 }
 
+/**
+ * Section eyebrow, revealed the way the hero reveals its headline.
+ *
+ * The element clips and the text slides up from behind it, so the motion layer
+ * gets a masked line rather than something to fade. Display type reads as
+ * typeset that way; an opacity tween on the same words reads as a generic
+ * page-load fade. The motion hook therefore belongs on the inner span — the
+ * clip has to stay still for the slide to show.
+ */
 export function SectionHeading({
   children,
   className,
   as: Tag = "h2",
   variant = "products",
+  "data-motion": motion,
   ...rest
-}: HeadingProps) {
+}: HeadingProps & { readonly "data-motion"?: string }) {
   return (
-    <Tag className={join(DISPLAY, HEADING_VARIANT[variant], className)} {...rest}>
-      {children}
+    <Tag className={join(DISPLAY, HEADING_VARIANT[variant], "overflow-hidden", className)} {...rest}>
+      <span className="block" data-motion={motion}>
+        {children}
+      </span>
     </Tag>
   );
 }

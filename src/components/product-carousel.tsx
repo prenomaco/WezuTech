@@ -20,7 +20,11 @@ import type { CatalogProduct } from "@/lib/catalog";
    y=1660, title 275 at 1970, copy 340 at 2021, buttons from 2350. */
 const CARD_GRID =
   "flex flex-col items-center " +
-  "lg:grid lg:h-[25.3125rem] lg:grid-cols-[23.5625rem_minmax(0,38.125rem)] lg:gap-x-[4.125rem] lg:pl-[8.625rem]";
+  /* `items-center` is a mobile-only choice — it survives into the grid and
+     centres each track vertically instead of letting them fill the row, so the
+     desktop layout has to put it back. */
+  "lg:grid lg:h-[25.3125rem] lg:grid-cols-[23.5625rem_minmax(0,38.125rem)] lg:items-stretch " +
+  "lg:gap-x-[4.125rem] lg:pl-[8.625rem]";
 
 /* Glyph x=169 / right edge x=1362.4 in the 1512 frame, i.e. 65px from the
    1304 column's left edge and 45.6px from its right, less the button padding. */
