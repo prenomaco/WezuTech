@@ -1,7 +1,7 @@
 /**
  * The design's light field, taken from the file as vectors.
  *
- * Figma builds each glow from four solid shapes inside a group that is
+ * Figma builds each glow from solid shapes inside a group that is
  * Gaussian-blurred and composited with `mix-blend-mode: screen`. The last shape
  * is filled with the page ink and painted over the bright ones — that is what
  * carves the dark waist through the middle, and it is why a CSS gradient cannot
@@ -24,7 +24,7 @@ export interface GlowVectorSpec {
 }
 
 export const GLOW_VECTORS = {
-  /** Group 12 — the hero band, reused for the mid-page bands. */
+  /** Group 12 in "BG Fractal Gradience" — the full tile, used behind the hero. */
   field: {
     width: 1881.69,
     height: 1327.81,
@@ -45,6 +45,22 @@ export const GLOW_VECTORS = {
       {
         d: "M220.579 1015.46C450.784 779.177 1183.55 467.85 1758.65 1173.19V1215.4C1499.67 883.652 830.459 444.08 181.671 1215.4L220.579 1015.46ZM1728.26 225.701C1598.16 416.199 790.822 957.704 181.671 225.701V112.401C448.757 434.218 1064.39 849.958 1758.65 112.401L1728.26 225.701Z",
         fill: "#02071C",
+      },
+    ],
+  },
+  /** The same tile with Vector 47 hidden, as Frames 6 and 7 instance it. Losing that #93C6EA highlight is what keeps the middle of the page dark. */
+  fieldDim: {
+    width: 1821.23,
+    height: 1327.81,
+    blur: 56.2004,
+    shapes: [
+      {
+        d: "M112.401 1065.53V883.071C206.193 797.451 364.373 697.862 566.875 644.122C420.276 606.418 267.196 543.081 112.401 445.689L112.401 236.548C379.213 522.472 994.216 891.842 1687.76 236.548L1698.7 422.292C1640.27 498.384 1464.98 605.935 1221.73 658.501C1364.07 701.686 1513.78 773.521 1667.8 883.071L1698.7 1093.17C1439.98 798.417 760.523 380.239 112.401 1065.53Z",
+        fill: "#14568A",
+      },
+      {
+        d: "M112.406 428.5V841.052C610.143 534.025 1378.62 686.197 1708.83 818.138V457.88C1088.23 774.54 385.962 560.442 112.406 428.5Z",
+        fill: "#7FA4C3",
       },
     ],
   },

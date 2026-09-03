@@ -19,6 +19,11 @@ interface GlowFieldProps {
   readonly opacity?: number;
   /** Parallax travel in pixels, read by the motion layer. */
   readonly depth?: number;
+  /**
+   * Width the rect's horizontal values are measured against. Defaults to the
+   * 1512 frame; a tile passes its own frame width so the child scales with it.
+   */
+  readonly relativeTo?: number;
 }
 
 /**
@@ -29,7 +34,7 @@ interface GlowFieldProps {
  * than to a section — scoping light per section is what produces visible seams
  * at the section boundaries, since each one clips its own glow.
  */
-export function GlowField({ vector, id, rect, opacity, depth }: GlowFieldProps) {
+export function GlowField({ vector, id, rect, opacity, depth, relativeTo = FRAME_WIDTH }: GlowFieldProps) {
   const spec = GLOW_VECTORS[vector];
   const filterId = `glow-${id}`;
 
@@ -37,8 +42,8 @@ export function GlowField({ vector, id, rect, opacity, depth }: GlowFieldProps) 
      A percentage `top` would resolve against the page's own height, which the
      content decides — the field would then shift whenever the page grew. */
   const style: CSSProperties = {
-    left: `${(rect.x / FRAME_WIDTH) * 100}%`,
-    width: `${(rect.width / FRAME_WIDTH) * 100}%`,
+    left: `${(rect.x / relativeTo) * 100}%`,
+    width: `${(rect.width / relativeTo) * 100}%`,
     top: rect.y,
     height: rect.height,
     opacity,
@@ -47,7 +52,7 @@ export function GlowField({ vector, id, rect, opacity, depth }: GlowFieldProps) 
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute mix-blend-screen"
+      className="glow-rayed pointer-events-none absolute mix-blend-screen"
       data-glow-depth={depth}
       fill="none"
       preserveAspectRatio="none"

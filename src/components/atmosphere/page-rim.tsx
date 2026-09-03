@@ -27,12 +27,17 @@ function inwardFade(side: "left" | "right"): string {
 }
 
 function rimStyle(side: "left" | "right", stops: readonly RimStop[]): CSSProperties {
+  /* Two mask layers intersected: the inward fade, and the vertical ray pattern
+     that modulates the light rather than adding to it. */
+  const mask = `${inwardFade(side)}, var(--glow-ray-mask)`;
   return {
     [side]: 0,
     width: RIM_REACH_PX,
     backgroundImage: verticalRamp(stops),
-    maskImage: inwardFade(side),
-    WebkitMaskImage: inwardFade(side),
+    maskImage: mask,
+    maskComposite: "intersect",
+    WebkitMaskImage: mask,
+    WebkitMaskComposite: "source-in",
   };
 }
 

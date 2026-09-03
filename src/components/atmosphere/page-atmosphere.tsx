@@ -5,68 +5,115 @@ import type { GlowVectorName } from "@/lib/design/glow-vectors";
 /**
  * The page's light, as one continuous field.
  *
- * Figma places its glow groups against the 1512 x 3984 frame, spanning section
- * boundaries. Reproducing them per section means each one clips its own light
- * and the joins show as hard horizontal seams, so this layer is mounted once
- * for the whole page and the sections sit above it.
- *
- * The two large groups are the design's own vectors. The border that runs down
- * both frame edges is `PageRim`, built from the render's own colour ramp.
+ * Figma places its glow against the 1512 x 3984 frame, spanning section
+ * boundaries. Reproducing it per section means each one clips its own light and
+ * the joins show as hard horizontal seams, so this layer is mounted once for
+ * the whole page and the sections sit above it.
  */
 
-interface GlowPlacement {
+const FRAME_WIDTH = 1512;
+
+/**
+ * "BG Fractal Gradience" (node 361:46) is the design's reusable background
+ * tile: a 1545 x 992.19 frame holding Group 12, which sits at (-64.375,
+ * -94.008) inside it and measures 1656.89 x 1103.00. The page instances that
+ * tile three times — Frame 5 behind the hero, Frame 6 over the products band
+ * and Frame 7 over the contact band — and each frame clips it.
+ *
+ * The exported SVG carries the room its blur needs, an extra 112.34 horizontal
+ * and 112.40 vertical, so it sits at (-176.715, -206.408) within its frame.
+ */
+interface FractalInstance {
   readonly id: string;
+  /** The frame that holds — and clips — this instance. */
+  readonly frame: GlowRect;
+  /** The exported tile's rect within that frame, blur padding included. */
+  readonly tile: GlowRect;
   readonly vector: GlowVectorName;
-  readonly rect: GlowRect;
   readonly opacity?: number;
   readonly depth: number;
 }
 
-/**
- * Rects are the exported SVG bounds — the group's box plus the room its blur
- * needs — from the `inset` Figma reports:
- *   Group 12 (hero)   node -64.4, -94.0  1656.9 x 1103.0, inset -10.19% -6.78%
- *   Group 13 (footer) node -166,  3524   1852   x 1101.9, inset  -9.98% -5.94%
- */
-const GLOWS: readonly GlowPlacement[] = [
+const FRACTAL_TILES: readonly FractalInstance[] = [
   {
     id: "hero",
+    frame: { x: -13, y: -10.596, width: 1545, height: 992.192 },
+    /* Group 12 sits at (-64.375, -94.008) in the frame; the export adds 112.34
+       horizontal and 112.40 vertical for its blur. */
+    tile: { x: -176.715, y: -206.408, width: 1881.69, height: 1327.81 },
     vector: "field",
-    rect: { x: -176.7, y: -206.4, width: 1881.69, height: 1327.81 },
-    /* Chrome's Gaussian spreads a little wider than Figma's, leaving the hero
-       band ~12/255 hot at the edges. The rim is screen-composited and can only
-       add, so the correction has to happen here. */
+    /* Chrome's Gaussian spreads a little wider than Figma's, leaving the band
+       hot at the edges. The rim is screen-composited and can only add, so the
+       correction has to happen here. */
     opacity: 0.94,
     depth: 30,
   },
   {
-    id: "footer",
-    vector: "footer",
-    rect: { x: -276, y: 3414, width: 2072, height: 1321.91 },
-    depth: 20,
+    id: "products",
+    frame: { x: -22, y: 1816, width: 1565, height: 648 },
+    /* Here Group 12 sits at (0, 353) and the export pads by 112.4 each way. */
+    tile: { x: -112.4, y: 240.6, width: 1821.23, height: 1327.81 },
+    vector: "fieldDim",
+    depth: 62,
+  },
+  {
+    id: "contact",
+    frame: { x: -21, y: 3112, width: 1565, height: 648 },
+    tile: { x: -112.4, y: 240.6, width: 1821.23, height: 1327.81 },
+    vector: "fieldDim",
+    depth: 48,
   },
 ];
+
+/** Group 13 (node 252:438), the footer band. Its highlight is #F0F7FD. */
+const FOOTER_GLOW = {
+  rect: { x: -276, y: 3414, width: 2072, height: 1321.91 } satisfies GlowRect,
+  depth: 20,
+};
+
+function pct(value: number) {
+  return `${(value / FRAME_WIDTH) * 100}%`;
+}
+
+/**
+ * An instance of the background tile, clipped by its frame as Figma clips it.
+ * The tile itself is far larger than the frame — 1821 x 1328 inside a 1565 x
+ * 648 window — and letting it spill instead raises the band below the products
+ * section by over 130/255.
+ */
+function FractalTile({ id, frame, tile, vector, opacity, depth }: FractalInstance) {
+  return (
+    <div
+      className="absolute overflow-clip"
+      style={{ left: pct(frame.x), top: frame.y, width: pct(frame.width), height: frame.height }}
+    >
+      <GlowField
+        depth={depth}
+        id={id}
+        opacity={opacity}
+        rect={tile}
+        relativeTo={frame.width}
+        vector={vector}
+      />
+    </div>
+  );
+}
 
 export function PageAtmosphere() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-clip" aria-hidden="true">
-      {GLOWS.map((glow) => (
-        <GlowField
-          depth={glow.depth}
-          id={glow.id}
-          key={glow.id}
-          opacity={glow.opacity}
-          rect={glow.rect}
-          vector={glow.vector}
-        />
+      {FRACTAL_TILES.map((tile) => (
+        <FractalTile key={tile.id} {...tile} />
       ))}
 
+      <GlowField
+        depth={FOOTER_GLOW.depth}
+        id="footer"
+        rect={FOOTER_GLOW.rect}
+        vector="footer"
+      />
 
       <PageRim />
-
-      {/* Vertical light rays run the full page, not just the hero: measured at
-          a 20px period and ~7.5/255 peak-to-peak at both y=150 and y=2600. */}
-      <div className="glow-rays absolute inset-0" />
     </div>
   );
 }
