@@ -37,6 +37,11 @@
   --font-display: "Centauri", "Arial Narrow", sans-serif;
   --font-body: "Overused Grotesk", Arial, Helvetica, sans-serif;
 
+  /* Figma distinguishes "Book" from "Regular" in this family. Book is a step
+     lighter; at 400 the testimonial's second line overruns its 634px box by
+     11px and breaks a word early. */
+  --font-weight-book: 360;
+
   /* The Figma frame is 1512 wide with content between x=104 and x=1408. */
   --spacing-gutter: 104px;
   --container-frame: 1304px;

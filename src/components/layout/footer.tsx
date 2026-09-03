@@ -18,7 +18,7 @@ const COLUMN_INDENT = "3.0625rem"; /* 49 */
    21.112px, links Overused Grotesk 18.766px on a 25.8px line with a 9.383px
    gap (a 35.19px row pitch), contact rows 18px on a 24px line. */
 const HEADING = "font-display text-[1.3195rem] leading-[1.539375rem] text-white";
-const LINK = "text-[1.172875rem] leading-[1.6125rem] text-white transition-colors hover:text-sky";
+const LINK = "text-[1.172875rem] font-book leading-[1.6125rem] text-white transition-colors hover:text-sky";
 const DETAIL = "flex items-center gap-[0.4375rem] text-[1.125rem] leading-[1.5rem] text-white";
 
 const DETAIL_ICON = {

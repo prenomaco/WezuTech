@@ -47,7 +47,7 @@ function IndustryItem({ industry, column, width, height }: IndustryItemProps) {
           at 16px the body wraps a word early in every column. */}
       <div className="pt-[0.875rem]">
         <h3 className="text-[1.125rem] font-bold leading-[1.5rem] text-ice">{industry.title}</h3>
-        <p className={`mt-1.5 text-[1.125rem] leading-[1.5rem] text-ice ${column.body}`}>
+        <p className={`mt-1.5 text-[1.125rem] font-book leading-[1.5rem] text-ice ${column.body}`}>
           {industry.body}
         </p>
       </div>
