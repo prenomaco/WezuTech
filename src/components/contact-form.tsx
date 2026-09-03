@@ -86,8 +86,8 @@ export function ContactForm() {
       />
 
       <Field label="Name" name="name" placeholder="John Doe" />
-      <Field label="Email Address" name="email" placeholder="john@company.com" type="email" />
-      <Field gap="rest" label="Subject" name="subject" placeholder="Project enquiry" />
+      <Field label="Email Address" name="email" placeholder="john@prenoma.co" type="email" />
+      <Field gap="rest" label="Subject" name="subject" placeholder="Project query" />
 
       <label className={`${LABEL} col-span-2 mt-[0.5625rem]`}>
         Message
@@ -95,7 +95,7 @@ export function ContactForm() {
           className={`${FIELD} ${FIELD_GAP.rest} h-[10rem] w-[43.5625rem] resize-none`}
           minLength={10}
           name="message"
-          placeholder="Tell us about your site, application, or deployment requirements."
+          placeholder="Lorem ipsum dolor siet amet"
           required
         />
       </label>

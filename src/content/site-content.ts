@@ -139,6 +139,13 @@ export const testimonials: readonly Testimonial[] = [
     client: "Industrial Fleet Operator",
     title: "Reliability at Every Stage",
   },
+  {
+    lead: "",
+    quote:
+      "They treated our requirements as engineering problems rather than a specification to sign off. The result is a platform we can keep building on, and a team we would work with again.",
+    client: "Commercial Vehicle Group",
+    title: "Built to Keep Developing",
+  },
 ];
 
 export const contact = {
