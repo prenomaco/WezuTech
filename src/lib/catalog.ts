@@ -4,15 +4,23 @@ import { figmaAssets } from "@/lib/figma-assets";
 
 export type CatalogProduct = Pick<Product, "id" | "slug" | "name" | "tagline" | "cardDescription" | "introduction" | "seoTitle" | "seoDescription"> & { imageUrl: string };
 
+/**
+ * The product the design shows (Figma nodes 252:484 and 252:482), used until
+ * the CMS has published entries. Copy is taken verbatim from the frame so the
+ * page matches the design out of the box.
+ */
 const showcaseProduct: CatalogProduct = {
-  id: "showcase-public-kiosk",
-  slug: "public-kiosk-charger",
-  name: "Public Kiosk Charger",
-  tagline: "Charge infrastructure, built for everywhere.",
-  cardDescription: "Weather-sealed public AC/DC charging for connected, open-environment deployments.",
-  introduction: "A weather-sealed public AC/DC charging kiosk designed for public spaces, parking areas, and workplace sites.",
-  seoTitle: "Public Kiosk Charger | Wezu Technologies",
-  seoDescription: "Connected, weather-sealed public charging infrastructure by Wezu Technologies.",
+  id: "showcase-ev-cooling",
+  slug: "electric-vehicle-cooling-systems",
+  name: "Electric Vehicle Cooling Systems",
+  tagline: "Thermal management for batteries, motors and power electronics.",
+  cardDescription:
+    "Wezu Technologies develops advanced thermal management systems for EV batteries, motors, and power electronics, designed to maintain optimal operating temperatures and improve overall vehicle efficiency. Its solutions include battery, motor, and inverter cooling, integrated cooling channels, active and passive thermal management, heat exchangers, and real-time monitoring and control.\n\nThese technologies help extend battery life, enhance performance and safety, maximize driving range, and enable scalable cooling solutions for next-generation electric vehicles.",
+  introduction:
+    "Wezu Technologies develops advanced thermal management systems for EV batteries, motors, and power electronics, designed to maintain optimal operating temperatures and improve overall vehicle efficiency. Its solutions include battery, motor, and inverter cooling, integrated cooling channels, active and passive thermal management, heat exchangers, and real-time monitoring and control.",
+  seoTitle: "Electric Vehicle Cooling Systems | Wezu Technologies",
+  seoDescription:
+    "Battery, motor and inverter cooling, integrated cooling channels, heat exchangers and real-time monitoring from Wezu Technologies.",
   imageUrl: figmaAssets.productIllustration,
 };
 

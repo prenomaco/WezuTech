@@ -34,7 +34,15 @@ function ProductCard({ product }: { product: CatalogProduct }) {
 
       <div className="flex flex-col">
         <ProductTitle className="max-w-[30.75rem]">{product.name}</ProductTitle>
-        <Prose className="mt-[1.1875rem]" size="product">{product.cardDescription}</Prose>
+        {/* The frame separates the description's paragraphs with a blank line
+            (node 252:482), so a blank line in the copy becomes a paragraph. */}
+        <div className="mt-[1.1875rem] flex flex-col gap-[1.5rem]">
+          {(product.cardDescription ?? "").split(/\n\s*\n/).map((paragraph) => (
+            <Prose key={paragraph.slice(0, 32)} size="product">
+              {paragraph}
+            </Prose>
+          ))}
+        </div>
 
         {/* Figma indents the CTA row 3px from the copy column (685 -> 688). */}
         <div className="mt-auto ml-[3px] flex items-center gap-5">
