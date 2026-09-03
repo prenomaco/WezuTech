@@ -27,7 +27,11 @@ const HEADLINE = "absolute font-display text-[1.5rem] leading-[1.75rem] text-ice
 
 export function MobileHero() {
   return (
-    <div className="relative h-[45.3125rem] lg:hidden">
+    /* Capped at the frame's own width. Every offset below is a percentage of
+       402, so letting the stage grow past that spreads the composition apart —
+       the CTA becomes a 750px bar and the headline drifts off the artwork. On
+       anything wider than the frame the stage centres instead. */
+    <div className="relative mx-auto h-[45.3125rem] w-full max-w-[25.125rem] lg:hidden">
       <div
         className="absolute"
         data-motion="hero-vehicles-drift"

@@ -12,18 +12,19 @@ import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
  * transparent — which is also what an SVG filter does outside its region, so
  * the region is pinned to the frame box rather than the default overhang.
  *
- * Three nested elements rather than one, because each has to stay out of the
- * others' way: parallax moves the outer one, the flip belongs outside the
- * shader exactly as the design nests it, and the innermost is the only thing
- * carrying the filter. Animating anything *inside* a filtered element would
- * make the browser re-run the displacement every frame.
+ * These frames do not take part in the parallax. `feDisplacementMap` has no CSS
+ * equivalent, so it stays an SVG filter graph, and Chrome rasters those on the
+ * CPU — over a 1545 x 992 surface. Moving the element invalidates that raster,
+ * so scrolling re-ran the displacement every frame and the page advanced in
+ * steps. Left still, it is rastered once and the tiles are simply scrolled.
+ * The drift the design asks for comes from the streaks and the hero subject,
+ * which are cheap to move.
  *
- * The screen blend sits on the outer element rather than on the glow inside it.
- * A CSS filter isolates its subtree, so an inner `mix-blend-mode` can only see
- * the frame's own transparent backdrop — which matters because Frames 6 and 7
- * overlap by 160px and have to add there. Figma's frames do not isolate, so
- * the group blends against everything beneath it; screening the whole frame
- * reproduces that, and is a no-op difference for the frames that stand alone.
+ * There is no screen blend. Figma marks the group `screen`, but its frames are
+ * transparent, so the blend has nothing to act on and the result composites
+ * normally over the page — which is also what the export shows. Measured
+ * against it, screening is 4.70 mean error and compositing normally is 4.42,
+ * and normal costs the compositor no backdrop read.
  */
 interface RefractionFrameProps {
   readonly id: string;
@@ -35,18 +36,15 @@ interface RefractionFrameProps {
   };
   /** Frame 7 draws the same tile mirrored down the page. */
   readonly flipY?: boolean;
-  /** Parallax travel in pixels, read by the motion layer. */
-  readonly depth?: number;
   readonly children: ReactNode;
 }
 
-export function RefractionFrame({ id, box, flipY, depth, children }: RefractionFrameProps) {
+export function RefractionFrame({ id, box, flipY, children }: RefractionFrameProps) {
   const filterId = `refraction-${id}`;
 
   return (
     <div
-      className="pointer-events-none absolute mix-blend-screen"
-      data-glow-depth={depth}
+      className="pointer-events-none absolute"
       style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
     >
       <svg aria-hidden="true" className="absolute size-0">

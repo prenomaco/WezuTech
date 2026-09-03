@@ -19,8 +19,6 @@ export interface GlowBox {
 
 interface GlowLayerProps {
   readonly vector: GlowVectorName;
-  /** Unique per instance — the blur filter is referenced by id. */
-  readonly id: string;
   /** The node's box, in the coordinates of whatever contains it. */
   readonly box: GlowBox;
   /**
@@ -29,22 +27,28 @@ interface GlowLayerProps {
    * groups at roughly a third of the scale.
    */
   readonly render?: { readonly width: number; readonly height: number };
-  /** Figma screens this group over its backdrop. */
-  readonly screen?: boolean;
   /** Parallax travel in pixels, read by the motion layer. */
   readonly depth?: number;
 }
 
-export function GlowLayer({ vector, id, box, render, screen, depth }: GlowLayerProps) {
+export function GlowLayer({ vector, box, render, depth }: GlowLayerProps) {
   const spec = GLOW_VECTORS[vector];
-  const filterId = `glow-${id}`;
   const width = render?.width ?? spec.width;
   const height = render?.height ?? spec.height;
+  /* The blur is a CSS filter rather than an feGaussianBlur in an SVG filter
+     graph. CSS `blur(v)` is defined as a Gaussian of standard deviation `v`,
+     so it is the same blur — but Chrome rasters an SVG filter graph on the CPU
+     and accelerates the CSS one, and these are very large surfaces at a 39-56px
+     radius. The SVG viewport clips the result exactly as the old filter region
+     did, since the export already carries the room the blur needs. */
+  /* In user units, so it scales with the viewBox exactly as Figma's does when
+     the small frame instances the same group smaller. */
+  const blur = `blur(${spec.blur}px)`;
 
   return (
     <svg
       aria-hidden="true"
-      className={`pointer-events-none absolute${screen ? " mix-blend-screen" : ""}`}
+      className="pointer-events-none absolute"
       data-glow-depth={depth}
       fill="none"
       height={height}
@@ -56,24 +60,11 @@ export function GlowLayer({ vector, id, box, render, screen, depth }: GlowLayerP
       viewBox={`0 0 ${spec.width} ${spec.height}`}
       width={width}
     >
-      <g filter={`url(#${filterId})`}>
+      <g style={{ filter: blur }}>
         {spec.shapes.map((shape) => (
           <path d={shape.d} fill={shape.fill} key={shape.d.slice(0, 24)} />
         ))}
       </g>
-      <defs>
-        <filter
-          colorInterpolationFilters="sRGB"
-          filterUnits="userSpaceOnUse"
-          height={spec.height}
-          id={filterId}
-          width={spec.width}
-          x="0"
-          y="0"
-        >
-          <feGaussianBlur stdDeviation={spec.blur} />
-        </filter>
-      </defs>
     </svg>
   );
 }

@@ -3,7 +3,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { MotionScene } from "@/motion/motion-scene";
 import { HeroScene } from "@/motion/scenes/hero-scene";
 import { ParallaxScene } from "@/motion/scenes/parallax-scene";
-import { PointerScene } from "@/motion/scenes/pointer-scene";
 import { RevealScene } from "@/motion/scenes/reveal-scene";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -28,7 +27,6 @@ export class MotionRegistry {
       new ParallaxScene(),
       new HeroScene(),
       new RevealScene(),
-      new PointerScene(),
     ]);
   }
 

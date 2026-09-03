@@ -56,7 +56,7 @@ export function Footer() {
         /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
            radius with no stroke — the edge you can see in the render is the
            light behind it showing through. */
-        className="relative z-10 rounded-[1.25rem] bg-black/20 px-6 pt-[2.3125rem] pb-[1.3125rem] backdrop-blur-[2px] lg:px-0"
+        className="relative z-10 rounded-[1.25rem] bg-black/20 px-6 pt-[2.3125rem] pb-[1.3125rem] lg:px-0"
         /* The entrance moves the panel rather than the footer. Translating the
            footer itself grows the document by the tween's offset until it
            plays, so the page loads 26px taller than the frame and settles

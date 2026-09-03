@@ -12,6 +12,11 @@ import { MotionScene, type SceneContext } from "@/motion/motion-scene";
  * either side of the design position looks the same in motion but leaves every
  * layer offset by half its depth at the top of the page, where the background
  * is most visible and is supposed to sit exactly where the design puts it.
+ *
+ * Vertical only, and only on the layers that are cheap to move. The frames
+ * carrying the refraction shader stay put: `feDisplacementMap` has no CSS
+ * equivalent, so it is rastered on the CPU, and moving it re-runs the
+ * displacement on every scroll frame.
  */
 export class ParallaxScene extends MotionScene {
   readonly name = "parallax";

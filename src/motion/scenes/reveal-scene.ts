@@ -35,17 +35,17 @@ const RECIPES: Record<string, Recipe> = {
      is what keeps the two reading as one page. */
   "about-eyebrow": {
     from: { yPercent: 115 },
-    duration: 0.85,
+    duration: 0.47,
     ease: EASE_TYPE,
   },
   "products-heading": {
     from: { yPercent: 115 },
-    duration: 0.85,
+    duration: 0.47,
     ease: EASE_TYPE,
   },
   "testimonials-heading": {
     from: { yPercent: 115 },
-    duration: 0.85,
+    duration: 0.47,
     ease: EASE_TYPE,
   },
 
@@ -53,13 +53,13 @@ const RECIPES: Record<string, Recipe> = {
      block of text drags the eye down the page just as it is trying to read. */
   "about-copy": {
     from: { y: 22, autoAlpha: 0 },
-    duration: 0.9,
+    duration: 0.5,
     ease: EASE_SETTLE,
-    stagger: 0.09,
+    stagger: 0.054,
   },
   "products-card": {
     from: { y: 28, autoAlpha: 0 },
-    duration: 0.95,
+    duration: 0.52,
     ease: EASE_SETTLE,
   },
 
@@ -67,56 +67,64 @@ const RECIPES: Record<string, Recipe> = {
      background rather than one flat plane arriving together. */
   "about-artwork": {
     from: { x: 48, scale: 1.045, autoAlpha: 0 },
-    duration: 1.2,
+    duration: 0.6,
     ease: EASE_SETTLE,
-    start: "top 88%",
+    start: "top 96%",
   },
 
   /* The grid cascades along the reading order; the stagger is short enough
      that the row still lands as a row. */
   "industry-item": {
     from: { y: 26, scale: 0.985, autoAlpha: 0 },
-    duration: 0.7,
+    duration: 0.39,
     ease: EASE_SETTLE,
-    stagger: 0.06,
+    stagger: 0.036,
   },
 
   /* Panels scale up a hair as they arrive, which reads as the frame drawing
      itself rather than a card being pasted in. */
   "testimonial-stage": {
     from: { scale: 0.975, autoAlpha: 0 },
-    duration: 0.9,
+    duration: 0.5,
     ease: EASE_SETTLE,
   },
   "testimonial-dots": {
     from: { y: 10, autoAlpha: 0 },
-    duration: 0.5,
+    duration: 0.28,
     ease: EASE_SETTLE,
   },
 
   "contact-title": {
     from: { xPercent: -12, autoAlpha: 0 },
-    duration: 0.95,
+    duration: 0.52,
     ease: EASE_TYPE,
   },
   /* Fields arrive one after another so the form reads as a sequence to fill
      in, not a block that appears. */
   "contact-field": {
     from: { y: 20, autoAlpha: 0 },
-    duration: 0.7,
+    duration: 0.39,
     ease: EASE_SETTLE,
-    stagger: 0.07,
+    stagger: 0.042,
   },
 
   footer: {
     from: { y: 24, autoAlpha: 0 },
-    duration: 0.8,
+    duration: 0.44,
     ease: EASE_SETTLE,
-    start: "top 94%",
+    start: "top 97%",
   },
 };
 
-const DEFAULT_START = "top 80%";
+/**
+ * Reveals begin before the element is in view, not after.
+ *
+ * At `top 80%` a section only starts once a fifth of it is already showing, so
+ * scrolling at any speed means watching blocks fade in behind you. Starting at
+ * 96% gives the tween most of its run before the element is actually being
+ * looked at.
+ */
+const DEFAULT_START = "top 96%";
 
 /**
  * Where every reveal lands: the element's own laid-out position, fully opaque.
@@ -165,6 +173,16 @@ export class RevealScene extends MotionScene {
           trigger: targets[0],
           start: recipe.start ?? DEFAULT_START,
           once: true,
+          /* A section that is already on screen when its trigger initialises —
+             a reload part-way down, or a scroll fast enough that the trigger is
+             passed before it is built — is put straight into its resting state
+             rather than played. Without this it can be left holding the
+             starting `autoAlpha: 0` and never appear at all. */
+          onRefreshInit: (self) => {
+            if (self.progress > 0 || self.scroll() > self.start) {
+              gsap.set(targets, restingFor(recipe.from));
+            }
+          },
         },
       });
     }
