@@ -21,12 +21,23 @@ const ARROW_RIGHT = "right-[2.1rem] top-[8.15625rem] -translate-y-1/2";
 const DOT_BASE = "h-[0.6775625rem] rounded-full transition-[width,background-color] duration-300 ease-out";
 
 /**
- * The shape is filled `black` at 10% — it darkens the page rather than tinting
- * it. Its stroke is not in the export but is plainly in the render, visible
- * along the top and bottom edges and gone down the sides, so it is drawn as a
- * vertical gradient at the alpha measured off those edges.
+ * The quote frame and its attribution capsule.
+ *
+ * Both are filled `black` at 10% — they darken the page rather than tinting
+ * it. The stroke is not in the export, and measuring the render shows it is
+ * not a full outline either: down the frame's sides the page reads 7.5/255,
+ * exactly the page ink, and along its bottom 5.7, which is the fill darkening
+ * the ink with nothing drawn over it. Only the top edge carries a stroke, and
+ * only the capsule's bottom does.
+ *
+ * So each shape gets one lit edge, faded at both ends. Two gradients do it:
+ * a horizontal one supplies the colour, running 0 at the ends to `strokeAlpha`
+ * across the middle, and a vertical mask decides which edge survives.
  */
 function Outline({ shape, gradientId }: { shape: FramePath; gradientId: string }) {
+  const maskId = `${gradientId}-mask`;
+  const lit = shape.litEdge === "top";
+
   return (
     <svg
       aria-hidden="true"
@@ -34,19 +45,60 @@ function Outline({ shape, gradientId }: { shape: FramePath; gradientId: string }
       viewBox={`0 0 ${shape.width} ${shape.height}`}
     >
       <defs>
-        <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha} />
-          <stop offset="0.5" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.12} />
-          <stop offset="1" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha} />
+        {/* Measured across the lit edge: 0 at both ends, flat over the middle
+            third. The shoulders are where the corner chamfers turn away. */}
+        <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#dafaf5" stopOpacity="0" />
+          <stop offset="0.06" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.61} />
+          <stop offset="0.17" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.79} />
+          <stop offset="0.34" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.96} />
+          <stop offset="0.45" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha} />
+          <stop offset="0.56" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha} />
+          <stop offset="0.67" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.96} />
+          <stop offset="0.83" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.79} />
+          <stop offset="0.94" stopColor="#dafaf5" stopOpacity={shape.strokeAlpha * 0.57} />
+          <stop offset="1" stopColor="#dafaf5" stopOpacity="0" />
         </linearGradient>
+
+        {/* Keeps the stroke on one edge and lets it die within a third of the
+            height, which is where the render loses it. */}
+        <linearGradient id={maskId} x1="0" x2="0" y1="0" y2="1">
+          {(lit
+            ? [
+                [0, 1],
+                [0.3, 1],
+                [0.45, 0],
+                [1, 0],
+              ]
+            : [
+                [0, 0],
+                [0.55, 0],
+                [0.7, 1],
+                [1, 1],
+              ]
+          ).map(([offset, value]) => (
+            <stop key={offset} offset={offset} stopColor={value ? "#fff" : "#000"} />
+          ))}
+        </linearGradient>
+        <mask id={`${maskId}-m`}>
+          <rect fill={`url(#${maskId})`} height={shape.height} width={shape.width} x="0" y="0" />
+        </mask>
       </defs>
+
       <path
         d={shape.d}
         fill="rgb(0 0 0 / 0.1)"
-        stroke={`url(#${gradientId})`}
-        strokeWidth="1"
         transform={shape.flipY ? `translate(0 ${shape.height}) scale(1 -1)` : undefined}
       />
+      <g mask={`url(#${maskId}-m)`}>
+        <path
+          d={shape.d}
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth="1"
+          transform={shape.flipY ? `translate(0 ${shape.height}) scale(1 -1)` : undefined}
+        />
+      </g>
     </svg>
   );
 }

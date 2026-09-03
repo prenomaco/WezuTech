@@ -30,6 +30,42 @@ function AboutArtwork() {
 }
 
 /**
+ * The 402 frame reorders the section rather than narrowing it: the artwork
+ * leads, full width and in flow (node 305:117 is 401 wide in a 402 frame),
+ * and the eyebrow and copy centre beneath it. Gaps come from the frame's own
+ * y-coordinates — artwork 795, eyebrow 1122, copy 1174.
+ */
+function MobileAbout() {
+  return (
+    <div className="overflow-clip lg:hidden">
+      <Image
+        alt="Connected mobility platforms around a control module"
+        className="mt-[4.375rem] w-full object-contain"
+        data-motion="about-artwork"
+        height={ARTWORK.height}
+        sizes="100vw"
+        src={ARTWORK.src}
+        width={ARTWORK.width}
+      />
+
+      <div className="mx-auto w-[81.3433%]">
+        <SectionHeading className="mt-[3.7292rem] text-center" data-motion="about-eyebrow" variant="about">
+          {about.eyebrow}
+        </SectionHeading>
+
+        <div className="mt-[1.9375rem] flex flex-col gap-[1.5rem] text-center" data-motion="about-copy">
+          {about.paragraphs.map((paragraph) => (
+            <Prose key={paragraph.slice(0, 32)}>
+              {paragraph}
+            </Prose>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Section geometry (frame y=940 at the section top):
  * eyebrow y=1010 (70px in), copy y=1062, artwork y=876, section ends y=1440.
  * The two paragraphs are separated by a blank line in the design, so the gap
@@ -37,14 +73,24 @@ function AboutArtwork() {
  */
 export function About() {
   return (
-    <Section id="about" className="min-h-[31.25rem] pt-[4.375rem]" bleed={<AboutArtwork />}>
-      <SectionHeading data-motion="about-eyebrow" variant="about">{about.eyebrow}</SectionHeading>
+    /* The anchor lives on the wrapper: the desktop shell below it is hidden on
+       small screens, so an id on that alone would leave "About" pointing at
+       nothing there. */
+    <div id="about">
+      <MobileAbout />
 
-      <div className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]" data-motion="about-copy">
-        {about.paragraphs.map((paragraph) => (
-          <Prose key={paragraph.slice(0, 32)}>{paragraph}</Prose>
-        ))}
-      </div>
-    </Section>
+      <Section
+        className="hidden min-h-[31.25rem] pt-[4.375rem] lg:block"
+        bleed={<AboutArtwork />}
+      >
+        <SectionHeading data-motion="about-eyebrow" variant="about">{about.eyebrow}</SectionHeading>
+
+        <div className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]" data-motion="about-copy">
+          {about.paragraphs.map((paragraph) => (
+            <Prose key={paragraph.slice(0, 32)}>{paragraph}</Prose>
+          ))}
+        </div>
+      </Section>
+    </div>
   );
 }

@@ -41,7 +41,7 @@ interface Streak {
 function StreakLayer({ id, vector, box, inner, rotate, flipY, depth }: Streak) {
   return (
     <div
-      className="pointer-events-none absolute flex items-center justify-center will-change-transform"
+      className="pointer-events-none absolute flex items-center justify-center"
       data-glow-depth={depth}
       style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
     >

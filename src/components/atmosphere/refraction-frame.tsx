@@ -45,7 +45,7 @@ export function RefractionFrame({ id, box, flipY, depth, children }: RefractionF
 
   return (
     <div
-      className="pointer-events-none absolute mix-blend-screen will-change-transform"
+      className="pointer-events-none absolute mix-blend-screen"
       data-glow-depth={depth}
       style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
     >

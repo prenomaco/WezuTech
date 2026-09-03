@@ -16,7 +16,11 @@ import type { CatalogProduct } from "@/lib/catalog";
  * `138px inset | 377px image | 66px gap | 610px copy`, 405px tall, with the
  * chevrons on the column edges and vertically centred on the card.
  */
-const CARD_GRID = "grid h-[25.3125rem] grid-cols-[23.5625rem_minmax(0,38.125rem)] gap-x-[4.125rem] pl-[8.625rem]";
+/* The 402 frame stacks the same parts and centres them: image 258 wide at
+   y=1660, title 275 at 1970, copy 340 at 2021, buttons from 2350. */
+const CARD_GRID =
+  "flex flex-col items-center " +
+  "lg:grid lg:h-[25.3125rem] lg:grid-cols-[23.5625rem_minmax(0,38.125rem)] lg:gap-x-[4.125rem] lg:pl-[8.625rem]";
 
 /* Glyph x=169 / right edge x=1362.4 in the 1512 frame, i.e. 65px from the
    1304 column's left edge and 45.6px from its right, less the button padding. */
@@ -28,15 +32,17 @@ function ProductCard({ product }: { product: CatalogProduct }) {
     <article className={`w-full shrink-0 snap-start ${CARD_GRID}`} data-motion="products-card">
       <img
         alt={product.name}
-        className="h-[25.125rem] w-[23.5625rem] object-contain"
+        className="h-[17.25rem] w-[16.125rem] object-contain lg:h-[25.125rem] lg:w-[23.5625rem]"
         src={product.imageUrl}
       />
 
-      <div className="flex flex-col">
-        <ProductTitle className="max-w-[30.75rem]">{product.name}</ProductTitle>
+      <div className="flex w-full flex-col items-center lg:items-stretch">
+        <ProductTitle className="mt-[2.125rem] w-[17.1875rem] text-center lg:mt-0 lg:w-auto lg:max-w-[30.75rem] lg:text-left">
+          {product.name}
+        </ProductTitle>
         {/* The frame separates the description's paragraphs with a blank line
             (node 252:482), so a blank line in the copy becomes a paragraph. */}
-        <div className="mt-[1.1875rem] flex flex-col gap-[1.5565rem]">
+        <div className="mt-[0.9375rem] flex w-[21.25rem] flex-col gap-[1.5565rem] text-center lg:mt-[1.1875rem] lg:w-auto lg:text-left">
           {(product.cardDescription ?? "").split(/\n\s*\n/).map((paragraph) => (
             <Prose key={paragraph.slice(0, 32)} size="product">
               {paragraph}
@@ -45,9 +51,9 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </div>
 
         {/* Figma indents the CTA row 3px from the copy column (685 -> 688). */}
-        <div className="mt-auto ml-[3px] flex items-center gap-5">
+        <div className="mt-[5rem] flex w-[19.3125rem] flex-col items-center gap-[1.25rem] lg:mt-auto lg:ml-[3px] lg:w-auto lg:flex-row lg:gap-5">
           <ButtonLink
-            className="w-[12.9375rem]"
+            className="w-full lg:w-[12.9375rem]"
             href="#contact"
             onClick={() => trackEvent("product_contact_click", { product_slug: product.slug })}
           >
@@ -56,7 +62,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           {/* Detail pages are not built yet, so this stays inert rather than
               becoming a link that goes nowhere. */}
           <span
-            className="inline-flex h-11 w-[16.8125rem] items-center justify-center rounded-control px-5 text-base leading-none text-mist"
+            className="inline-flex h-11 w-full items-center justify-center rounded-control px-5 text-center text-base leading-none text-mist lg:w-[16.8125rem]"
             title="Product detail page is in development"
           >
             Learn more about the product
@@ -76,7 +82,7 @@ export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
   return (
     <div className="relative mt-8">
       <CarouselArrow
-        className={ARROW_LEFT}
+        className={`hidden lg:flex ${ARROW_LEFT}`}
         direction="prev"
         label="Previous product"
         onClick={() => move(-1)}
@@ -93,7 +99,7 @@ export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
       </div>
 
       <CarouselArrow
-        className={ARROW_RIGHT}
+        className={`hidden lg:flex ${ARROW_RIGHT}`}
         direction="next"
         label="Next product"
         onClick={() => move(1)}

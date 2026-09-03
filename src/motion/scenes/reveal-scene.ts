@@ -86,6 +86,34 @@ const RECIPES: Record<string, Recipe> = {
 
 const DEFAULT_START = "top 80%";
 
+/**
+ * Where every reveal lands: the element's own laid-out position, fully opaque.
+ *
+ * Spelling the end state out matters. `gsap.from` infers it from whatever the
+ * element happens to be at when the tween is built, and re-infers it whenever
+ * ScrollTrigger refreshes — which the page does on resize and on any height
+ * change. A refresh after a section had already played would re-apply its
+ * starting `autoAlpha: 0`, leaving whole sections of the page blank until they
+ * were scrolled past again.
+ */
+const RESTING: gsap.TweenVars = {
+  autoAlpha: 1,
+  x: 0,
+  y: 0,
+  xPercent: 0,
+  yPercent: 0,
+  scale: 1,
+};
+
+/** The resting values for just the properties a recipe actually animates. */
+function restingFor(from: gsap.TweenVars): gsap.TweenVars {
+  const to: gsap.TweenVars = {};
+  for (const key of Object.keys(from)) {
+    if (key in RESTING) to[key] = RESTING[key as keyof typeof RESTING];
+  }
+  return to;
+}
+
 export class RevealScene extends MotionScene {
   readonly name = "reveal";
 
@@ -96,8 +124,8 @@ export class RevealScene extends MotionScene {
       const targets = this.query(root, motion);
       if (!targets.length) continue;
 
-      gsap.from(targets, {
-        ...recipe.from,
+      gsap.fromTo(targets, recipe.from, {
+        ...restingFor(recipe.from),
         duration: recipe.duration,
         ease: recipe.ease,
         stagger: recipe.stagger,

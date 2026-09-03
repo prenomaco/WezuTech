@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Header } from "@/components/layout/header";
+import { MobileHero } from "@/components/sections/mobile-hero";
 import { ButtonLink } from "@/components/ui/button";
 import { DisplayTitle } from "@/components/ui/typography";
 import { hero } from "@/content/site-content";
@@ -40,7 +41,9 @@ export function Hero() {
     <section id="home" className="relative overflow-clip">
       <Header />
 
-      <div className="relative z-10 aspect-[1512/940] w-full">
+      <MobileHero />
+
+      <div className="relative z-10 hidden aspect-[1512/940] w-full lg:block">
         {/* Two layers on purpose: the wrapper owns the scroll-scrubbed drift and
             the image owns the entrance. Animating `y` on one element from both
             scenes lets ScrollTrigger latch the mid-entrance value on refresh and
