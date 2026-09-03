@@ -147,15 +147,16 @@
     );
   }
 
-  /* Measured off the render: a 20px period with roughly 7.5/255 of
-     peak-to-peak luminance, constant down the page rather than scaled to the
-     light behind it. A triangular ramp reads closer than hard 1px rules. */
+  /* Vertical light rays. Measured by FFT across the bright edge bands, where
+     they actually read: a ~50px period, not the ~20px a zero-crossing count
+     suggested — that was picking up render noise and reporting a harmonic.
+     Peak-to-peak lands near 10/255 over a lit background. */
   .glow-rays {
     background-image: repeating-linear-gradient(
       90deg,
-      rgb(180 214 245 / 0.037) 0px,
-      rgb(180 214 245 / 0) 10px,
-      rgb(180 214 245 / 0.037) 20px
+      rgb(180 214 245 / 0.06) 0px,
+      rgb(180 214 245 / 0) 25px,
+      rgb(180 214 245 / 0.06) 50px
     );
   }
 }
