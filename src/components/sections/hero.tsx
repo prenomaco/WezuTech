@@ -73,7 +73,14 @@ export function Hero() {
           ))}
         </DisplayTitle>
 
-        <DisplayTitle as="p" className="absolute" style={{ left: pct(962), top: pct(613, "height") }}>
+        {/* Node 252:471 is a 388-wide box at x=962 with its two lines set
+            flush right, so "NEXT" hangs off the end of "MOVEMENT" rather than
+            starting level with it. */}
+        <DisplayTitle
+          as="p"
+          className="absolute text-right"
+          style={{ left: pct(962), top: pct(613, "height"), width: pct(388) }}
+        >
           {hero.titleRight.map((line) => (
             <HeadlineLine key={line}>{line}</HeadlineLine>
           ))}

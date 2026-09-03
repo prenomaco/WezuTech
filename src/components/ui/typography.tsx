@@ -102,7 +102,10 @@ export function ProductTitle({ children, className, ...rest }: TypeProps) {
  */
 const PROSE_SIZE = {
   about: "text-[1.125rem] leading-[1.5rem] text-frost",
-  product: "text-[1.16731rem] leading-[1.5rem] text-ice",
+  /* Node 252:482 is 249.032 tall for nine lines and the blank line
+     between its two paragraphs — a 24.9032px line, not the flat 24 the rest
+     of the page uses. */
+  product: "text-[1.16731rem] leading-[1.5565rem] text-ice",
 } as const;
 
 interface ProseProps extends TypeProps {

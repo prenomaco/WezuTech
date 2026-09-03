@@ -36,7 +36,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         <ProductTitle className="max-w-[30.75rem]">{product.name}</ProductTitle>
         {/* The frame separates the description's paragraphs with a blank line
             (node 252:482), so a blank line in the copy becomes a paragraph. */}
-        <div className="mt-[1.1875rem] flex flex-col gap-[1.5rem]">
+        <div className="mt-[1.1875rem] flex flex-col gap-[1.5565rem]">
           {(product.cardDescription ?? "").split(/\n\s*\n/).map((paragraph) => (
             <Prose key={paragraph.slice(0, 32)} size="product">
               {paragraph}

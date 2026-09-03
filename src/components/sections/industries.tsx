@@ -22,14 +22,26 @@ const COLUMN = [
   { gap: "gap-[0.6875rem]", body: "max-w-[17.75rem]" },
 ] as const;
 
+/**
+ * How far the copy sits below the top of its icon, per row.
+ *
+ * The frame does not use one value: row one puts all three titles 14px below
+ * the icon (y=2105 against icons at 2091), row two puts them 17px below
+ * (y=2287 against icons at 2270). Row two's left cell is a further 6px down
+ * again at 2293, on its own — that one is a stray nudge rather than a rhythm,
+ * so the row follows the two cells that agree.
+ */
+const ROW_OFFSET = ["pt-[0.875rem]", "pt-[1.0625rem]"] as const;
+
 interface IndustryItemProps {
   readonly industry: Industry;
   readonly column: (typeof COLUMN)[number];
+  readonly row: string;
   readonly width: number;
   readonly height: number;
 }
 
-function IndustryItem({ industry, column, width, height }: IndustryItemProps) {
+function IndustryItem({ industry, column, row, width, height }: IndustryItemProps) {
   return (
     <article className={`flex items-start ${column.gap}`} data-motion="industry-item">
       <div className={ICON_SLOT}>
@@ -42,10 +54,9 @@ function IndustryItem({ industry, column, width, height }: IndustryItemProps) {
           width={width}
         />
       </div>
-      {/* Titles sit 14px below the top of the icon in the Figma frame. Type is
-          18px throughout (nodes 252:492 bold / 252:495 book), both in #dafaf5 —
-          at 16px the body wraps a word early in every column. */}
-      <div className="pt-[0.875rem]">
+      {/* Type is 18px throughout (nodes 252:492 bold / 252:495 book), both in
+          #dafaf5 — at 16px the body wraps a word early in every column. */}
+      <div className={row}>
         <h3 className="text-[1.125rem] font-bold leading-[1.5rem] text-ice">{industry.title}</h3>
         <p className={`mt-1.5 text-[1.125rem] font-book leading-[1.5rem] text-ice ${column.body}`}>
           {industry.body}
@@ -76,6 +87,7 @@ export function Industries() {
             height={ICON_NATURAL_HEIGHT}
             industry={industry}
             key={industry.title}
+            row={ROW_OFFSET[Math.min(Math.floor(index / COLUMN.length), ROW_OFFSET.length - 1)]}
             width={ICON_NATURAL_WIDTH[industry.image] ?? 315}
           />
         ))}
