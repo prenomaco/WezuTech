@@ -72,7 +72,7 @@ export function ContactForm() {
     if (response.ok) {
       form.reset();
       setState("success");
-      setMessage("Thank you — our team will be in touch shortly.");
+      setMessage("Thank you. Our team will be in touch shortly.");
       trackEvent("generate_lead", { form_name: "website_contact" });
     } else {
       setState("error");

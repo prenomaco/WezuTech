@@ -2,7 +2,7 @@ export const figmaAssets = {
   logoMark: "/figma/17d6eac93320ae8b913cdf8d53db84d80d6d3805.svg",
   logoWordmark: "/figma/3ed5e9419b455c07a01ab011191db32a3719085d.png",
   heroVehicles: "/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png",
-  aboutMobility: "/figma/4ee4965ee44dd5484773156ad47d1b9d4690459e.png",
+  aboutMobility: "/figma/ecosystem.png",
   productIllustration: "/figma/4e3fa066be6f748b58327aa09b039a99b2d14394.png",
   applicationSprite: "/figma/25199dbca022bc049469283e44c322ed6fca47a5.png",
   headerPolygon: "/figma/90e4793c9d4e91f3f1c4239f033de09d8aeb24f6.svg",

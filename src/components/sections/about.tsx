@@ -3,10 +3,12 @@ import { Section } from "@/components/layout/section";
 import { Prose, SectionHeading } from "@/components/ui/typography";
 import { about } from "@/content/site-content";
 
+/* The transparent original rather than the flattened export, so the light
+   behind it shows through instead of being covered by the crop's own ink. */
 const ARTWORK = {
-  src: "/figma/4ee4965ee44dd5484773156ad47d1b9d4690459e.png",
-  width: 1264,
-  height: 843,
+  src: "/figma/ecosystem.png",
+  width: 746,
+  height: 560,
 };
 
 /**

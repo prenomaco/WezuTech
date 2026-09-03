@@ -1,0 +1,33 @@
+/*
+ * The dashboard's palette.
+ *
+ * Scoped to `.dashboard-root` rather than `:root`: the marketing pages define
+ * their own tokens globally and are matched pixel for pixel against a design,
+ * so a second theme on the document would repaint them. Everything the admin
+ * primitives read is declared here and nowhere else.
+ */
+.dashboard-root {
+  --dash-bg: #f7f8fa;
+  --dash-card: #ffffff;
+  --dash-fg: #0d1220;
+  --dash-muted: #6b7280;
+  --dash-border: #e4e7ec;
+  --dash-subtle: #f0f2f5;
+  --dash-primary: #0985cc;
+  --dash-primary-hover: #0a76b4;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dashboard-root {
+    --dash-bg: #0b0f1a;
+    --dash-card: #111726;
+    --dash-fg: #e8eef7;
+    --dash-muted: #94a3b8;
+    --dash-border: #1e2637;
+    --dash-subtle: #161d2c;
+
+    color-scheme: dark;
+  }
+}

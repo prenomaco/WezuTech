@@ -60,7 +60,7 @@ export const hero = {
   titleLeft: ["ENGINEERING", "THE"],
   titleRight: ["NEXT", "MOVEMENT"],
   intro:
-    "Wezu Technologies designs and develops intelligent hardware and software systems for the vehicles and mobility platforms of tomorrow — from thermal management and vehicle control to power, diagnostics and connected electronics.",
+    "Wezu Technologies designs and develops intelligent hardware and software systems for the vehicles and mobility platforms of tomorrow, from thermal management and vehicle control to power, diagnostics and connected electronics.",
 } as const;
 
 export const about = {
