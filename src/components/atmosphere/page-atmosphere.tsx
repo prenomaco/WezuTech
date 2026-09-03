@@ -36,7 +36,7 @@ const GLOWS: readonly GlowPlacement[] = [
     /* Chrome's Gaussian spreads a little wider than Figma's, leaving the hero
        band ~12/255 hot at the edges. The rim is screen-composited and can only
        add, so the correction has to happen here. */
-    opacity: 0.88,
+    opacity: 0.94,
     depth: 30,
   },
   {
