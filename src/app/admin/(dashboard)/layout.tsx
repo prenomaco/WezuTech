@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { EdgeGlow } from "@/components/dashboard/edge-glow";
+import { DashboardAtmosphere } from "@/components/dashboard/dashboard-atmosphere";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { authOptions } from "@/lib/auth";
 import "@/app/admin/dashboard.css";
@@ -35,8 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             is opaque. Here its left edge is the rail's right edge, which is
             where the site gathers its own. */}
         <div className="relative min-w-0 flex-1">
-          <EdgeGlow className="w-[19rem]" />
-          <EdgeGlow className="w-[15rem]" side="right" />
+          <DashboardAtmosphere />
           <header className="relative z-10 px-6 pt-8 pb-7 lg:px-10">
             {/* Centauri, as the site sets every display line. */}
             <h1 className="font-display text-[clamp(1.5rem,3.2vw,2.5rem)] leading-[1.1] text-[var(--dash-fg)]">
