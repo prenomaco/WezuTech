@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { GLOW_VECTORS, type GlowVectorName } from "@/lib/design/glow-vectors";
 
 /**
@@ -96,6 +97,10 @@ export function GlowLayer({ vector, box, render, depth, relativeTo }: GlowLayerP
             : `calc(${(width / relativeTo) * 100}% / ${RASTER_SCALE})`,
         height: height / RASTER_SCALE,
         transform: `scale(${RASTER_SCALE})`,
+        /* Read by the scroll-driven drift in `globals.css`. It animates the
+           `translate` property rather than `transform`, which this element is
+           already using for its raster scale. */
+        ...(depth ? ({ "--glow-depth": `${depth}px` } as CSSProperties) : null),
       }}
     >
       <svg

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { GlowLayer } from "@/components/atmosphere/glow-layer";
 import { RefractionFrame } from "@/components/atmosphere/refraction-frame";
 
@@ -54,13 +55,17 @@ function StreakLayer({ vector, box, inner, rotate, flipY, depth, render }: Strea
     <div
       className="pointer-events-none absolute flex items-center justify-center"
       data-glow-depth={depth}
-      style={{
-        left: box.left,
-        right: box.right,
-        top: box.top,
-        width: box.width,
-        height: box.height,
-      }}
+      style={
+        {
+          left: box.left,
+          right: box.right,
+          top: box.top,
+          width: box.width,
+          height: box.height,
+          /* Travel for the scroll-driven drift, as `globals.css` reads it. */
+          "--glow-depth": `${depth}px`,
+        } as CSSProperties
+      }
     >
       {/* Figma composes rotation before scale, so a mirrored streak reads as
           rotate-then-flip. Swapping the two flips the sign of the angle and

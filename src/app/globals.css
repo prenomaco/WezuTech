@@ -366,3 +366,34 @@
     }
   }
 }
+
+/*
+ * The background's drift, run by the compositor.
+ *
+ * Each glow carries its travel as `--glow-depth`, and the timeline is the
+ * document's own scroll range, which is what the JavaScript fallback in
+ * `parallax-scene.ts` scrubs against. A scroll-driven animation is evaluated
+ * off the main thread, so scrolling the page runs no script at all.
+ *
+ * It animates `translate` rather than `transform`: the glows already use
+ * `transform` for the scale that lets them raster small, and the two
+ * properties compose without either having to know about the other.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    [data-glow-depth]:not([data-glow-depth="0"]) {
+      animation: glow-drift linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes glow-drift {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: 0 var(--glow-depth, 0);
+  }
+}

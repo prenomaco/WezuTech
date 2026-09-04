@@ -17,12 +17,20 @@ import { MotionScene, type SceneContext } from "@/motion/motion-scene";
  * carrying the refraction shader stay put: `feDisplacementMap` has no CSS
  * equivalent, so it is rastered on the CPU, and moving it re-runs the
  * displacement on every scroll frame.
+ *
+ * This is the fallback. Where the browser has scroll-driven animations the
+ * drift is a CSS animation on a scroll timeline, which the compositor runs
+ * without the main thread: a scrubbed ScrollTrigger has to keep a ticker alive
+ * for as long as the page is moving, and across a three-second scroll that was
+ * 4224 animation-frame callbacks and 520ms of script. Ceding it to CSS leaves
+ * the scroll with no JavaScript in it at all.
  */
 export class ParallaxScene extends MotionScene {
   readonly name = "parallax";
 
   build({ root, reducedMotion }: SceneContext): void {
     if (reducedMotion) return;
+    if (CSS.supports("animation-timeline: scroll()")) return;
 
     const layers = Array.from(root.querySelectorAll<HTMLElement>("[data-glow-depth]"));
     if (!layers.length) return;

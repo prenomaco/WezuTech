@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { GlowLayer } from "@/components/atmosphere/glow-layer";
 import { RefractionFrame } from "@/components/atmosphere/refraction-frame";
 
@@ -49,7 +50,15 @@ export function AboutAtmosphere() {
       <div
         className="pointer-events-none absolute flex items-center justify-center"
         data-glow-depth={45}
-        style={{ right: -315.158, top: 1813.342, width: 698.618, height: 1476.808 }}
+        style={
+          {
+            right: -315.158,
+            top: 1813.342,
+            width: 698.618,
+            height: 1476.808,
+            "--glow-depth": "45px",
+          } as CSSProperties
+        }
       >
         <div className="flex-none" style={{ transform: "rotate(80.82deg) scaleY(-1)" }}>
           <div className="relative" style={{ width: 1418.65, height: 478.33 }}>
@@ -95,7 +104,15 @@ export function AboutAtmosphere() {
       <div
         className="pointer-events-none absolute flex items-center justify-center"
         data-glow-depth={45}
-        style={{ left: -503, top: 2193.72, width: 677.451, height: 1578.601 }}
+        style={
+          {
+            left: -503,
+            top: 2193.72,
+            width: 677.451,
+            height: 1578.601,
+            "--glow-depth": "45px",
+          } as CSSProperties
+        }
       >
         <div className="flex-none" style={{ transform: "rotate(-97.65deg)" }}>
           <div className="relative" style={{ width: 1528.549, height: 478.33 }}>
