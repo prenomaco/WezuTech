@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionScene, type SceneContext } from "@/motion/motion-scene";
+import { splitAll } from "@/motion/split-text";
 
 interface Recipe {
   /** Starting state. The element animates from here to its laid-out position. */
@@ -10,6 +11,14 @@ interface Recipe {
   readonly stagger?: number;
   /** ScrollTrigger start; defaults to entering the lower third of the viewport. */
   readonly start?: string;
+  /**
+   * Reveal a character at a time rather than as one block.
+   *
+   * Only worth it for type that is already clipped by its own element, where
+   * the letters have something to slide out from behind. The trigger stays the
+   * element itself — the characters are what moves, not what is watched for.
+   */
+  readonly split?: boolean;
 }
 
 /**
@@ -22,6 +31,9 @@ interface Recipe {
  */
 const EASE_TYPE = "expo.out";
 const EASE_SETTLE = "power3.out";
+
+/** Seconds between one letter starting and the next, where a recipe splits. */
+const LETTER_STAGGER = 0.026;
 
 /**
  * Each element type gets its own entrance instead of one shared fade-up.
@@ -38,16 +50,19 @@ const RECIPES: Record<string, Recipe> = {
     from: { yPercent: 115 },
     duration: 0.47,
     ease: EASE_TYPE,
+    split: true,
   },
   "products-heading": {
     from: { yPercent: 115 },
     duration: 0.47,
     ease: EASE_TYPE,
+    split: true,
   },
   "testimonials-heading": {
     from: { yPercent: 115 },
     duration: 0.47,
     ease: EASE_TYPE,
+    split: true,
   },
 
   /* Copy rises a short way. The distance is small on purpose: long travel on a
@@ -157,6 +172,9 @@ function restingFor(from: gsap.TweenVars): gsap.TweenVars {
 export class RevealScene extends MotionScene {
   readonly name = "reveal";
 
+  /** Undoes the character splits when React unmounts the page. */
+  private readonly restores: (() => void)[] = [];
+
   build({ root, reducedMotion }: SceneContext): void {
     if (reducedMotion) return;
 
@@ -165,6 +183,20 @@ export class RevealScene extends MotionScene {
       if (!targets.length) continue;
 
       const resting = restingFor(recipe.from);
+      /* What actually moves. For a split recipe that is the characters; the
+         element itself stays put so its clip has an edge to reveal from. */
+      let animated: HTMLElement[] = targets;
+      let stagger = recipe.stagger;
+
+      if (recipe.split) {
+        const split = splitAll(targets);
+        const chars = split.groups.flat();
+        if (chars.length) {
+          this.restores.push(split.restore);
+          animated = chars;
+          stagger = recipe.stagger ?? LETTER_STAGGER;
+        }
+      }
 
       /*
        * A plain `set` for the starting state and a plain `to` for the reveal,
@@ -179,14 +211,14 @@ export class RevealScene extends MotionScene {
        * starts a tween, and once it has run there is no from-state left to
        * reapply.
        */
-      gsap.set(targets, recipe.from);
+      gsap.set(animated, recipe.from);
 
       const play = () => {
-        gsap.to(targets, {
+        gsap.to(animated, {
           ...resting,
           duration: recipe.duration,
           ease: recipe.ease,
-          stagger: recipe.stagger,
+          stagger,
           overwrite: "auto",
         });
       };
@@ -204,5 +236,10 @@ export class RevealScene extends MotionScene {
         },
       });
     }
+  }
+
+  dispose(): void {
+    for (const restore of this.restores) restore();
+    this.restores.length = 0;
   }
 }
