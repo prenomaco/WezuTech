@@ -27,16 +27,25 @@ import { cn } from "@/lib/cn";
 const SCALE = 1;
 
 /**
- * How far the streak is pushed down so its lit core lands mid-screen.
+ * How far the streak is pushed down, so that its end clears the top of the
+ * screen and the light has nowhere to stop.
  *
- * Centring the placement box does not centre the light: the box is the shape's
- * bounding box and the bright part sits high inside it, which put the glow in
- * the top corner. The value is measured, not guessed: at 700 the core landed
- * at 0.253 of an 807px viewport, so 199 more brings it to the middle. It is a
- * constant because the box is centred on the container, which makes the core's
- * distance from that centre independent of the window's height.
+ * Centring the placement box does not centre the light — the box is the
+ * shape's bounding box and the bright part sits high inside it — but centring
+ * the *core* is not available either. The streak's lit end is only about 155px
+ * above its core, so putting the core at the middle of an 807px screen drags
+ * that end into view, and the light stops at a hard horizontal line partway
+ * down. Stretching the shape along its length moves the end off the top, but
+ * spreads the same light over more of it: at three times the length the column
+ * was three times dimmer, and no opacity below 1 brings it back.
+ *
+ * So the end goes above the viewport and the core sits high, which is how the
+ * marketing pages read anyway — light gathered in the upper third, falling away
+ * down the rest of the column. Measured on the render, top to bottom: 36.5 at
+ * the very top, rising smoothly to 77 at 0.17, then a long fade to 22.6, with
+ * no step anywhere in it.
  */
-const LIT_OFFSET = 899;
+const LIT_OFFSET = 620;
 
 /**
  * Brought down to the marketing pages' own edge intensity.

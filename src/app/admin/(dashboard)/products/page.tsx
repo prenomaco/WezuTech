@@ -1,7 +1,6 @@
 import { AdminProductForm } from "@/components/admin-product-form";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Table, Td, Th } from "@/components/dashboard/ui";
 import { prisma } from "@/lib/db";
-import "@/app/admin/admin.css";
 
 export const metadata = { title: "Products" };
 export const dynamic = "force-dynamic";
@@ -61,10 +60,7 @@ export default async function ProductsPage() {
         </CardContent>
       </Card>
 
-      {/* The editor keeps its own styling for now: what is dynamic here is
-          still to be decided, so it is left as it was rather than rebuilt
-          around a shape that may change. */}
-      <section className="admin-shell !p-0">
+      <section className="flex flex-col gap-4">
         <AdminProductForm />
         {products.map((product) => (
           <AdminProductForm key={product.id} media={product.media[0]} product={product} />
