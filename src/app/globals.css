@@ -342,23 +342,25 @@
 }
 
 /*
- * Promoted, because Firefox re-rasters these on scroll and Chrome does not.
+ * Promoted, because Firefox re-rasters the stack on scroll and Chrome does not.
  *
- * The glows are static, and Chrome rasters each once and composites the
- * result. Firefox re-does the blur as they travel through the viewport, and
- * `will-change: transform` gives each one its own layer so it is rastered once
- * and scrolling only moves it.
+ * The refraction stack is summed with `plus-lighter`, and promoting the group
+ * makes Gecko raster it as one surface rather than assembling it as the
+ * displayport moves across it. Measured over an APZ wheel scroll in Zen at
+ * DPR 2, content paint per frame is 5.80ms unpromoted and 1.74ms promoted,
+ * against 0.95ms for a page carrying no background at all.
  *
- * The refraction stack earns it for a second reason: it is summed with
- * `plus-lighter`, and promoting the group makes Gecko raster it as one surface
- * rather than assembling it as the displayport moves across it. Measured over
- * an APZ wheel scroll in Zen at DPR 2, content paint per frame is 5.80ms with
- * neither promoted, 2.53ms with the stack alone, and 1.13ms with both, against
- * 0.95ms for a page carrying no background at all.
+ * The glow layers are deliberately NOT promoted, though it would buy another
+ * 0.6ms. Each glow's blur is a CSS filter on the `<svg>` inside the element,
+ * and a Gaussian spreads about three times its radius past the box it is drawn
+ * in. Gecko sizes a promoted layer to the element's own bounds, so promoting a
+ * glow clips its blur to that rectangle — which is where the hard-edged
+ * rectangular blocks down the left and right of the page came from. They only
+ * showed in Zen, only against the live compositor, and never in a repaint,
+ * which is why every screenshot of the page came back clean.
  */
 @layer components {
-  .refraction-stack,
-  [data-glow-depth] {
+  .refraction-stack {
     will-change: transform;
   }
 }
