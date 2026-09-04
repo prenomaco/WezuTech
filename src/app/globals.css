@@ -311,63 +311,6 @@
 }
 
 /*
- * The refraction frames, rasterised at CSS resolution rather than the screen's.
- *
- * A filter's result is produced in device pixels, so the same frame costs four
- * times the area on a 2x display. The frame is therefore laid out at 1/n and
- * scaled back up, with its contents counter-scaled so they stay in design
- * pixels; the matching filter divides the ridge period and the displacement,
- * both of which are measured in the filtered element's own user units.
- *
- * `transform-origin` has to be stated: scaling about the default centre would
- * move both edges of the frame.
- */
-@layer components {
-  .refraction-raster {
-    width: 100%;
-    height: 100%;
-    transform-origin: 0 0;
-    filter: var(--refraction-filter);
-  }
-
-  .refraction-content {
-    width: 100%;
-    height: 100%;
-    transform-origin: 0 0;
-  }
-
-  @media (min-resolution: 2dppx) {
-    .refraction-raster {
-      width: 50%;
-      height: 50%;
-      transform: scale(2);
-      filter: var(--refraction-filter-2x);
-    }
-
-    .refraction-content {
-      width: 200%;
-      height: 200%;
-      transform: scale(0.5);
-    }
-  }
-
-  @media (min-resolution: 3dppx) {
-    .refraction-raster {
-      width: calc(100% / 3);
-      height: calc(100% / 3);
-      transform: scale(3);
-      filter: var(--refraction-filter-3x);
-    }
-
-    .refraction-content {
-      width: 300%;
-      height: 300%;
-      transform: scale(calc(1 / 3));
-    }
-  }
-}
-
-/*
  * The background's drift, run by the compositor.
  *
  * Each glow carries its travel as `--glow-depth`, and the timeline is the
@@ -399,27 +342,22 @@
 }
 
 /*
- * Promoted, because Firefox re-rasters them on scroll and Chrome does not.
+ * Promoted, because Firefox re-rasters these on scroll and Chrome does not.
  *
- * Both the refraction frames and the glow layers are static, and Chrome
- * rasters each once and composites the result. Firefox re-does the work as
- * they travel through the viewport, and it is not a small difference: measured
- * in Zen over an identical scripted scroll of this page, the median frame was
- * 33.3ms — half rate — with 66 frames of 93 past 33ms, and the scroll itself
- * starved. Hiding the background alone took that to 8.3ms, and the refraction
- * and the glows each accounted for about half of it.
+ * The glows are static, and Chrome rasters each once and composites the
+ * result. Firefox re-does the blur as they travel through the viewport, and
+ * `will-change: transform` gives each one its own layer so it is rastered once
+ * and scrolling only moves it.
  *
- * `will-change: transform` gives each one its own layer, so the filter and the
- * blur are rastered once and scrolling only moves the result: 8.3ms median,
- * p90 16.7, five frames past 33ms. `contain: paint` changed nothing, and
- * `will-change: filter` on the frames was worse than `transform`.
- *
- * It is stated for the layers that already earn a texture — the three frames
- * and the glows, which raster at a quarter size — and nothing else, since the
- * cost of this is a texture and a stacking context per element.
+ * The refraction stack earns it for a second reason: it is summed with
+ * `plus-lighter`, and promoting the group makes Gecko raster it as one surface
+ * rather than assembling it as the displayport moves across it. Measured over
+ * an APZ wheel scroll in Zen at DPR 2, content paint per frame is 5.80ms with
+ * neither promoted, 2.53ms with the stack alone, and 1.13ms with both, against
+ * 0.95ms for a page carrying no background at all.
  */
 @layer components {
-  .refraction-raster,
+  .refraction-stack,
   [data-glow-depth] {
     will-change: transform;
   }

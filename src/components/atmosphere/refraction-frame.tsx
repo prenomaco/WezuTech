@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
+import { refractionLayers } from "@/lib/design/refraction";
 
 /**
  * A background frame carrying Figma's pattern-refraction shader.
@@ -9,40 +9,32 @@ import { DISPLACEMENT_SCALE, refractionMapUri } from "@/lib/design/refraction";
  * bands past the frame edge.
  *
  * The shader's `pixelWrapMode` is 0 — samples outside the frame come back
- * transparent — which is also what an SVG filter does outside its region, so
- * the region is pinned to the frame box rather than the default overhang.
+ * transparent — which is also what the stack does, since each copy is the same
+ * glow and there is nothing beyond it to slide in.
  *
- * These frames do not take part in the parallax. `feDisplacementMap` has no CSS
- * equivalent, so it stays an SVG filter graph, and Chrome rasters those on the
- * CPU — 3.6 megapixels across the three of them, against a 1.4 megapixel
- * viewport. Moving them re-ran the displacement on every scroll frame, which is
- * what made the page advance in steps. Left still, each is rastered once and
- * the tiles are simply scrolled.
+ * The displacement is not a filter. With the shader's angle at 0 the effect
+ * collapses to `out(x) = in(x + dx(x))`, a purely horizontal remap, and
+ * {@link refractionLayers} rebuilds that from four copies of the frame at fixed
+ * offsets, weighted by `repeating-linear-gradient` masks on the ridge period
+ * and added together inside an isolating group. Gradients, transforms and a
+ * blend are things a compositor can do, so each frame is rastered once and
+ * scrolling merely moves the result.
  *
- * They are rasterised at CSS resolution rather than at the display's. A
- * filter's result is produced in device pixels, so a 2x screen does four times
- * the area for the same layer: measured over an identical scripted scroll of
- * the landing page, the compositor's own ScrollLayer work was 94ms across 110
- * frames at 1x and 350ms across 109 at 2x — the same frames, 3.7x the time.
- * That is the whole of the difference between this page being smooth on an
- * external monitor and stepping on a laptop's built-in screen.
+ * It used to be an `feImage` feeding an `feDisplacementMap`. No engine
+ * implements `feDisplacementMap` on the compositor, so Gecko rendered the
+ * filtered subtree as a CPU blob, tiled it, and re-ran the graph as the
+ * displayport moved — measured over a scripted APZ wheel scroll of this page in
+ * Zen at DPR 2, content paint was 107ms per paint with the filter and 1.2ms
+ * without, which is 93% of the page's scrolling cost and the whole of the
+ * stutter on a built-in display. Chrome hid it by rastering the filter once.
  *
- * So a 2x display draws the frame at half size and scales the result back up,
- * which is exactly what the 1x display already renders and what does not
- * stutter. The content inside is counter-scaled so its coordinates stay in
- * design pixels, and the ridge period and displacement are divided to match,
- * since both are measured in the filtered element's own user units. The
- * variants are switched by a media query rather than by reading
- * `devicePixelRatio`, which would make the whole background tree client-side
- * for one number.
+ * The frames also no longer raster at a divided resolution. That existed to
+ * keep a filter's device-pixel result small on a 2x screen, and Gecko sizes a
+ * filter surface by the element's own transform, so the half-size path bought
+ * it nothing anyway: 107ms per paint against 90ms forced back to 1x. With the
+ * filter gone there is no surface to divide.
  *
- * Unlike the glow, they are *not* rasterised below that. The glow is a Gaussian and
- * holds no detail to lose, but these ridges are the one piece of high-frequency
- * detail in the background, and the displacement is a sawtooth with a sharp
- * reset inside every 59px. Rasterising at half size and scaling back up halves
- * the banding's amplitude — measured across the hero, the residual after
- * detrending falls from 5.93 to 2.80 — because the resample smooths exactly the
- * steep part of the ramp that produces the seams. The 3.6 megapixels stay.
+ * These frames do not take part in the parallax.
  *
  * There is no screen blend. Figma marks the group `screen`, but its frames are
  * transparent, so the blend has nothing to act on and the result composites
@@ -65,76 +57,43 @@ interface RefractionFrameProps {
   readonly children: ReactNode;
 }
 
-/**
- * How wide the ridge ramp is drawn.
- *
- * The frame stretches with the viewport, but `feImage` is placed in the
- * element's own pixels, so a ramp only as wide as the design frame would run
- * out part-way across a wider one. Drawing it well past any plausible viewport
- * costs nothing — it is a tiled gradient — and keeps the ridges on their 59.2px
- * pitch rather than stretching with the frame.
- */
-const RAMP_COVER = 4000;
-
-/** The divisors a display might need. 3x exists; anything higher is capped. */
-const RASTER_DIVISORS = [1, 2, 3] as const;
-
 export function RefractionFrame({ id, box, flipY, relativeTo, children }: RefractionFrameProps) {
-  const filterId = `refraction-${id}`;
   const across = (value: number) =>
     relativeTo === undefined ? value : `${(value / relativeTo) * 100}%`;
+  const layers = refractionLayers(box.width);
 
   return (
     <div
       className="pointer-events-none absolute"
       style={{ left: across(box.left), top: box.top, width: across(box.width), height: box.height }}
     >
-      <svg aria-hidden="true" className="absolute size-0">
-        <defs>
-          {RASTER_DIVISORS.map((divisor) => (
-            <filter
-              colorInterpolationFilters="sRGB"
-              filterUnits="objectBoundingBox"
-              height="1"
-              id={`${filterId}-${divisor}x`}
-              key={divisor}
-              primitiveUnits="userSpaceOnUse"
-              width="1"
-              x="0"
-              y="0"
-            >
-              <feImage
-                height={box.height / divisor}
-                href={refractionMapUri(box.width, RAMP_COVER, divisor)}
-                preserveAspectRatio="none"
-                result="ridges"
-                width={RAMP_COVER}
-                x="0"
-                y="0"
-              />
-              <feDisplacementMap
-                in="SourceGraphic"
-                in2="ridges"
-                scale={DISPLACEMENT_SCALE / divisor}
-                xChannelSelector="R"
-                yChannelSelector="G"
-              />
-            </filter>
-          ))}
-        </defs>
-      </svg>
       <div className="size-full" style={{ transform: flipY ? "scaleY(-1)" : undefined }}>
-        <div
-          className="refraction-raster relative overflow-hidden"
-          style={
-            {
-              "--refraction-filter": `url(#${filterId}-1x)`,
-              "--refraction-filter-2x": `url(#${filterId}-2x)`,
-              "--refraction-filter-3x": `url(#${filterId}-3x)`,
-            } as CSSProperties
-          }
-        >
-          <div className="refraction-content">{children}</div>
+        <div className="refraction-stack relative isolate size-full overflow-hidden">
+          {layers.map((layer) => (
+            /* The mask names columns of the frame, so it has to sit on an
+               element the shift does not move — a mask is applied in the
+               element's own space, and putting both on one element would drag
+               each copy's stripes along with it and land every copy on a
+               different phase. */
+            <div
+              className="absolute inset-0"
+              key={`${id}-${layer.offset}`}
+              style={
+                {
+                  maskImage: layer.mask,
+                  WebkitMaskImage: layer.mask,
+                  mixBlendMode: "plus-lighter",
+                } as CSSProperties
+              }
+            >
+              <div
+                className="absolute inset-0"
+                style={{ transform: `translateX(${(-layer.offset).toFixed(4)}px)` }}
+              >
+                {children}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

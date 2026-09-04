@@ -21,22 +21,23 @@ export interface GlowBox {
 /**
  * How much smaller than its final size each glow is actually rasterised.
  *
- * These layers are the page's whole rendering budget. Together they cover
- * 15.2 megapixels against a 1.4 megapixel viewport, at radii of 39 to 56px,
- * and a filter cannot be rasterised a tile at a time — Chrome has to produce
- * the entire filter result the moment any part of the element comes into view.
- * A 2.7 megapixel surface with a 55px Gaussian therefore lands inside a single
- * frame, which is what made scrolling arrive in blocks.
+ * These layers cover 15.2 megapixels against a 1.4 megapixel viewport, at
+ * radii of 39 to 56px. A filter cannot be rasterised a tile at a time, so the
+ * whole result has to be produced the moment any part of the element comes
+ * into view, and a 2.7 megapixel surface with a 55px Gaussian lands inside a
+ * single frame — which is what made scrolling arrive in blocks.
  *
- * A Gaussian of radius r holds no detail finer than r, so there is nothing in
- * these layers to lose by rasterising them small and scaling the result back
- * up: at a quarter size the area falls by sixteen and the radius by four,
- * taking 15.2 megapixels of 56px blur down to 0.95 of 14px. The upscale is
- * bilinear over an image with no high frequencies left in it, so it is not a
- * visible approximation — measured against the design's own export, a quarter
- * scale changes the mean error by 0.03/255.
+ * A Gaussian of radius r holds no detail finer than r, so rasterising below
+ * its own radius costs nothing visible: at a half scale the area falls by four
+ * and the radius by two, taking 15.2 megapixels of 56px blur down to 3.8 of
+ * 28px, and the upscale is bilinear over an image with no high frequencies
+ * left in it.
+ *
+ * It was a quarter while the refraction frames were an SVG filter and the page
+ * had no budget to spare. That filter is gone, so the halves are affordable
+ * and the glow's gradients resolve visibly better where they meet an edge.
  */
-const RASTER_SCALE = 4;
+const RASTER_SCALE = 2;
 
 interface GlowLayerProps {
   readonly vector: GlowVectorName;
