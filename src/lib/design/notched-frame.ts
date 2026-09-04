@@ -37,6 +37,17 @@ export interface FramePath {
   readonly strokeWidth?: number;
   /** The design draws this shape flipped from how it was exported. */
   readonly flipY: boolean;
+  /**
+   * Fill this shape opaquely rather than as 10% black over whatever is behind.
+   *
+   * The capsule overlaps the frame, and the frame's lit bottom edge runs
+   * straight through where the capsule sits. In the design that edge stops at
+   * the capsule and picks up again on the other side, which only happens if
+   * the capsule is opaque. The value is the same colour the translucent fill
+   * resolves to over the page — measured off the render at (2,6,25), the ink
+   * at exactly 0.9 — so nothing about the shape's own appearance changes.
+   */
+  readonly opaqueFill?: string;
 }
 
 /**

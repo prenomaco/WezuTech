@@ -69,6 +69,46 @@ const INNER = { width: 2107.153, height: 548.383 } as const;
  */
 const RAMP_COVER = 4000;
 
+/**
+ * The two bands the column is split into.
+ *
+ * The design does not run the ridges from top to bottom: they sit across the
+ * middle of the light and the ends are plain glow. So the streak is drawn
+ * twice with complementary masks — the refracted copy across the middle, the
+ * untouched copy above and below it — and the two cross-fade over the same
+ * quarter, where they are nearly the same image anyway, since one is only a
+ * horizontal displacement of the other.
+ */
+const RIDGE_BAND = "22%, 78%";
+
+function Streak() {
+  return (
+    <div
+      className="absolute top-1/2 flex items-center justify-center"
+      style={{
+        left: BOX.left,
+        width: BOX.width,
+        height: 2148.471,
+        transform: `translateY(calc(-50% + ${LIT_OFFSET}px))`,
+      }}
+    >
+      {/* Figma composes rotation before scale, so a mirrored streak reads as
+          rotate-then-flip; swapping them throws it to the other side. */}
+      <div
+        className="flex-none"
+        style={{ transform: `rotate(-95.25deg) scaleY(-1) scale(${SCALE})` }}
+      >
+        <div className="relative" style={{ width: INNER.width, height: INNER.height }}>
+          <GlowLayer
+            box={{ left: 0, top: 0, width: INNER.width, height: INNER.height }}
+            vector="streakUpper"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EdgeGlow({
   side = "left",
   className,
@@ -77,6 +117,12 @@ export function EdgeGlow({
   readonly className?: string;
 }) {
   const filterId = `edge-glow-${side}`;
+  const band = (inverted: boolean) => {
+    const stops = inverted
+      ? `#000 0, transparent ${RIDGE_BAND}, #000 100%`
+      : `transparent 0, #000 ${RIDGE_BAND}, transparent 100%`;
+    return `linear-gradient(to bottom, ${stops})`;
+  };
 
   return (
     <div
@@ -120,30 +166,22 @@ export function EdgeGlow({
         </defs>
       </svg>
 
-      <div className="absolute inset-0" style={{ filter: `url(#${filterId})` }}>
-        <div
-          className="absolute top-1/2 flex items-center justify-center"
-          style={{
-            left: BOX.left,
-            width: BOX.width,
-            height: 2148.471,
-            transform: `translateY(calc(-50% + ${LIT_OFFSET}px))`,
-          }}
-        >
-          {/* Figma composes rotation before scale, so a mirrored streak reads as
-              rotate-then-flip; swapping them throws it to the other side. */}
-          <div
-            className="flex-none"
-            style={{ transform: `rotate(-95.25deg) scaleY(-1) scale(${SCALE})` }}
-          >
-            <div className="relative" style={{ width: INNER.width, height: INNER.height }}>
-              <GlowLayer
-                box={{ left: 0, top: 0, width: INNER.width, height: INNER.height }}
-                vector="streakUpper"
-              />
-            </div>
-          </div>
-        </div>
+      <div
+        className="absolute inset-0"
+        style={{ maskImage: band(true), WebkitMaskImage: band(true) }}
+      >
+        <Streak />
+      </div>
+
+      <div
+        className="absolute inset-0"
+        style={{
+          filter: `url(#${filterId})`,
+          maskImage: band(false),
+          WebkitMaskImage: band(false),
+        }}
+      >
+        <Streak />
       </div>
     </div>
   );

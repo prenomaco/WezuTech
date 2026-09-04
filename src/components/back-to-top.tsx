@@ -5,8 +5,16 @@ import { useEffect, useState } from "react";
 /** Distance scrolled before the control appears, in pixels. */
 const REVEAL_AFTER = 560;
 
+/*
+ * No `backdrop-filter`, and an opaque background instead of 80%.
+ *
+ * This control is `fixed`, so a backdrop filter on it has to be recomputed
+ * against whatever has just scrolled underneath — every frame, for as long as
+ * the page is moving. Two pixels of blur behind a 40px disc is not worth a
+ * per-frame backdrop read, least of all in the engines that do it on the CPU.
+ */
 const BASE =
-  "fixed bottom-[1.375rem] left-[1.375rem] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised/80 text-ice backdrop-blur-[2px] transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
+  "fixed bottom-[1.375rem] left-[1.375rem] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised text-ice transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);

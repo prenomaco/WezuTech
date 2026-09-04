@@ -16,8 +16,12 @@
      value rather than by a border doing all the work. */
   --dash-rail: #0a1733;
   --dash-rail-hover: rgb(218 250 245 / 0.07);
-  --dash-card: rgb(218 250 245 / 0.03);
-  --dash-card-hover: rgb(218 250 245 / 0.055);
+  /* Opaque, not translucent. These are the same two values — the page ink
+     lifted 3% and 5.5% towards the ice — resolved against `--dash-bg` rather
+     than left for the compositor, because the edge light sits behind the
+     content column and was showing through every card and every field. */
+  --dash-card: #080e23;
+  --dash-card-hover: #0e1428;
   --dash-fg: #dafaf5;
   --dash-muted: #8fa3bd;
   --dash-border: rgb(218 250 245 / 0.1);

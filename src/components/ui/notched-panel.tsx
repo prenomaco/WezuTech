@@ -83,7 +83,7 @@ export function NotchedPanel({ shape, gradientId }: { shape: FramePath; gradient
         })}
       </defs>
 
-      <path d={shape.d} fill="rgb(0 0 0 / 0.1)" transform={flip} />
+      <path d={shape.d} fill={shape.opaqueFill ?? "rgb(0 0 0 / 0.1)"} transform={flip} />
 
       {shape.lit.map((lit) => (
         <g key={lit.edge} mask={`url(#${gradientId}-${lit.edge}-m)`}>
