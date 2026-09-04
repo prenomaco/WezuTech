@@ -6,12 +6,22 @@
  * which is what gives the quote its recessed panel look. Measured against the
  * render: the interior reads (2,6,25) against the (2,7,28) ink, exactly 0.9x.
  *
- * The export carries no stroke, and the render has less of one than it looks:
- * down the frame's sides the page reads 7.5/255, which is the page ink
- * untouched, and along its bottom 5.7, the fill darkening the ink with nothing
- * drawn over it. Only the frame's top edge is lit, and only the capsule's
- * bottom. Both peak across the middle and fade to nothing at their ends —
- * 0.237 and 0.225 of #dafaf5, measured off the render.
+ * The export carries no stroke; the render draws its own. Down the sides the
+ * page reads 7.5/255, the ink untouched, so the sides carry none — but all
+ * four long edges do, and the two that carry the most are the frame's notched
+ * bottom and the capsule's notched top, which is what makes the pair read as
+ * one plate with a tab hanging out of it. Sampled across each edge in Figma's
+ * export, five rows deep and clear of the corners:
+ *
+ *   frame top      peak  66  mean 22.7
+ *   frame bottom   peak 240  mean 28.9
+ *   capsule top    peak 119  mean 31.1
+ *   capsule bottom peak  64  mean 17.6
+ *
+ * The alphas below are those means over the page ink, scaled against a
+ * measured render of this component. An earlier version lit only the frame's
+ * top and the capsule's bottom — the two faintest of the four — which left the
+ * shape with no bottom edge at all.
  */
 
 import type { FramePath } from "@/lib/design/notched-frame";
@@ -21,7 +31,11 @@ export type { FramePath };
 export const QUOTE_FRAME: FramePath = {
   width: 725.265,
   height: 261.269,
-  lit: [{ edge: "top", alpha: 0.237 }],
+  lit: [
+    { edge: "top", alpha: 0.28 },
+    { edge: "bottom", alpha: 0.39 },
+  ],
+  strokeWidth: 2,
   flipY: true,
   d:
     "M364.306 0H625.906C630.576 0 635.192 1.00578 639.438 2.94894L674.836 19.1458" +
@@ -35,7 +49,11 @@ export const QUOTE_FRAME: FramePath = {
 export const QUOTE_CAPSULE: FramePath = {
   width: 382.689,
   height: 111.663,
-  lit: [{ edge: "bottom", alpha: 0.225 }],
+  lit: [
+    { edge: "top", alpha: 0.73 },
+    { edge: "bottom", alpha: 0.32 },
+  ],
+  strokeWidth: 2,
   flipY: false,
   d:
     "M192.227 0H328.168C332.026 0 335.853 0.686389 339.471 2.02708L356.171 8.21645" +
