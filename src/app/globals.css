@@ -342,25 +342,25 @@
 }
 
 /*
- * Promoted, because Firefox re-rasters the stack on scroll and Chrome does not.
+ * Nothing in the background is promoted.
  *
- * The refraction stack is summed with `plus-lighter`, and promoting the group
- * makes Gecko raster it as one surface rather than assembling it as the
- * displayport moves across it. Measured over an APZ wheel scroll in Zen at
- * DPR 2, content paint per frame is 5.80ms unpromoted and 1.74ms promoted,
- * against 0.95ms for a page carrying no background at all.
+ * Both promotions were removed because Gecko sizes a promoted layer to the
+ * element's own bounds, and everything here paints outside those bounds. Each
+ * glow's blur is a CSS filter on the `<svg>` inside its element, and a
+ * Gaussian spreads about three times its radius past the box it is drawn in;
+ * the refraction frames sit inside a `scaleY(-1)` wrapper and are summed with
+ * `plus-lighter` across an isolating group. Promoting either clipped what it
+ * drew to a rectangle — the hard-edged blocks down the sides of the page, and
+ * the mirrored frame failing to continue the glow past the join at its top
+ * edge.
  *
- * The glow layers are deliberately NOT promoted, though it would buy another
- * 0.6ms. Each glow's blur is a CSS filter on the `<svg>` inside the element,
- * and a Gaussian spreads about three times its radius past the box it is drawn
- * in. Gecko sizes a promoted layer to the element's own bounds, so promoting a
- * glow clips its blur to that rectangle — which is where the hard-edged
- * rectangular blocks down the left and right of the page came from. They only
- * showed in Zen, only against the live compositor, and never in a repaint,
- * which is why every screenshot of the page came back clean.
+ * They only showed in Firefox, only against the live compositor, and never in
+ * a repaint, which is why screenshots of the page came back clean: a
+ * screenshot forces a fresh paint and bypasses the layer doing the clipping.
+ *
+ * Neither promotion was paying for itself anyway. With the filter gone there
+ * is nothing left that re-rasters on scroll, and the layers cost more in
+ * texture and management than they saved: content paint per frame over an APZ
+ * wheel scroll in Zen at DPR 2 measured 1.74ms with both promoted and 0.87ms
+ * with the glows released, against 106.77ms before any of this work.
  */
-@layer components {
-  .refraction-stack {
-    will-change: transform;
-  }
-}
