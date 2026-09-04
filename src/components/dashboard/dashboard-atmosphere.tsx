@@ -30,6 +30,18 @@ import { RefractionFrame } from "@/components/atmosphere/refraction-frame";
 const BAND = { width: 1565, height: 1400 } as const;
 
 /**
+ * How far the band hangs past both edges of the column.
+ *
+ * `feDisplacementMap` reads outside its filter region as transparent, so the
+ * displaced result is missing a strip about half the displacement wide down
+ * each edge of the frame — which showed as a dark line just inside the rail.
+ * Frame 7 never has that problem because it places its frames off-canvas at
+ * x=-22, -21 and -13; this does the same, on both sides, with enough room for
+ * the 44px the map is scaled by.
+ */
+const OVERHANG = 48;
+
+/**
  * Node 252:496 — the field itself, centred in the band.
  *
  * Its bright core sits halfway down its own 1103, so the offset is the band's
@@ -111,7 +123,12 @@ export function DashboardAtmosphere() {
       style={{ opacity: LIT_OPACITY }}
     >
       <RefractionFrame
-        box={{ left: 0, top: 0, width: BAND.width, height: BAND.height }}
+        box={{
+          left: -OVERHANG,
+          top: 0,
+          width: BAND.width + OVERHANG * 2,
+          height: BAND.height,
+        }}
         id="dash-band"
         relativeTo={BAND.width}
       >
