@@ -8,7 +8,26 @@ import type { ReactNode } from "react";
  * 1096px content box and pulled every Figma x-coordinate ~98px inward.
  * The gutter collapses towards 40px on narrower desktops.
  */
-export const CONTAINER = "mx-auto w-full max-w-[94.5rem] px-[clamp(2.5rem,6.88vw,6.5rem)]";
+/*
+ * The gutter is the frame's, in the frame's own unit.
+ *
+ * Both drawn frames set one: 26 either side of the 402 and 104 either side of
+ * the 1512. Written as `rem` each is carried by the root scale, so the small
+ * frame's gutter shrinks with a narrow phone and the large one's tracks the
+ * column all the way to 1512 and then stops. Only the tablet range between
+ * them has no frame to quote, so it interpolates.
+ *
+ * The large frame's gutter also yields. Below about 1134 the root scale is
+ * held at its legibility floor, so the 81.5rem column asks for more than the
+ * window has; `min` gives it whatever is actually left over instead, which
+ * keeps the copy at its size and compresses the margin — the one thing on the
+ * page with room to give. Where there is room the two agree exactly: at 1512
+ * both terms are 104.
+ */
+export const CONTAINER =
+  "mx-auto w-full max-w-[94.5rem] px-[1.625rem] " +
+  "sm:px-[clamp(2.5rem,6.88vw,6.5rem)] " +
+  "lg:px-[min(6.5rem,calc((100vw-81.5rem)/2))]";
 
 interface SectionProps {
   readonly id?: string;

@@ -2,94 +2,73 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 import { hero } from "@/content/site-content";
 
-/**
- * The hero as the 402 frame draws it (node 305:48).
- *
- * It is a different composition rather than the desktop one reflowed: the
- * headline splits across the artwork instead of flanking it, the copy and the
- * buttons centre, and the buttons stack full-width. Positions are percentages
- * of the 402 frame across and pixels down, since the type is a fixed size —
- * scaling the whole stage would shrink 24px Centauri below legibility on a
- * narrow phone.
- */
-const FRAME_WIDTH = 402;
+/** Scale the 402 composition continuously, then cap it at a readable tablet size. */
+const STAGE =
+  "relative mx-auto h-[clamp(45.3125rem,180.3483vw,63.4375rem)] w-full max-w-[35.175rem]";
+const HEADLINE = "absolute font-display leading-[normal] text-ice";
 
-const x = (value: number) => `${(value / FRAME_WIDTH) * 100}%`;
-
-/** Node 252:469's artwork, cropped to the 370 x 246.667 window at node 305:96. */
-const VEHICLES = { src: "/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png", width: 1264, height: 843 };
-
-/**
- * Centauri 24px, as nodes 305:98 and 305:102 set it. Both are 56 tall for two
- * lines, so the line box is 28 — Figma's "normal" for this face, not 1.
- */
-const HEADLINE = "absolute font-display text-[1.5rem] leading-[1.75rem] text-ice";
+function HeroArtwork() {
+  return (
+    <div
+      className="absolute left-[4.2289%] top-[20.3862%] h-[34.023%] w-[92.0398%]"
+      data-motion="hero-vehicles-drift"
+    >
+      <div className="size-full" data-motion="hero-vehicles-float">
+        <Image
+          alt="Electric car, freight truck and passenger train"
+          className="size-full object-contain"
+          data-motion="hero-vehicles"
+          height={843}
+          priority
+          sizes="(min-width: 563px) 518px, 92vw"
+          src="/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png"
+          width={1264}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function MobileHero() {
   return (
-    /* Capped at the frame's own width. Every offset below is a percentage of
-       402, so letting the stage grow past that spreads the composition apart —
-       the CTA becomes a 750px bar and the headline drifts off the artwork. On
-       anything wider than the frame the stage centres instead. */
-    <div className="relative mx-auto h-[45.3125rem] w-full max-w-[25.125rem] lg:hidden">
-      <div
-        className="absolute"
-        data-motion="hero-vehicles-drift"
-        style={{ left: x(17), top: "9.2375rem", width: x(370), height: "15.4167rem" }}
-      >
-        <div className="size-full" data-motion="hero-vehicles-float">
-          <Image
-            alt="Electric car, freight truck and passenger train"
-            className="h-full w-full object-contain"
-            data-motion="hero-vehicles"
-            height={VEHICLES.height}
-            priority
-            sizes="370px"
-            src={VEHICLES.src}
-            width={VEHICLES.width}
-          />
+    <div className="overflow-hidden lg:hidden">
+      <div className={STAGE}>
+        <HeroArtwork />
+        <h1
+          className={`${HEADLINE} left-[5.7214%] top-[26.4828%] text-[clamp(1.4106875rem,5.6147vw,1.9749625rem)]`}
+        >
+          {hero.titleLeft.map((line) => (
+            <span className="block" key={line}>
+              {line}
+            </span>
+          ))}
+        </h1>
+        <p
+          className={`${HEADLINE} right-[8.4851%] top-[49.5172%] text-right text-[clamp(1.469625rem,5.8493vw,2.057475rem)]`}
+        >
+          {hero.titleRight.map((line) => (
+            <span className="block" key={line}>
+              {line}
+            </span>
+          ))}
+        </p>
+        <p
+          className="absolute inset-x-0 top-[65.2414%] mx-auto w-[83.8308%] text-center text-[clamp(1rem,3.9801vw,1.4rem)] leading-normal text-ice"
+          data-motion="hero-intro"
+        >
+          {hero.intro}
+        </p>
+        <div
+          className="absolute inset-x-0 top-[87.8621%] mx-auto flex w-[81.592%] flex-col items-center [&_a]:h-[clamp(2.75rem,10.9453vw,3.85rem)] [&_a]:text-[clamp(1rem,3.9801vw,1.4rem)]"
+          data-motion="hero-ctas"
+        >
+          <ButtonLink className="w-full" href="#contact">
+            Contact Us
+          </ButtonLink>
+          <ButtonLink href="#about" variant="ghost">
+            About
+          </ButtonLink>
         </div>
-      </div>
-
-      {/* 305:98 — set left, its own two lines. */}
-      <h1 className={HEADLINE} style={{ left: x(29.918), top: "12.3325rem" }}>
-        {hero.titleLeft.map((line) => (
-          <span className="block" key={line}>
-            {line}
-          </span>
-        ))}
-      </h1>
-
-      {/* 305:102 — set right, its right edge on x=367.65. */}
-      <p className={`${HEADLINE} text-right`} style={{ right: x(34.35), top: "22.3669rem" }}>
-        {hero.titleRight.map((line) => (
-          <span className="block" key={line}>
-            {line}
-          </span>
-        ))}
-      </p>
-
-      <p
-        className="absolute left-1/2 -translate-x-1/2 text-center text-[1rem] leading-normal text-ice"
-        data-motion="hero-intro"
-        style={{ top: "29.5625rem", width: x(337) }}
-      >
-        {hero.intro}
-      </p>
-
-      {/* 305:106 — a 328-wide column: the primary fills it, the ghost centres
-          under it. */}
-      <div
-        className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center"
-        data-motion="hero-ctas"
-        style={{ top: "39.8125rem", width: x(328) }}
-      >
-        <ButtonLink className="w-full" href="#contact">
-          Contact Us
-        </ButtonLink>
-        <ButtonLink href="#about" variant="ghost">
-          About
-        </ButtonLink>
       </div>
     </div>
   );

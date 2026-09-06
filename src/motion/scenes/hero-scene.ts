@@ -34,11 +34,17 @@ export class HeroScene extends MotionScene {
 
   build({ root, reducedMotion }: SceneContext): void {
     const lines = this.query(root, "hero-line");
-    const vehicles = this.first(root, "hero-vehicles");
+    /*
+     * Every match, not the first. The page ships both compositions — the 402
+     * frame's and the 1512 one — and hides whichever does not apply, so the
+     * first `hero-intro` in the document is always the mobile one. Animating
+     * only that left the desktop copy and buttons with no entrance at all.
+     */
+    const vehicles = this.query(root, "hero-vehicles");
     if (reducedMotion || !lines.length) return;
 
     // The drift wrapper, not the image: see the note in `sections/hero.tsx`.
-    const drift = this.first(root, "hero-vehicles-drift");
+    const drifts = this.query(root, "hero-vehicles-drift");
 
     const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -52,10 +58,10 @@ export class HeroScene extends MotionScene {
         { autoAlpha: 0, y: 46, scale: 1.06, duration: 1.25, ease: "power2.out" },
         "-=0.85",
       )
-      .from(this.first(root, "hero-intro"), { autoAlpha: 0, y: 20, duration: 0.6 }, "-=0.7")
-      .from(this.first(root, "hero-ctas"), { autoAlpha: 0, y: 14, duration: 0.5 }, "-=0.4");
+      .from(this.query(root, "hero-intro"), { autoAlpha: 0, y: 20, duration: 0.6 }, "-=0.7")
+      .from(this.query(root, "hero-ctas"), { autoAlpha: 0, y: 14, duration: 0.5 }, "-=0.4");
 
-    this.buildExit(drift);
+    for (const drift of drifts) this.buildExit(drift);
   }
 
   dispose(): void {

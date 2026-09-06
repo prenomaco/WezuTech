@@ -13,8 +13,14 @@ export type ArrowScale = "product" | "testimonial";
 
 const GLYPH: Record<ArrowScale, string> = {
   product: "h-[2.4625rem] w-[1.23125rem]",
-  testimonial: "h-[2.575rem] w-[1.2875rem]",
+  testimonial:
+    "h-[1.4004375rem] w-[0.7001875rem] lg:h-[2.575rem] lg:w-[1.2875rem]",
 };
+
+/* Expand inward so 44px targets fit even at 320px without moving the glyph,
+   changing Figma spacing, or introducing horizontal document overflow. */
+const HIT_AREA =
+  "before:absolute before:top-1/2 before:h-[max(100%,44px)] before:w-[max(100%,44px)] before:-translate-y-1/2 before:content-['']";
 
 interface CarouselArrowProps {
   readonly direction: "prev" | "next";
@@ -25,11 +31,17 @@ interface CarouselArrowProps {
   readonly className?: string;
 }
 
-export function CarouselArrow({ direction, label, scale, onClick, className }: CarouselArrowProps) {
+export function CarouselArrow({
+  direction,
+  label,
+  scale,
+  onClick,
+  className,
+}: CarouselArrowProps) {
   return (
     <button
       aria-label={label}
-      className={`absolute z-20 grid place-items-center p-3 text-ice/70 transition-colors duration-200 ease-out hover:text-ice ${className ?? ""}`}
+      className={`absolute z-20 grid place-items-center p-3 text-ice/70 transition-colors duration-200 ease-out hover:text-ice ${HIT_AREA} ${direction === "prev" ? "before:left-0" : "before:right-0"} ${className ?? ""}`}
       onClick={onClick}
       type="button"
     >

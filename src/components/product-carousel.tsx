@@ -33,7 +33,10 @@ const ARROW_RIGHT = "right-[2.1rem] top-1/2 -translate-y-1/2";
 
 function ProductCard({ product }: { product: CatalogProduct }) {
   return (
-    <article className={`w-full shrink-0 snap-start ${CARD_GRID}`} data-motion="products-card">
+    <article
+      className={`w-full shrink-0 snap-start ${CARD_GRID}`}
+      data-motion="products-card"
+    >
       <img
         alt={product.name}
         className="h-[17.25rem] w-[16.125rem] object-contain lg:h-[25.125rem] lg:w-[23.5625rem]"
@@ -46,7 +49,10 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </ProductTitle>
         {/* The frame separates the description's paragraphs with a blank line
             (node 252:482), so a blank line in the copy becomes a paragraph. */}
-        <div className="mt-0 flex w-[21.25rem] flex-col gap-[1.5565rem] text-center lg:mt-[1.1875rem] lg:w-auto lg:text-left">
+        {/* The 402 frame sets the body flush under the title. With the wider
+            type of a tablet the two lines of the title close right up on it,
+            so the copy takes a line's worth of air there. */}
+        <div className="-mt-[0.1875rem] flex w-[21.25rem] max-w-full flex-col gap-[1.3125rem] text-center sm:mt-[1.25rem] sm:w-[26rem] lg:mt-[1.1875rem] lg:w-auto lg:gap-[1.5565rem] lg:text-left">
           {(product.cardDescription ?? "").split(/\n\s*\n/).map((paragraph) => (
             <Prose key={paragraph.slice(0, 32)} size="product">
               {paragraph}
@@ -55,11 +61,15 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </div>
 
         {/* Figma indents the CTA row 3px from the copy column (685 -> 688). */}
-        <div className="mt-[5rem] flex w-[19.3125rem] flex-col items-center gap-[1.25rem] lg:mt-auto lg:ml-[3px] lg:w-auto lg:flex-row lg:gap-5">
+        <div className="mt-[2.1875rem] flex w-[19.3125rem] flex-col items-center gap-[1.25rem] lg:mt-auto lg:ml-[3px] lg:w-auto lg:flex-row lg:gap-5">
           <ButtonLink
             className="w-full lg:w-[12.9375rem]"
             href="#contact"
-            onClick={() => trackEvent("product_contact_click", { product_slug: product.slug })}
+            onClick={() =>
+              trackEvent("product_contact_click", {
+                product_slug: product.slug,
+              })
+            }
           >
             Contact For Purchase
           </ButtonLink>
@@ -81,7 +91,10 @@ export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
   const rail = useRef<HTMLDivElement>(null);
 
   const move = (direction: number) =>
-    rail.current?.scrollBy({ left: direction * rail.current.clientWidth, behavior: "smooth" });
+    rail.current?.scrollBy({
+      left: direction * rail.current.clientWidth,
+      behavior: "smooth",
+    });
 
   /* 402 frame: eyebrow 1615 -> card 1660, i.e. 24. The 1512 frame puts 32. */
   return (

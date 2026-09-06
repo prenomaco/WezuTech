@@ -47,24 +47,32 @@ function MobileAbout() {
     <div className="overflow-clip lg:hidden">
       <Image
         alt="Connected mobility platforms around a control module"
-        className="mt-[4.375rem] w-full object-contain"
+        className="mx-auto mt-[4.375rem] w-[calc(100%-0.0625rem)] max-w-[37.5rem] object-contain"
         data-motion="about-artwork"
-        height={ARTWORK.height}
-        sizes="100vw"
-        src={ARTWORK.src}
-        width={ARTWORK.width}
+        height={843}
+        sizes="(min-width: 640px) 600px, 100vw"
+        src="/figma/4ee4965ee44dd5484773156ad47d1b9d4690459e.png"
+        width={1264}
       />
 
-      <div className="mx-auto w-[81.3433%]">
-        <SectionHeading className="mt-[3.7292rem] text-center" data-motion="about-eyebrow" variant="about">
+      {/* The measure is capped as the column widens. At a tablet width the
+          81% column runs to a ~670px line, which is roughly twice a
+          comfortable reading measure. */}
+      <div className="mx-auto w-[81.3433%] sm:max-w-[34rem]">
+        <SectionHeading
+          className="mt-[3.7292rem] text-center"
+          data-motion="about-eyebrow"
+          variant="about"
+        >
           {about.eyebrow}
         </SectionHeading>
 
-        <div className="mt-[1.9375rem] flex flex-col gap-[1.5rem] text-center" data-motion="about-copy">
+        <div
+          className="mt-[1.9375rem] flex flex-col gap-[2.625rem] text-center"
+          data-motion="about-copy"
+        >
           {about.paragraphs.map((paragraph) => (
-            <Prose key={paragraph.slice(0, 32)}>
-              {paragraph}
-            </Prose>
+            <Prose key={paragraph.slice(0, 32)}>{paragraph}</Prose>
           ))}
         </div>
       </div>
@@ -90,9 +98,14 @@ export function About() {
         className="hidden min-h-[31.25rem] pt-[4.375rem] lg:block"
         bleed={<AboutArtwork />}
       >
-        <SectionHeading data-motion="about-eyebrow" variant="about">{about.eyebrow}</SectionHeading>
+        <SectionHeading data-motion="about-eyebrow" variant="about">
+          {about.eyebrow}
+        </SectionHeading>
 
-        <div className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]" data-motion="about-copy">
+        <div
+          className="mt-[1.625rem] flex w-[45.0920%] flex-col gap-[1.5rem]"
+          data-motion="about-copy"
+        >
           {about.paragraphs.map((paragraph) => (
             <Prose key={paragraph.slice(0, 32)}>{paragraph}</Prose>
           ))}

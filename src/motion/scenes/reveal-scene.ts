@@ -73,9 +73,11 @@ const RECIPES: Record<string, Recipe> = {
     ease: EASE_SETTLE,
     stagger: 0.054,
   },
+  /* The card comes forward rather than up, which reads as it being brought
+     to the front of the section instead of sliding into it. */
   "products-card": {
-    from: { y: 28, autoAlpha: 0 },
-    duration: 0.52,
+    from: { y: 30, scale: 0.972, autoAlpha: 0 },
+    duration: 0.6,
     ease: EASE_SETTLE,
   },
 
@@ -88,20 +90,22 @@ const RECIPES: Record<string, Recipe> = {
     start: "top 96%",
   },
 
-  /* The grid cascades along the reading order; the stagger is short enough
-     that the row still lands as a row. */
+  /* The grid cascades along the reading order, each cell arriving from a
+     little further back as well as below, so the six read as a sequence with
+     depth rather than a block that fades. The stagger stays short enough that
+     a row still lands as a row. */
   "industry-item": {
-    from: { y: 26, scale: 0.985, autoAlpha: 0 },
-    duration: 0.39,
+    from: { y: 34, x: -10, scale: 0.965, autoAlpha: 0 },
+    duration: 0.46,
     ease: EASE_SETTLE,
-    stagger: 0.036,
+    stagger: 0.048,
   },
 
   /* Panels scale up a hair as they arrive, which reads as the frame drawing
      itself rather than a card being pasted in. */
   "testimonial-stage": {
-    from: { scale: 0.975, autoAlpha: 0 },
-    duration: 0.5,
+    from: { y: 18, scale: 0.965, autoAlpha: 0 },
+    duration: 0.58,
     ease: EASE_SETTLE,
   },
   "testimonial-dots": {
@@ -118,10 +122,10 @@ const RECIPES: Record<string, Recipe> = {
   /* Fields arrive one after another so the form reads as a sequence to fill
      in, not a block that appears. */
   "contact-field": {
-    from: { y: 20, autoAlpha: 0 },
-    duration: 0.39,
+    from: { y: 24, x: -12, autoAlpha: 0 },
+    duration: 0.44,
     ease: EASE_SETTLE,
-    stagger: 0.042,
+    stagger: 0.055,
   },
 
   footer: {

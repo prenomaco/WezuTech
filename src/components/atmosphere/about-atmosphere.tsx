@@ -1,136 +1,93 @@
-import type { CSSProperties } from "react";
 import { GlowLayer } from "@/components/atmosphere/glow-layer";
 import { RefractionFrame } from "@/components/atmosphere/refraction-frame";
+import { StreakLayer } from "@/components/atmosphere/streak-layer";
 
 /**
  * The About page's light (Figma node 307:165).
  *
  * Same layers as the home page, placed against its own 1512 x 3151 frame. The
- * hero tile is a larger instance than the home page's — Frame 8 is 1675 x 1179
+ * hero tile is a larger instance than the home page's — Frame 8 is 1675 x 1335
  * holding a 2123-wide group, against 1545 x 992 holding 1657 — which is what
  * makes the top of this page read as one wide wash rather than an hourglass.
  *
- * As on the home page, the layers that span the frame are placed
- * proportionally so the light reaches the edges of the screen rather than the
- * edges of the design, and the edge streak is pinned to the edge it decorates.
+ * Split the same way as the home page: the tiles carry structure and belong to
+ * the content column, the streaks decorate the screen's edges and hang off the
+ * full-width parent so they keep reaching them past 1512.
  */
-
-const FRAME_WIDTH = 1512;
-
 export function AboutAtmosphere() {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-clip">
-      {/* Frame 8 (374:268) — the wide tile behind the introduction. */}
-      <RefractionFrame
-        box={{ left: -142, top: -439, width: 1675, height: 1179 }}
-        id="about-hero"
-        relativeTo={FRAME_WIDTH}
-      >
-        <GlowLayer
-          box={{ left: -434, top: -156, width: 2123, height: 1304.443 }}
-          relativeTo={1675}
-          vector="field"
-        />
-      </RefractionFrame>
-
-      {/* Frame 8 (375:142) — the dimmed tile over the capabilities panel. */}
-      <RefractionFrame
-        box={{ left: -22, top: 991, width: 1565, height: 648 }}
-        id="about-capabilities"
-        relativeTo={FRAME_WIDTH}
-      >
-        <GlowLayer
-          box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
-          relativeTo={1565}
-          vector="fieldDim"
-        />
-      </RefractionFrame>
-
-      {/* Group 22 (307:177) — the streak down the right edge. */}
-      <div
-        className="pointer-events-none absolute flex items-center justify-center"
-        data-glow-depth={45}
-        style={
-          {
-            right: -315.158,
-            top: 1813.342,
-            width: 698.618,
-            height: 1476.808,
-            "--glow-depth": "45px",
-          } as CSSProperties
-        }
-      >
-        <div className="flex-none" style={{ transform: "rotate(80.82deg) scaleY(-1)" }}>
-          <div className="relative" style={{ width: 1418.65, height: 478.33 }}>
-            <GlowLayer
-              box={{ left: 0, top: 0, width: 1418.65, height: 478.33 }}
-              vector="streakRight"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/*
-        Frame 7 (307:211) — the tile again, mirrored, picking up exactly where
-        the frame above it clips.
-
-        The metadata reports y=2287, which is its far edge rather than its
-        origin, the same way the home frame reported 3112 for a frame that
-        starts at 2464. The render settles it: this page has no hard step at
-        1639 or at 2287, and its left edge is lit from 1500 to 1800 and ink by
-        1900 — which only happens if this frame begins where the one above ends.
-      */}
-      <RefractionFrame
-        box={{ left: -21, top: 1639, width: 1565, height: 648 }}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-clip"
+    >
+      <StreakLayer
+        box={{ left: -270, top: 21, width: 533.374, height: 1657.703 }}
+        depth={0}
         flipY
-        id="about-contact"
-        relativeTo={FRAME_WIDTH}
-      >
-        <GlowLayer
-          box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
-          relativeTo={1565}
-          vector="fieldDim"
-        />
-      </RefractionFrame>
-
-      {/*
-        Group 17 (307:173) — the streak down the lower left.
-
-        Its metadata y is the far edge again: 3772.32 less its own 1578.6 puts
-        it at 2193.72, which is the same arithmetic that turns the home frame's
-        reported 3986.32 into the 2407.72 its generated code gives. Without it
-        the left edge is ink from 2200 down, where the render is lit to 32/255.
-      */}
-      <div
-        className="pointer-events-none absolute flex items-center justify-center"
-        data-glow-depth={45}
-        style={
-          {
-            left: -503,
-            top: 2193.72,
-            width: 677.451,
-            height: 1578.601,
-            "--glow-depth": "45px",
-          } as CSSProperties
-        }
-      >
-        <div className="flex-none" style={{ transform: "rotate(-97.65deg)" }}>
-          <div className="relative" style={{ width: 1528.549, height: 478.33 }}>
-            <GlowLayer
-              box={{ left: 0, top: 0, width: 1528.549, height: 478.33 }}
-              vector="streakLower"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Group 13 (307:181) — the footer band. */}
-      <GlowLayer
-        box={{ left: -166, top: 2677.51, width: 1852, height: 1101.905 }}
-        depth={20}
-        relativeTo={FRAME_WIDTH}
-        vector="footer"
+        inner={{ width: 1634.045, height: 433.163 }}
+        rotate={-86.45}
+        vector="streakAboutLeft"
       />
+      <StreakLayer
+        box={{ right: -228.413, top: 84.16, width: 534.673, height: 1851.871 }}
+        depth={0}
+        inner={{ width: 1826.994, height: 397.1 }}
+        rotate={-85.65}
+        vector="streakAboutRight"
+      />
+      {/* Group 22 (307:177) — the streak down the right edge. */}
+      <StreakLayer
+        box={{ right: -315.158, top: 1737, width: 698.618, height: 1476.808 }}
+        depth={0}
+        flipY
+        inner={{ width: 1418.65, height: 478.33 }}
+        rotate={80.82}
+        vector="streakRight"
+      />
+
+      {/* Group 17 (307:173), with the live rotated bounds from Figma. */}
+      <StreakLayer
+        box={{ left: -521.93, top: 2052.7, width: 696.381, height: 1719.612 }}
+        depth={0}
+        inner={{ width: 1670.825, height: 478.33 }}
+        render={{ width: 1828.825, height: 636.33 }}
+        rotate={-97.65}
+        vector="streakLower"
+      />
+
+      <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
+        {/* Frame 8 (374:268) — the wide tile behind the introduction. */}
+        <RefractionFrame
+          box={{ left: -142, top: -439, width: 1675, height: 1335 }}
+          bleed
+          id="about-hero"
+        >
+          {/* Use the About export itself, including its Gaussian margins. */}
+          <GlowLayer
+            box={{ left: -434, top: -156, width: 2123, height: 1304.443 }}
+            vector="fieldAbout"
+          />
+        </RefractionFrame>
+
+        {/* The capabilities/contact pair shares one reflected surface. */}
+        <RefractionFrame
+          box={{ left: -22, top: 991, width: 1565, height: 648 }}
+          id="about-capabilities"
+          mirrorY
+          bleed
+        >
+          <GlowLayer
+            box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
+            vector="fieldDim"
+          />
+        </RefractionFrame>
+
+        {/* Group 13 (307:181) — the footer band. */}
+        <GlowLayer
+          box={{ left: -166, top: 2726.18, width: 1852, height: 1053.236 }}
+          vector="footerAbout"
+        />
+      </div>
     </div>
   );
 }

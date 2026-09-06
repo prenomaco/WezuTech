@@ -44,7 +44,8 @@ const HEADING_VARIANT = {
   products: `${HEADING_SM} text-ice lg:text-[1.4375rem] lg:leading-[1.625rem]`,
   /** WHAT PEOPLE SAY — 24.934px / 28.19px, #dafaf5. */
   /* Node 374:51 is 16 tall on the 402 frame, against 28.19 at 1512. */
-  testimonials: "text-[0.875rem] leading-[1rem] text-ice lg:text-[1.558375rem] lg:leading-[1.761875rem]",
+  testimonials:
+    "text-[0.847625rem] leading-[1rem] text-ice lg:text-[1.558375rem] lg:leading-[1.761875rem]",
 } as const;
 
 interface HeadingProps extends TypeProps {
@@ -69,7 +70,15 @@ export function SectionHeading({
   ...rest
 }: HeadingProps & { readonly "data-motion"?: string }) {
   return (
-    <Tag className={join(DISPLAY, HEADING_VARIANT[variant], "overflow-hidden", className)} {...rest}>
+    <Tag
+      className={join(
+        DISPLAY,
+        HEADING_VARIANT[variant],
+        "overflow-hidden",
+        className,
+      )}
+      {...rest}
+    >
       <span className="block" data-motion={motion}>
         {children}
       </span>
@@ -83,9 +92,11 @@ export function SectionHeading({
  * font rather than a transform.
  */
 const DISPLAY_SIZE = {
-  hero: "text-[2.25rem] leading-[2.5625rem]",
+  // Match the 1512-wide stage even below the global 12px root-font floor.
+  hero: "text-[min(2.25rem,2.380952vw)] leading-[min(2.5625rem,2.71164vw)]",
   /* Node 374:69 is 56 tall over two lines on the 402 frame. */
-  section: "text-[1.5rem] leading-[1.75rem] lg:text-[2.10880625rem] lg:leading-[2.4375rem]",
+  section:
+    "text-[1.5rem] leading-[1.75rem] lg:text-[2.10880625rem] lg:leading-[2.4375rem]",
 } as const;
 
 interface DisplayProps extends TypeProps {
@@ -100,7 +111,10 @@ export function DisplayTitle({
   ...rest
 }: DisplayProps) {
   return (
-    <Tag className={join(DISPLAY, DISPLAY_SIZE[size], "text-ice", className)} {...rest}>
+    <Tag
+      className={join(DISPLAY, DISPLAY_SIZE[size], "text-ice", className)}
+      {...rest}
+    >
       {children}
     </Tag>
   );
@@ -134,18 +148,25 @@ export function ProductTitle({ children, className, ...rest }: TypeProps) {
 const PROSE_SIZE = {
   /* Mobile-first: the 402 frame sets both columns at 16px on a normal line
      box (nodes 305:72 and 305:123); the `lg:` half is the 1512 frame's. */
-  about: "text-[1rem] leading-normal text-frost lg:text-[1.125rem] lg:leading-[1.5rem]",
+  about:
+    "text-[1rem] leading-[1.3125rem] text-frost lg:text-[1.125rem] lg:leading-[1.5rem]",
   /* Node 252:482 is 249.032 tall for nine lines and the blank line
      between its two paragraphs — a 24.9032px line, not the flat 24 the rest
      of the page uses. */
-  product: "text-[1rem] leading-[1.3125rem] text-ice lg:text-[1.16731rem] lg:leading-[1.5565rem]",
+  product:
+    "text-[1rem] leading-[1.3125rem] text-ice lg:text-[1.16731rem] lg:leading-[1.5565rem]",
 } as const;
 
 interface ProseProps extends TypeProps {
   readonly size?: keyof typeof PROSE_SIZE;
 }
 
-export function Prose({ children, className, size = "about", ...rest }: ProseProps) {
+export function Prose({
+  children,
+  className,
+  size = "about",
+  ...rest
+}: ProseProps) {
   return (
     <p className={join(PROSE_SIZE[size], className)} {...rest}>
       {children}

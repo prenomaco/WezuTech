@@ -43,11 +43,11 @@
   --font-weight-book: 360;
 
   /* The Figma frame is 1512 wide with content between x=104 and x=1408. */
-  --spacing-gutter: 104px;
-  --container-frame: 1304px;
+  --spacing-gutter: 6.5rem;
+  --container-frame: 81.5rem;
 
-  --radius-control: 14px;
-  --radius-panel: 20px;
+  --radius-control: 0.875rem;
+  --radius-panel: 1.25rem;
 }
 
 /* Glow ramp for the atmosphere layers. Kept as raw channels so each layer can
@@ -56,7 +56,7 @@
   --glow-core: 148 176 201;
   --glow-mid: 13 132 204;
   --glow-deep: 24 76 119;
-  --header-height: 96px;
+  --header-height: 6rem;
 }
 
 /* ==========================================================================
@@ -75,12 +75,62 @@
     box-sizing: border-box;
   }
 
+  /*
+   * One scale for the whole design.
+   *
+   * There are two drawn frames, 1512 and 402, and every measurement taken off
+   * them is written in `rem` — 278 of them against 7 in pixels. So the root
+   * font size is the single dial that maps a frame onto a screen: set it to
+   * 1512ths of the viewport and the entire composition — type, spacing, icon
+   * slots, grid tracks, and the light behind them — resolves at exactly the
+   * proportion the file drew it at, on any width, with nothing to re-state per
+   * breakpoint.
+   *
+   * That is the difference between this and a set of breakpoint overrides. A
+   * fixed-rem layout only holds at the width it was measured at and has to be
+   * patched at every other one, and each patch is a new set of numbers that
+   * the design does not contain; the ratios here come out of the frame itself,
+   * so a width nobody tested is still the design.
+   *
+   * The bands:
+   *   - up to 402: the small frame, shrunk with the screen and floored so the
+   *     copy stays legible on a 320 phone.
+   *   - 402 to 1024: the small frame at its drawn size. This is the one range
+   *     with no frame behind it, so it reflows (see the `sm:` rules) instead
+   *     of scaling — stretching a 402 layout to 1000 would double the type.
+   *   - 1024 and up: the large frame, scaled to fit and capped at 1:1 so the
+   *     design never renders larger than it was drawn. Past 1512 the content
+   *     centres and the edge light keeps reaching the screen edges.
+   *
+   * The floor on the large frame is a legibility limit, not a layout one: at a
+   * pure ratio a 1024 window puts the body copy at 12.2px. Held at 12 it stops
+   * at 13.5, and below about 1134 the column is then wider than the screen can
+   * give it — which the gutter absorbs (see `layout/section`) rather than the
+   * type.
+   *
+   * `vw` resolves against the initial containing block, which excludes the
+   * classic scrollbar, so the scale tracks the width the content actually
+   * gets rather than overflowing by the scrollbar's width.
+   */
   html {
     scroll-behavior: smooth;
     background-color: var(--color-ink);
     /* `clip` (not `hidden`) keeps position:sticky working while killing the
        horizontal scrollbar decorative layers would otherwise create. */
     overflow-x: clip;
+    font-size: 16px;
+  }
+
+  @media (width < 25.125rem) {
+    html {
+      font-size: max(14px, 3.9801vw);
+    }
+  }
+
+  @media (width >= 64rem) {
+    html {
+      font-size: clamp(12px, 1.0582vw, 16px);
+    }
   }
 
   body {
@@ -89,7 +139,7 @@
     background-color: var(--color-ink);
     color: var(--color-mist);
     font-family: var(--font-body);
-    font-size: 16px;
+    font-size: 1rem;
     -webkit-font-smoothing: antialiased;
   }
 

@@ -33,7 +33,10 @@ interface LogoProps {
   readonly style?: CSSProperties;
 }
 
-export function Logo({ href = "#home", size = "header", className, style }: LogoProps) {
+/* The site root rather than the `#home` anchor: the lockup also sits in the
+   header of `/about` and in the footer of every page, where a fragment that
+   only exists on the landing page scrolls nowhere. */
+export function Logo({ href = "/", size = "header", className, style }: LogoProps) {
   const { mark, word } = LOCKUP[size];
 
   return (

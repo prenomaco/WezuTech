@@ -10,7 +10,7 @@ import { CAPABILITIES_PANEL } from "@/lib/design/notched-frame";
  * The page shares its header, testimonials, contact and footer with the home
  * page; what is new is the introduction, the capabilities panel and the process
  * line. Every length below is the frame's own, so they can be checked against
- * the file: the introduction runs x=106 with the artwork at x=875 y=256, the
+ * the file: the introduction runs x=96 with the artwork at x=832 y=438, the
  * panel spans x=136..1376 between y=824 and 1285, and the process line sits at
  * y=1399 with its paragraph at y=1458.
  *
@@ -19,7 +19,11 @@ import { CAPABILITIES_PANEL } from "@/lib/design/notched-frame";
  */
 
 /** Node 374:279 — the fleet render beside the introduction. */
-const FLEET = { src: "/figma/about-fleet.png", width: 601, height: 401 };
+const FLEET = {
+  src: "/figma/e82ee81068ab79863936c9f1c227d78b6fa756a8.png",
+  width: 1536,
+  height: 1024,
+};
 
 /**
  * Overused Grotesk Book 18.766px, white (node 307:233).
@@ -27,63 +31,78 @@ const FLEET = { src: "/figma/about-fleet.png", width: 601, height: 401 };
  * The line box is 25, not the browser's "normal": node 374:244 is 75 tall for
  * three lines and node 374:242 is 125 for five.
  */
-const BODY = "text-[1.172875rem] font-book leading-[1.5625rem] text-white capitalize";
+const BODY =
+  "text-[1.172875rem] font-book leading-[1.5625rem] text-white capitalize";
 
 /** Centauri 23px, white (node 307:234). */
-const TITLE = "font-display text-[1.4375rem] leading-[1.625rem] text-white capitalize";
+const TITLE =
+  "font-display text-[1.4375rem] leading-[1.625rem] text-white capitalize";
 
 function Intro() {
-  /* The heading sits at y=198 in the frame, and the header box above this
+  /* The heading sits at y=193 in the frame, and the header box above this
      section already accounts for its first 106. */
   return (
     /* The next section begins at y=751 in the frame, a fixed distance the copy
        used to reach by accident: the lead paragraph carried a block gap under
        it that is now a line break inside its own paragraph. */
-    <Section className="pt-[5.75rem] pb-[1.5625rem]" innerClassName="relative">
-      {/* x=875, y=256 against a section starting at y=0 — 58px above the copy. */}
+    <div className="relative mx-auto max-w-[94.5rem]">
+      {/* The transparent fleet image extends below the introduction. */}
       <Image
         alt="An electric truck, car, tram and bus"
-        className="absolute top-[3.625rem] left-[57.3413%] hidden w-[39.7487%] max-w-none lg:block"
+        className="absolute top-[20.75rem] left-[55.0265%] z-20 hidden w-[42.8571%] max-w-none lg:block"
         data-motion="about-artwork"
         height={FLEET.height}
         priority
-        sizes="(min-width: 1512px) 601px, 40vw"
+        sizes="(min-width: 1512px) 648px, 43vw"
         src={FLEET.src}
         width={FLEET.width}
       />
 
-      <h1 className={`${TITLE} max-w-[37.8125rem]`} data-motion="contact-title">
-        {aboutPage.title}
-      </h1>
-
-      <div
-        /* One blank line between paragraphs, as the frame sets them. */
-        className="mt-[1.625rem] flex max-w-[46.8125rem] flex-col gap-[1.5625rem]"
-        data-motion="about-copy"
+      <Section
+        className="pt-[5.4375rem] pb-[1.5625rem]"
+        innerClassName="relative"
       >
-        {aboutPage.intro.map((paragraph) => (
-          <p className={BODY} key={(paragraph.lead ?? "") + paragraph.body.slice(0, 24)}>
-            {paragraph.lead ? <strong className="font-bold">{paragraph.lead}</strong> : null}
-            {/* Node 307:233 breaks after this lead but does not open a new
+        <h1
+          className={`${TITLE} max-w-[37.8125rem] lg:-ml-2`}
+          data-motion="contact-title"
+        >
+          {aboutPage.title}
+        </h1>
+
+        <div
+          /* One blank line between paragraphs, as the frame sets them. */
+          className="mt-[1.9375rem] flex max-w-[46.8125rem] flex-col gap-[1.5625rem] lg:-ml-2"
+          data-motion="about-copy"
+        >
+          {aboutPage.intro.map((paragraph) => (
+            <p
+              className={BODY}
+              key={(paragraph.lead ?? "") + paragraph.body.slice(0, 24)}
+            >
+              {paragraph.lead ? (
+                <strong className="font-bold">{paragraph.lead}</strong>
+              ) : null}
+              {/* Node 307:233 breaks after this lead but does not open a new
                 block: the paragraph below it follows on the next line, not
                 after the 25px the other paragraphs are separated by. */}
-            {paragraph.leadOwnLine ? <br /> : null}
-            {paragraph.body}
-          </p>
-        ))}
-      </div>
+              {paragraph.leadOwnLine ? <br /> : null}
+              {paragraph.body}
+            </p>
+          ))}
+        </div>
 
-      {/* The artwork leads on a narrow screen, where there is no column to sit
+        {/* The artwork leads on a narrow screen, where there is no column to sit
           beside. */}
-      <Image
-        alt="An electric truck, car, tram and bus"
-        className="mt-[2.5rem] w-full max-w-none lg:hidden"
-        height={FLEET.height}
-        sizes="100vw"
-        src={FLEET.src}
-        width={FLEET.width}
-      />
-    </Section>
+        <Image
+          alt="An electric truck, car, tram and bus"
+          className="mt-[2.5rem] w-full max-w-none lg:hidden"
+          height={FLEET.height}
+          sizes="100vw"
+          src={FLEET.src}
+          width={FLEET.width}
+        />
+      </Section>
+    </div>
   );
 }
 
@@ -104,8 +123,11 @@ const MEASURE = [293, 342, 338, 285, 354, 357] as const;
 function Capabilities() {
   return (
     <Section className="pt-[4.5625rem]">
-      <div className="relative mx-auto w-full max-w-[77.5rem] px-6 pt-[2.875rem] pb-[4rem] lg:px-[5.375rem]">
-        <NotchedPanel gradientId="about-capabilities" shape={CAPABILITIES_PANEL} />
+      <div className="relative mx-auto w-full max-w-[77.5rem] px-6 pt-[2.875rem] pb-[4.625rem] lg:px-[5.375rem]">
+        <NotchedPanel
+          gradientId="about-capabilities"
+          shape={CAPABILITIES_PANEL}
+        />
 
         <h2
           className="relative text-center font-display text-[1.4375rem] leading-[1.625rem] text-white capitalize"
@@ -118,7 +140,7 @@ function Capabilities() {
             86 / 411 / 816, so the tracks are 325 / 405 / 338. Each cell's copy
             is capped at its own measure from the frame, which is what decides
             where every one of them wraps. */}
-        <div className="relative mt-[1.9375rem] grid grid-cols-1 gap-y-[2.75rem] sm:grid-cols-2 lg:grid-cols-[325fr_405fr_338fr]">
+        <div className="relative mt-[1.3125rem] grid grid-cols-1 gap-y-[2.75rem] sm:grid-cols-2 lg:grid-cols-[325fr_405fr_338fr]">
           {aboutPage.capabilities.map((item, index) => (
             <p
               className={BODY}
@@ -126,7 +148,7 @@ function Capabilities() {
               key={item.title}
               style={{ maxWidth: MEASURE[index] }}
             >
-              {item.title}
+              <strong className="font-bold">{item.title}</strong>
               <br />
               {item.body}
             </p>

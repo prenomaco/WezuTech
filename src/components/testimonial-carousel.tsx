@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import gsap from "gsap";
 import { CarouselArrow } from "@/components/ui/carousel-arrow";
 import { NotchedPanel } from "@/components/ui/notched-panel";
-import { QUOTE_CAPSULE, QUOTE_FRAME } from "@/lib/design/testimonial-frame";
+import {
+  QUOTE_CAPSULE,
+  QUOTE_FRAME,
+  QUOTE_CAPSULE_MOBILE,
+  QUOTE_FRAME_MOBILE,
+} from "@/lib/design/testimonial-frame";
 import { testimonials } from "@/content/site-content";
+import { carouselTabIndex } from "@/lib/carousel-navigation";
 
 /**
  * Figma geometry (1512 frame): the notched frame is 725.265 x 261.269 at
@@ -16,33 +22,180 @@ import { testimonials } from "@/content/site-content";
 /* Chevron glyphs at x=169 and right edge x=1362 — 65px and 45.6px from the
    1304 content column's edges, less the arrow button's 12px hit padding. */
 /* 402 frame: chevrons at x=17 and 382.2, on y=3653 — 120 into the block. */
-const ARROW_LEFT = "left-[1.0625rem] top-[7.5rem] -translate-y-1/2 lg:left-[3.3125rem] lg:top-[8.15625rem]";
-const ARROW_RIGHT = "right-[1.0625rem] top-[7.5rem] -translate-y-1/2 lg:right-[2.1rem] lg:top-[8.15625rem]";
+const ARROW_LEFT =
+  "-left-[1.3125rem] top-[7.5rem] -translate-y-1/2 sm:left-0 lg:left-[3.3125rem] lg:top-[8.15625rem]";
+const ARROW_RIGHT =
+  "-right-[1.125rem] top-[7.5rem] -translate-y-1/2 sm:right-0 lg:right-[2.1rem] lg:top-[8.15625rem]";
 
 /** Dots measured off the render: 11px circles, 5px apart, 30px active pill. */
 /* The 402 frame shrinks the row to 41.59 wide on 4.73px dots. */
 const DOT_BASE =
   "h-[0.2955rem] rounded-full transition-[width,background-color] duration-300 ease-out lg:h-[0.6775625rem]";
 
+/** How long each testimonial holds before the next one takes over. */
+const AUTOPLAY_MS = 6500;
+
+interface TestimonialDotsProps {
+  readonly activeIndex: number;
+  readonly panelId: string;
+  readonly go: (next: number, direction: number) => void;
+}
+
+function TestimonialDots({ activeIndex, panelId, go }: TestimonialDotsProps) {
+  const tabs = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      aria-label="Testimonial selection"
+      className="mt-[0.75rem] flex items-center justify-center gap-[0.1875rem] lg:mt-[3.25rem] lg:gap-[0.33875rem]"
+      onKeyDown={(event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        const next = carouselTabIndex(
+          activeIndex,
+          event.key,
+          testimonials.length,
+        );
+        if (next === null) return;
+        event.preventDefault();
+        go(next, next > activeIndex ? 1 : -1);
+        tabs.current
+          ?.querySelectorAll("button")
+          [next]?.focus({ preventScroll: true });
+      }}
+      ref={tabs}
+      role="tablist"
+    >
+      {testimonials.map((item, index) => (
+        <button
+          aria-controls={panelId}
+          aria-label={`Show testimonial ${index + 1}`}
+          aria-selected={activeIndex === index}
+          className={`${DOT_BASE} ${activeIndex === index ? "w-[0.8275rem] bg-sky lg:w-[1.8971875rem]" : "w-[0.2955rem] bg-ice lg:w-[0.6775625rem]"}`}
+          id={`${panelId}-tab-${index}`}
+          key={item.client}
+          onClick={() => go(index, index > activeIndex ? 1 : -1)}
+          role="tab"
+          tabIndex={activeIndex === index ? 0 : -1}
+          type="button"
+        />
+      ))}
+    </div>
+  );
+}
+
 export function TestimonialCarousel() {
+  const panelId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
-  const content = useRef<HTMLQuoteElement>(null);
+  /** The direction the last change moved in, so the quote enters from that side. */
+  const [direction, setDirection] = useState(1);
+  /* Hover and focus must remain independent: leaving with the pointer must
+     never restart playback while a keyboard user still has a control focused. */
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [offscreen, setOffscreen] = useState(false);
+  const [backgrounded, setBackgrounded] = useState(false);
+  const content = useRef<HTMLParagraphElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const paused = hovered || focused || offscreen || backgrounded;
   const testimonial = testimonials[activeIndex];
 
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !content.current) return;
-    gsap.fromTo(
-      content.current,
-      { autoAlpha: 0 },
-      { autoAlpha: 1, duration: 0.28, ease: "power2.out", overwrite: "auto" },
-    );
-  }, [activeIndex]);
+  const go = useCallback((next: number, from: number) => {
+    setDirection(from);
+    setActiveIndex(next);
+  }, []);
 
-  const move = (direction: number) =>
-    setActiveIndex((current) => (current + direction + testimonials.length) % testimonials.length);
+  const move = useCallback((step: number) => {
+    setDirection(step);
+    setActiveIndex(
+      (current) => (current + step + testimonials.length) % testimonials.length,
+    );
+  }, []);
+
+  /*
+   * The quote slides in from the side the change came from, so an advance
+   * reads as forward motion rather than a crossfade in place. The travel is
+   * small — the frame around it does not move, and a long slide inside a
+   * static frame reads as the text being loose in it.
+   */
+  useEffect(() => {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !content.current
+    )
+      return;
+    const tween = gsap.fromTo(
+      content.current,
+      { autoAlpha: 0, x: direction * 26 },
+      {
+        autoAlpha: 1,
+        x: 0,
+        duration: 0.42,
+        ease: "power3.out",
+        overwrite: "auto",
+      },
+    );
+    return () => {
+      tween.revert();
+    };
+  }, [activeIndex, direction]);
+
+  /*
+   * Autoplay, held whenever it would be rude to move the text: while a pointer
+   * is over the carousel, while focus is inside it, while the tab is in the
+   * background, and while the section is off screen. The timer is keyed on
+   * `activeIndex`, so any manual change restarts the full interval rather than
+   * advancing again a moment later.
+   */
+  useEffect(() => {
+    if (paused || testimonials.length < 2) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let timer: number | undefined;
+    const syncPreference = () => {
+      window.clearInterval(timer);
+      if (!preference.matches)
+        timer = window.setInterval(() => move(1), AUTOPLAY_MS);
+    };
+    syncPreference();
+    preference.addEventListener("change", syncPreference);
+    return () => {
+      window.clearInterval(timer);
+      preference.removeEventListener("change", syncPreference);
+    };
+  }, [paused, activeIndex, move]);
+
+  /** Off-screen and background tabs hold the timer; both are wasted motion. */
+  useEffect(() => {
+    const node = stage.current;
+    if (!node) return;
+
+    const onVisibility = () => setBackgrounded(document.hidden);
+    onVisibility();
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setOffscreen(!entry.isIntersecting),
+      { threshold: 0.2 },
+    );
+    observer.observe(node);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    <div className="relative mt-[2.9375rem]" data-motion="testimonial-stage">
+    <div
+      className="relative mt-[1.4375rem] lg:mt-[2.9375rem]"
+      data-motion="testimonial-stage"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          setFocused(false);
+      }}
+      onFocus={() => setFocused(true)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      ref={stage}
+    >
       <CarouselArrow
         className={ARROW_LEFT}
         direction="prev"
@@ -57,17 +210,42 @@ export function TestimonialCarousel() {
           its content, the capsule follows in flow, and the frame stretches. */}
       {/* 402 frame: a 316.18 x 243.9 block at x=43, its copy 276.48 wide and
           starting 14.65 down. */}
-      <div className="relative mx-auto w-full max-w-[19.76125rem] px-[1.240625rem] pt-[0.915625rem] pb-[2.5rem] lg:h-[16.3293125rem] lg:w-[45.3290625rem] lg:max-w-none lg:px-0 lg:pt-0 lg:pb-0">
-        <NotchedPanel gradientId="quote-frame-stroke" shape={QUOTE_FRAME} />
+      {/* The 402 frame's card is 316 wide. Left at that on a tablet it is a
+          small card adrift in a wide section, so it grows with the screen up
+          to the point the desktop composition takes over. */}
+      <div
+        aria-labelledby={`${panelId}-tab-${activeIndex}`}
+        className="relative mx-auto w-full max-w-[19.76125rem] px-[1.240625rem] pt-[0.915625rem] sm:max-w-[32rem] sm:px-[2rem] lg:h-[16.3293125rem] lg:w-[45.3290625rem] lg:max-w-none lg:px-0 lg:pt-0"
+        id={panelId}
+        role="tabpanel"
+      >
+        <div className="absolute inset-x-0 top-0 bottom-[1.44375rem] lg:bottom-0">
+          <div className="lg:hidden">
+            <NotchedPanel
+              gradientId="quote-frame-mobile"
+              shape={QUOTE_FRAME_MOBILE}
+            />
+          </div>
+          <div className="hidden lg:block">
+            <NotchedPanel gradientId="quote-frame-stroke" shape={QUOTE_FRAME} />
+          </div>
+        </div>
 
         <blockquote
-          aria-live="polite"
+          aria-live={paused ? "polite" : "off"}
           /* 276.48 wide and 176 tall over eight lines. */
-          className="relative text-center text-[0.875rem] font-book leading-[1.375rem] text-ice lg:absolute lg:left-1/2 lg:top-[2.0625rem] lg:w-[39.625rem] lg:-translate-x-1/2 lg:text-[1.219625rem] lg:leading-[1.625rem]"
-          ref={content}
+          className="relative flex min-h-[11rem] items-center justify-center text-center text-[1rem] font-book leading-[1.375rem] text-ice lg:absolute lg:left-1/2 lg:top-[2.0625rem] lg:min-h-0 lg:w-[39.625rem] lg:-translate-x-1/2 lg:text-[1.219625rem] lg:leading-[1.625rem]"
         >
-          <p>
-            “{testimonial.lead ? <strong className="font-semibold">{testimonial.lead}</strong> : null}
+          {/* The tween goes on the paragraph, not the blockquote: the
+              blockquote centres itself with a translate at `lg`, and gsap
+              writing `transform` would overwrite it. */}
+          <p ref={content}>
+            “
+            {testimonial.lead ? (
+              <strong className="font-bold lg:font-semibold">
+                {testimonial.lead}
+              </strong>
+            ) : null}
             {testimonial.quote}”
           </p>
         </blockquote>
@@ -75,11 +253,24 @@ export function TestimonialCarousel() {
         {/* Figma y=2797.25 against the frame top at y=2636.80 = 160.45px. */}
         {/* 402 frame: a 230 x 64 capsule at x=80, 203 down the block — so it
             hangs past its bottom edge, as it does at 1512. */}
-        <div className="relative mx-auto mt-[0.8125rem] h-[4rem] w-full max-w-[14.375rem] lg:absolute lg:left-1/2 lg:top-[10.028125rem] lg:mt-0 lg:h-[6.9789375rem] lg:w-[23.9180625rem] lg:max-w-none lg:-translate-x-1/2">
-          <NotchedPanel gradientId="quote-capsule-stroke" shape={QUOTE_CAPSULE} />
-          <div className="relative grid h-full place-items-center px-4 text-center text-[0.8125rem] font-book leading-[1.1875rem] text-ice lg:px-0 lg:text-[1.219625rem] lg:leading-[1.625rem]">
+        <div className="relative mx-auto mt-[0.771875rem] h-[4rem] w-full max-w-[14.375rem] max-sm:-left-[0.375rem] sm:max-w-[19rem] lg:absolute lg:left-1/2 lg:top-[10.028125rem] lg:mt-0 lg:h-[6.9789375rem] lg:w-[23.9180625rem] lg:max-w-none lg:-translate-x-1/2">
+          <div className="lg:hidden">
+            <NotchedPanel
+              gradientId="quote-capsule-mobile"
+              shape={QUOTE_CAPSULE_MOBILE}
+            />
+          </div>
+          <div className="hidden lg:block">
+            <NotchedPanel
+              gradientId="quote-capsule-stroke"
+              shape={QUOTE_CAPSULE}
+            />
+          </div>
+          <div className="relative grid h-full place-items-center px-0 text-center text-[0.875rem] font-book leading-[1.1875rem] text-ice max-sm:translate-x-[0.461875rem] lg:text-[1.219625rem] lg:leading-[1.625rem]">
             <p>
-              <strong className="font-semibold">{testimonial.client}</strong>
+              <strong className="font-bold lg:font-semibold">
+                {testimonial.client}
+              </strong>
               <br />
               <span className="font-normal">{testimonial.title}</span>
             </p>
@@ -95,23 +286,7 @@ export function TestimonialCarousel() {
         scale="testimonial"
       />
 
-      <div
-        aria-label="Testimonial selection"
-        className="mt-[1.5rem] flex items-center justify-center gap-[0.1875rem] lg:mt-[3.25rem] lg:gap-[0.33875rem]"
-        role="tablist"
-      >
-        {testimonials.map((item, index) => (
-          <button
-            aria-label={`Show testimonial ${index + 1}`}
-            aria-selected={activeIndex === index}
-            className={`${DOT_BASE} ${activeIndex === index ? "w-[0.8275rem] bg-sky lg:w-[1.8971875rem]" : "w-[0.2955rem] bg-ice lg:w-[0.6775625rem]"}`}
-            key={item.client}
-            onClick={() => setActiveIndex(index)}
-            role="tab"
-            type="button"
-          />
-        ))}
-      </div>
+      <TestimonialDots activeIndex={activeIndex} panelId={panelId} go={go} />
     </div>
   );
 }

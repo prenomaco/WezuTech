@@ -1,3 +1,5 @@
+import { designPx } from "@/lib/design/units";
+
 /**
  * Figma's "Pattern refraction" shader, ported to run without a filter.
  *
@@ -164,7 +166,7 @@ export function refractionLayers(frameWidth: number): readonly RefractionLayer[]
     for (let i = 0; i <= STOPS_PER_PERIOD; i += 1) {
       const t = (i / STOPS_PER_PERIOD) * PATTERN_SIZE;
       const share = Math.max(0, 1 - Math.abs(refractionDisplacement(t) - offset) / step);
-      stops.push(`rgb(0 0 0/${share.toFixed(4)}) ${(phase - PATTERN_SIZE + t).toFixed(3)}px`);
+      stops.push(`rgb(0 0 0/${share.toFixed(4)}) ${designPx(phase - PATTERN_SIZE + t)}`);
     }
 
     return { offset, mask: `repeating-linear-gradient(to right,${stops.join(",")})` };
