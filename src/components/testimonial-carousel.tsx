@@ -10,8 +10,8 @@ import {
   QUOTE_CAPSULE_MOBILE,
   QUOTE_FRAME_MOBILE,
 } from "@/lib/design/testimonial-frame";
-import { testimonials } from "@/content/site-content";
 import { carouselTabIndex } from "@/lib/carousel-navigation";
+import type { PublicTestimonial } from "@/lib/testimonials";
 
 /**
  * Figma geometry (1512 frame): the notched frame is 725.265 x 261.269 at
@@ -38,10 +38,11 @@ const AUTOPLAY_MS = 6500;
 interface TestimonialDotsProps {
   readonly activeIndex: number;
   readonly panelId: string;
+  readonly testimonials: readonly PublicTestimonial[];
   readonly go: (next: number, direction: number) => void;
 }
 
-function TestimonialDots({ activeIndex, panelId, go }: TestimonialDotsProps) {
+function TestimonialDots({ activeIndex, panelId, testimonials, go }: TestimonialDotsProps) {
   const tabs = useRef<HTMLDivElement>(null);
   return (
     <div
@@ -71,7 +72,7 @@ function TestimonialDots({ activeIndex, panelId, go }: TestimonialDotsProps) {
           aria-selected={activeIndex === index}
           className={`${DOT_BASE} ${activeIndex === index ? "w-[0.8275rem] bg-sky lg:w-[1.8971875rem]" : "w-[0.2955rem] bg-ice lg:w-[0.6775625rem]"}`}
           id={`${panelId}-tab-${index}`}
-          key={item.client}
+          key={item.id}
           onClick={() => go(index, index > activeIndex ? 1 : -1)}
           role="tab"
           tabIndex={activeIndex === index ? 0 : -1}
@@ -82,7 +83,7 @@ function TestimonialDots({ activeIndex, panelId, go }: TestimonialDotsProps) {
   );
 }
 
-export function TestimonialCarousel() {
+export function TestimonialCarousel({ testimonials }: { readonly testimonials: readonly PublicTestimonial[] }) {
   const panelId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
   /** The direction the last change moved in, so the quote enters from that side. */
@@ -108,7 +109,7 @@ export function TestimonialCarousel() {
     setActiveIndex(
       (current) => (current + step + testimonials.length) % testimonials.length,
     );
-  }, []);
+  }, [testimonials.length]);
 
   /*
    * The quote slides in from the side the change came from, so an advance
@@ -160,7 +161,7 @@ export function TestimonialCarousel() {
       window.clearInterval(timer);
       preference.removeEventListener("change", syncPreference);
     };
-  }, [paused, activeIndex, move]);
+  }, [paused, activeIndex, move, testimonials.length]);
 
   /** Off-screen and background tabs hold the timer; both are wasted motion. */
   useEffect(() => {
@@ -286,7 +287,7 @@ export function TestimonialCarousel() {
         scale="testimonial"
       />
 
-      <TestimonialDots activeIndex={activeIndex} panelId={panelId} go={go} />
+      <TestimonialDots activeIndex={activeIndex} panelId={panelId} testimonials={testimonials} go={go} />
     </div>
   );
 }

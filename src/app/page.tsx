@@ -8,12 +8,13 @@ import { Products } from "@/components/sections/products";
 import { Testimonials } from "@/components/sections/testimonials";
 import { getPublishedProducts } from "@/lib/catalog";
 import { jsonLd, organisationSchema, websiteSchema } from "@/lib/structured-data";
+import { getPublishedTestimonials } from "@/lib/testimonials";
 import { SiteMotion } from "@/motion/site-motion";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const products = await getPublishedProducts();
+  const [products, testimonials] = await Promise.all([getPublishedProducts(), getPublishedTestimonials()]);
 
   return (
     <main className="relative">
@@ -26,7 +27,7 @@ export default async function Home() {
       <About />
       <Products products={products} />
       <Industries />
-      <Testimonials />
+      <Testimonials testimonials={testimonials} />
       <Contact />
       <Footer />
     </main>

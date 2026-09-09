@@ -26,8 +26,10 @@ const TITLE_OFFSET =
 export function Contact({
   /* 402 frame: 54 above the title and 58 below the submit button. */
   className = "pt-[3.375rem] pb-[3.625rem] lg:pt-[3.1875rem] lg:pb-[6.3125rem]",
+  productSlug,
 }: {
   readonly className?: string;
+  readonly productSlug?: string;
 }) {
   return (
     <Section id="contact" className={className}>
@@ -39,7 +41,7 @@ export function Contact({
             </span>
           ))}
         </DisplayTitle>
-        <ContactForm />
+        <ContactForm productSlug={productSlug} />
       </div>
     </Section>
   );

@@ -20,7 +20,9 @@ enum ProductStatus {
 enum ProductMediaKind {
   CARD
   HERO
+  DETAIL
   GALLERY
+  APPLICATION
   DATASHEET
 }
 
@@ -63,21 +65,21 @@ model User {
 }
 
 model Product {
-  id             String        @id @default(cuid())
-  slug           String        @unique
-  name           String
-  status         ProductStatus @default(DRAFT)
-  tagline        String?
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  name            String
+  status          ProductStatus    @default(DRAFT)
+  tagline         String?
   cardDescription String?
-  introduction   String?
-  seoTitle       String?
-  seoDescription String?
-  sortOrder      Int           @default(0)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  media          ProductMedia[]
-  sections       ProductSection[]
-  leads          Lead[]
+  introduction    String?
+  seoTitle        String?
+  seoDescription  String?
+  sortOrder       Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  media           ProductMedia[]
+  sections        ProductSection[]
+  leads           Lead[]
 
   @@index([status, sortOrder])
 }
@@ -129,4 +131,18 @@ model Lead {
 
   @@index([status, createdAt])
   @@index([sourceProductId])
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  lead        String?
+  quote       String
+  client      String
+  title       String
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
 }

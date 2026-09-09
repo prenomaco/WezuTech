@@ -13,7 +13,7 @@ const STATUS_TONE = {
 
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
-    include: { media: { where: { kind: "CARD" }, take: 1 }, _count: { select: { leads: true } } },
+    include: { media: { orderBy: { sortOrder: "asc" } }, sections: { orderBy: { sortOrder: "asc" } }, _count: { select: { leads: true } } },
     orderBy: { sortOrder: "asc" },
   });
 
@@ -63,7 +63,7 @@ export default async function ProductsPage() {
       <section className="flex flex-col gap-4">
         <AdminProductForm />
         {products.map((product) => (
-          <AdminProductForm key={product.id} media={product.media[0]} product={product} />
+          <AdminProductForm key={product.id} media={product.media} product={product} sections={product.sections} />
         ))}
       </section>
     </div>

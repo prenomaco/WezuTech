@@ -33,16 +33,16 @@ export const primaryNav: readonly NavLink[] = [
   /* There is a dedicated About page (Figma node 307:165), so the nav goes to
      it rather than to the home page's about section. */
   { label: "About", href: "/about" },
-  { label: "Products", href: "#products" },
-  { label: "Gallery", href: "#gallery" },
+  { label: "Products", href: "/#products" },
+  { label: "Gallery", href: "/#gallery" },
 ];
 
 export const footerNav: readonly NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "About", href: "#about" },
-  { label: "Product", href: "#products" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/about" },
+  { label: "Product", href: "/#products" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const legalNav: readonly NavLink[] = [

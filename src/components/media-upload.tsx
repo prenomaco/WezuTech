@@ -11,9 +11,21 @@ import { Input, Label } from "@/components/dashboard/ui";
  * cannot be replaced without losing the browser's own file picker, so the
  * button inside it takes the dashboard's colours instead.
  */
-export function MediaUpload({ initialUrl = "" }: { readonly initialUrl?: string }) {
+export function MediaUpload({
+  initialUrl = "",
+  initialPublicId = "",
+  label = "Product card image",
+  name = "imageUrl",
+  accept = "image/*",
+}: {
+  readonly initialUrl?: string;
+  readonly initialPublicId?: string;
+  readonly label?: string;
+  readonly name?: string;
+  readonly accept?: string;
+}) {
   const [url, setUrl] = useState(initialUrl);
-  const [publicId, setPublicId] = useState("");
+  const [publicId, setPublicId] = useState(initialPublicId);
   const [state, setState] = useState("");
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
@@ -49,23 +61,29 @@ export function MediaUpload({ initialUrl = "" }: { readonly initialUrl?: string 
   }
 
   return (
-    <label className="flex flex-col gap-1.5 sm:col-span-2">
-      <Label>Product card image</Label>
-      <Input
-        name="imageUrl"
-        onChange={(event) => setUrl(event.target.value)}
-        placeholder="https://..."
-        type="url"
-        value={url}
-      />
-      <input name="imagePublicId" type="hidden" value={publicId} />
-      <input
-        accept="image/*,.pdf"
-        className="mt-1 w-full text-sm text-[var(--dash-muted)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--dash-subtle)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-[var(--dash-fg)] hover:file:bg-[var(--dash-card-hover)]"
-        onChange={upload}
-        type="file"
-      />
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <Label>{label}</Label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs text-[var(--dash-muted)]">Paste an image or file URL</span>
+        <Input
+          name={name}
+          onChange={(event) => setUrl(event.target.value)}
+          placeholder="https://..."
+          type="url"
+          value={url}
+        />
+      </label>
+      <input name={`${name}PublicId`} type="hidden" value={publicId} />
+      <label className="flex flex-col gap-1">
+        <span className="text-xs text-[var(--dash-muted)]">Or upload from your device</span>
+        <input
+          accept={accept}
+          className="w-full text-sm text-[var(--dash-muted)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--dash-subtle)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-[var(--dash-fg)] hover:file:bg-[var(--dash-card-hover)]"
+          onChange={upload}
+          type="file"
+        />
+      </label>
       {state ? <small className="text-xs text-[var(--dash-muted)]">{state}</small> : null}
-    </label>
+    </div>
   );
 }

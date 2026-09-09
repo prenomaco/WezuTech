@@ -5,6 +5,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useRef } from "react";
+import Link from "next/link";
 import { trackEvent } from "@/components/analytics";
 import { ButtonLink } from "@/components/ui/button";
 import { CarouselArrow } from "@/components/ui/carousel-arrow";
@@ -34,9 +35,15 @@ const ARROW_RIGHT = "right-[2.1rem] top-1/2 -translate-y-1/2";
 function ProductCard({ product }: { product: CatalogProduct }) {
   return (
     <article
-      className={`w-full shrink-0 snap-start ${CARD_GRID}`}
+      className={`relative w-full shrink-0 snap-start ${CARD_GRID}`}
       data-motion="products-card"
     >
+      <Link
+        aria-label={`View ${product.name}`}
+        className="absolute inset-0 z-10 rounded-panel focus-visible:outline-offset-[-3px]"
+        href={`/products/${product.slug}`}
+        onClick={() => trackEvent("product_detail_click", { product_slug: product.slug })}
+      />
       <img
         alt={product.name}
         className="h-[17.25rem] w-[16.125rem] object-contain lg:h-[25.125rem] lg:w-[23.5625rem]"
@@ -63,7 +70,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         {/* Figma indents the CTA row 3px from the copy column (685 -> 688). */}
         <div className="mt-[2.1875rem] flex w-[19.3125rem] flex-col items-center gap-[1.25rem] lg:mt-auto lg:ml-[3px] lg:w-auto lg:flex-row lg:gap-5">
           <ButtonLink
-            className="w-full lg:w-[12.9375rem]"
+            className="relative z-20 w-full lg:w-[12.9375rem]"
             href="#contact"
             onClick={() =>
               trackEvent("product_contact_click", {
@@ -73,11 +80,8 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           >
             Contact For Purchase
           </ButtonLink>
-          {/* Detail pages are not built yet, so this stays inert rather than
-              becoming a link that goes nowhere. */}
           <span
             className="inline-flex h-11 w-full items-center justify-center rounded-control px-5 text-center text-base leading-none text-mist lg:w-[16.8125rem]"
-            title="Product detail page is in development"
           >
             Learn more about the product
           </span>

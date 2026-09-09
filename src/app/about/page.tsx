@@ -6,6 +6,7 @@ import { AboutIntro } from "@/components/sections/about-page";
 import { Contact } from "@/components/sections/contact";
 import { Testimonials } from "@/components/sections/testimonials";
 import { jsonLd, webPageSchema } from "@/lib/structured-data";
+import { getPublishedTestimonials } from "@/lib/testimonials";
 import { SiteMotion } from "@/motion/site-motion";
 
 const DESCRIPTION =
@@ -26,7 +27,10 @@ export const metadata: Metadata = {
  * their own offsets here; the introduction, capabilities panel and process line
  * are this page's alone.
  */
-export default function AboutPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AboutPage() {
+  const testimonials = await getPublishedTestimonials();
   return (
     <main className="relative">
       <SiteMotion />
@@ -51,7 +55,7 @@ export default function AboutPage() {
           spaces them differently — the quote block sits 131px lower after the
           process line than it does after the industries grid. */}
       <div className="mt-[8.1875rem]">
-        <Testimonials />
+        <Testimonials testimonials={testimonials} />
       </div>
       {/* Frame 307:165 puts the form 79.7px below the quote block and the
           footer panel 50.5px below the form, against the home frame's 51 and

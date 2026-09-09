@@ -9,6 +9,7 @@ import {
   Inbox,
   LayoutDashboard,
   LogOut,
+  MessageSquareQuote,
   Package,
   type LucideIcon,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Enquiries", icon: Inbox },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
 ];
 
 /** Where the collapsed state is remembered, so it survives a navigation. */

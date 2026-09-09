@@ -1,5 +1,6 @@
 import { contactDetails } from "@/content/site-content";
 import { siteUrl } from "@/lib/env";
+import type { ProductDetail } from "@/lib/product-detail";
 
 /**
  * Schema.org descriptions of the site, emitted as JSON-LD.
@@ -66,6 +67,23 @@ export function websiteSchema() {
     url: siteUrl,
     name: "Wezu Technologies",
     publisher: { "@id": ORGANISATION_ID },
+  };
+}
+
+export function productSchema(product: ProductDetail) {
+  const images = [product.media.hero, ...product.media.gallery.map((item) => item.url)]
+    .filter(Boolean)
+    .map((url) => new URL(url, siteUrl).toString());
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${siteUrl}/products/${product.slug}#product`,
+    name: product.name,
+    description: product.seoDescription ?? product.introduction,
+    url: `${siteUrl}/products/${product.slug}`,
+    ...(images.length ? { image: images } : {}),
+    brand: { "@type": "Brand", name: "Wezu Technologies" },
+    manufacturer: { "@id": ORGANISATION_ID },
   };
 }
 

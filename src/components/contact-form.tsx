@@ -68,7 +68,7 @@ function Field({
   );
 }
 
-export function ContactForm() {
+export function ContactForm({ productSlug }: { readonly productSlug?: string }) {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
 
@@ -98,6 +98,7 @@ export function ContactForm() {
     /* The fields carry the reveal, not the form: staggering them reads as a
        sequence to fill in, and animating both would double the movement. */
     <form className={GRID} onSubmit={submit}>
+      {productSlug ? <input name="productSlug" type="hidden" value={productSlug} /> : null}
       {/* Bot trap: never shown, never focusable, submitted with the payload. */}
       <input
         aria-hidden="true"

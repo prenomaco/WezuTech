@@ -134,6 +134,73 @@ const RECIPES: Record<string, Recipe> = {
     ease: EASE_SETTLE,
     start: "top 97%",
   },
+
+  /* Product detail page. Same family as the rest of the site — headings
+     slide up from behind their own clip, copy and cards rise and settle,
+     artwork comes forward from depth — so the page reads as one more room
+     in the same building rather than a bolted-on template. */
+  "product-title": {
+    from: { yPercent: 115 },
+    duration: 0.5,
+    ease: EASE_TYPE,
+    split: true,
+  },
+  "product-copy": {
+    from: { y: 20, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+    stagger: 0.12,
+  },
+  "product-metric": {
+    from: { y: 26, scale: 0.96, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+    stagger: 0.12,
+  },
+  "product-cta": {
+    from: { y: 14, autoAlpha: 0 },
+    duration: 0.5,
+    ease: EASE_SETTLE,
+    stagger: 0.12,
+  },
+  /* The gallery settles from depth like the About artwork — a foreground
+     element arriving after the copy beside it. */
+  "product-gallery": {
+    from: { x: 40, scale: 1.04, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+    start: "top 92%",
+  },
+  "product-panel": {
+    from: { y: 24, scale: 0.97, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+  },
+  /* Arrives from the side it sits on, ahead of the panel it overlaps. */
+  "product-detail-image": {
+    from: { x: -36, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+    start: "top 92%",
+  },
+  "product-section-heading": {
+    from: { yPercent: 115 },
+    duration: 0.47,
+    ease: EASE_TYPE,
+    split: true,
+  },
+  "product-feature-item": {
+    from: { y: 30, x: -8, scale: 0.97, autoAlpha: 0 },
+    duration: 0.6,
+    ease: EASE_SETTLE,
+    stagger: 0.09,
+  },
+  "product-spec-row": {
+    from: { y: 14, autoAlpha: 0 },
+    duration: 0.5,
+    ease: EASE_SETTLE,
+    stagger: 0.06,
+  },
 };
 
 /**
