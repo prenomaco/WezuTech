@@ -51,9 +51,9 @@ export const legalNav: readonly NavLink[] = [
 ];
 
 export const contactDetails: readonly ContactDetail[] = [
-  { icon: "name", label: "Name Surname" },
-  { icon: "email", label: "name@gmail.com", href: "mailto:name@gmail.com" },
-  { icon: "phone", label: "+91 00000 00000", href: "tel:+910000000000" },
+  { icon: "name", label: "Customer Support" },
+  { icon: "email", label: "purchase@wezutech.com", href: "mailto:purchase@wezutech.com" },
+  { icon: "phone", label: "+91 9247539016", href: "tel:+919247539016" },
 ];
 
 export const hero = {
