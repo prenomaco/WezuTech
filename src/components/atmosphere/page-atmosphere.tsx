@@ -194,8 +194,8 @@ function MobileAtmosphere() {
 /**
  * Frame 5 (362:47) — the tile behind the hero.
  *
- * RefractionFrame extends the source through reflected canvas sampling at
- * wide viewports. There are no duplicated DOM tiles or additive mask layers.
+ * Stretch one source across the viewport; reflecting its cropped sides creates
+ * extra grooves where the original frame ends on large screens.
  */
 const HERO_TILE = {
   left: -13,
@@ -206,7 +206,7 @@ const HERO_TILE = {
 
 function HeroTile() {
   return (
-    <RefractionFrame box={HERO_TILE} bleed id="hero">
+    <RefractionFrame box={HERO_TILE} relativeTo={1512} id="hero">
       <GlowLayer
         box={{ left: -64.38, top: -94.01, width: 1656.89, height: 1103.004 }}
         vector="field"
@@ -222,13 +222,9 @@ function DesktopAtmosphere() {
      * Clipped at the viewport, and split into the two things the design's
      * light actually does.
      *
-     * The tiles carry structure — the `field` vector has a dark waist about
-     * five twelfths across, and that waist is drawn to land on the artwork
-     * behind the hero. So they belong to the content column and are laid out
-     * in the same `rem` the column is, which holds them at the design's exact
-     * proportion at every width and locks them to the column past 1512 where
-     * it stops growing. Stretching them to the viewport instead is what put
-     * the waist at 160/255 on a 1905 screen where the design has 4.7.
+     * The client requested continuous horizontal stretching on large screens.
+     * Tile widths therefore follow the viewport; their vertical positions and
+     * heights remain in design units so section alignment does not change.
      *
      * The streaks carry none — they are a soft falloff off one edge of the
      * frame, and the edge they decorate is the screen's. They hang off the
@@ -274,23 +270,24 @@ function DesktopAtmosphere() {
         vector="streakUpper"
       />
 
-      <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
+      <div className="relative h-full w-full">
         {/* Frame 5 (362:47) — the hero tile. */}
         <HeroTile />
 
         {/* Group 13 (362:62) — the footer band. */}
-        <GlowLayer
-          box={{ left: -166, top: 3524, width: 1852, height: 1101.905 }}
-          vector="footer"
-        />
+        <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
+          <GlowLayer
+            box={{ left: -166, top: 3524, width: 1852, height: 1101.905 }}
+            vector="footer"
+          />
+        </div>
 
-        {/* Frames 6/7 share a single mirrored surface. Full-width continuation
-            prevents the old 1565px crop from appearing inside wide screens. */}
+        {/* Frames 6/7 retain their vertical mirror on one stretched surface. */}
         <RefractionFrame
           box={{ left: -22, top: 1816, width: 1565, height: 648 }}
           id="products"
           mirrorY
-          bleed
+          relativeTo={1512}
         >
           <GlowLayer
             box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
