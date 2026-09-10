@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
+    "db:portfolio": "tsx --env-file=.env.local prisma/seed-portfolio.ts",
     "postinstall": "DATABASE_URL='postgresql://user:password@localhost:5432/wezu' prisma generate",
     "db:admins": "tsx scripts/seed-admins.ts"
   },
