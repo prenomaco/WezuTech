@@ -28,7 +28,7 @@ const COLUMN_INDENT = "3.0625rem"; /* 49 */
 const HEADING =
   "font-display text-[1.3195rem] leading-[1.539375rem] text-white";
 const LINK =
-  "nav-link text-[1rem] font-book leading-[1.3125rem] text-white transition-colors hover:text-sky lg:text-[1.172875rem] lg:leading-[1.6125rem]";
+  "nav-link w-fit max-w-full text-[1rem] font-book leading-[1.3125rem] text-white transition-colors hover:text-sky lg:text-[1.172875rem] lg:leading-[1.6125rem]";
 const DETAIL =
   "flex items-center gap-[0.4375rem] text-[1.125rem] leading-[1.5rem] text-white";
 
