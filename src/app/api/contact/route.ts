@@ -16,7 +16,9 @@ export async function POST(request: Request) {
 
   try {
     const product = result.data.productSlug
-      ? await prisma.product.findUnique({ where: { slug: result.data.productSlug }, select: { id: true } })
+      /* The name and slug come along for the notification, which says which
+         product the enquiry came from and links back to its page. */
+      ? await prisma.product.findUnique({ where: { slug: result.data.productSlug }, select: { id: true, name: true, slug: true } })
       : null;
     const lead = await prisma.lead.create({
       data: {
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
         sourceProductId: product?.id,
       },
     });
-    const delivery = await notifySales(lead);
+    const delivery = await notifySales({ ...lead, productName: product?.name, productSlug: product?.slug });
     await prisma.lead.update({
       where: { id: lead.id },
       data: { notificationStatus: delivery.status as LeadEmailStatus, notificationMessage: delivery.message },
