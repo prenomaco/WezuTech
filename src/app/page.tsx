@@ -1,4 +1,5 @@
 import { PageAtmosphere } from "@/components/atmosphere/page-atmosphere";
+import { CurtainIntro } from "@/components/intro/curtain-intro";
 import { Footer } from "@/components/layout/footer";
 import { About } from "@/components/sections/about";
 import { Contact } from "@/components/sections/contact";
@@ -20,6 +21,7 @@ export default async function Home() {
     <main className="relative">
       <SiteMotion />
       <PageAtmosphere />
+      <CurtainIntro />
       <script dangerouslySetInnerHTML={jsonLd(organisationSchema())} type="application/ld+json" />
       <script dangerouslySetInnerHTML={jsonLd(websiteSchema())} type="application/ld+json" />
 

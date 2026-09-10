@@ -494,3 +494,37 @@
  * wheel scroll in Zen at DPR 2 measured 1.74ms with both promoted and 0.87ms
  * with the glows released, against 106.77ms before any of this work.
  */
+
+/*
+ * The home page's load intro is unconditional JSX, not gated behind a
+ * client-only check, specifically so the very first painted frame — before
+ * any JS has run, cache or no cache — is already the cover rather than a
+ * flash of the page underneath. That means a pure-CSS animation is what has
+ * to guarantee it clears again: if a script error ever stops the GSAP
+ * timeline from reaching its own completion, this keeps the cover from
+ * blocking the site forever. Under normal conditions GSAP finishes first,
+ * around 2.9s, and unmounts the element outright.
+ */
+@keyframes curtain-intro-fallback-clear {
+  0%,
+  92% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.curtain-intro {
+  animation: curtain-intro-fallback-clear 6s 1 forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curtain-intro {
+    display: none;
+  }
+}
