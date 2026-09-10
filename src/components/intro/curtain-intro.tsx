@@ -83,7 +83,7 @@ export function CurtainIntro() {
         <div className="absolute inset-x-0 top-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="-ml-px h-full flex-1 bg-ink first:ml-0"
+              className="-ml-px h-full flex-1 bg-sky-bright first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) topRefs.current[index] = el;
@@ -95,7 +95,7 @@ export function CurtainIntro() {
         <div className="absolute inset-x-0 bottom-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="-ml-px h-full flex-1 bg-ink first:ml-0"
+              className="-ml-px h-full flex-1 bg-sky-bright first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) bottomRefs.current[index] = el;

@@ -48,7 +48,7 @@ function frameStyle({
 export function RefractionFrame(props: RefractionFrameProps) {
   const { id, box, flipY, mirrorY, bleed, phaseOffset, children } = props;
   return (
-    <div className="pointer-events-none absolute" style={frameStyle(props)}>
+    <div className="pointer-events-none absolute overflow-hidden" style={frameStyle(props)}>
       <RefractionCanvas
         id={id}
         frame={box}

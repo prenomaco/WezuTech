@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Header } from "@/components/layout/header";
 import { MobileHero } from "@/components/sections/mobile-hero";
 import { ButtonLink } from "@/components/ui/button";
@@ -17,8 +16,13 @@ const FRAME = { width: 1512, height: 940 } as const;
 const pct = (value: number, axis: "width" | "height" = "width") =>
   `${(value / FRAME[axis]) * 100}%`;
 
-/* Figma node 252:469 — the artwork starts 15px above the frame and is clipped. */
-const VEHICLES = { src: "/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png", width: 1264, height: 843 };
+/*
+ * The hero footage is a 1920 x 440 banner, so the stage box is given the clip's
+ * own ratio rather than a Figma height. `object-cover` then has nothing to crop:
+ * any other box turns a 4.36:1 clip into a single hugely magnified frame, which
+ * is what the fixed 1174.5 x 783 slot used to do.
+ */
+const VEHICLES = { src: "/videos/hero-section.mp4", aspect: "aspect-[1920/440]" };
 
 /**
  * Each headline line gets its own clip so the motion layer can slide it up from
@@ -54,29 +58,24 @@ export function Hero() {
             scenes lets ScrollTrigger latch the mid-entrance value on refresh and
             leaves the artwork stranded off its mark. */}
         <div
-          className="absolute"
+          className={`absolute overflow-hidden rounded-xl ${VEHICLES.aspect}`}
           data-motion="hero-vehicles-drift"
-          style={{
-            left: pct(123),
-            top: pct(-15, "height"),
-            width: pct(1174.5),
-            height: pct(783, "height"),
-          }}
+          style={{ left: pct(166), top: pct(319, "height"), width: pct(1186) }}
         >
-          {/* A third wrapper: the drift above is scroll-scrubbed and the image
+          {/* A third wrapper: the drift above is scroll-scrubbed and the video
               below is owned by the intro timeline, so the idle float needs a
               transform of its own rather than a share of either. */}
           <div className="size-full" data-motion="hero-vehicles-float">
-            <Image
-              alt="Electric car, freight truck and passenger train"
-              className="h-full w-full object-cover"
+            <video
+              autoPlay
+              className="block size-full object-cover"
               data-motion="hero-vehicles"
-              height={VEHICLES.height}
-              priority
-              sizes="(min-width: 1512px) 1175px, 78vw"
-              src={VEHICLES.src}
-              width={VEHICLES.width}
-            />
+              loop
+              muted
+              playsInline
+            >
+              <source src={VEHICLES.src} type="video/mp4" />
+            </video>
           </div>
         </div>
 
@@ -102,7 +101,7 @@ export function Hero() {
         <p
           className="absolute text-[1.125rem] leading-[1.5rem] text-ice"
           data-motion="hero-intro"
-          style={{ left: pct(104), top: pct(732, "height"), width: pct(709) }}
+          style={{ left: pct(166), top: pct(624, "height"), width: pct(709) }}
         >
           {hero.intro}
         </p>
@@ -113,7 +112,7 @@ export function Hero() {
           /* A percentage gap resolves against this box's own width, which is
              shrink-to-fit — the cycle collapses it during intrinsic sizing and
              wraps "Contact Us" onto a second line. */
-          style={{ left: pct(103), top: pct(838, "height"), gap: "1.1875rem" }}
+          style={{ left: pct(166), top: pct(730, "height"), gap: "1.1875rem" }}
         >
           <ButtonLink href="#contact">Contact Us</ButtonLink>
           <ButtonLink href="#about" variant="ghost">
