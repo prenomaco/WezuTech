@@ -59,12 +59,10 @@ export function MobileHero() {
           {hero.intro}
         </p>
         <div
-          className="absolute inset-x-0 top-[87.8621%] mx-auto flex w-[81.592%] flex-col items-center [&_a]:h-[clamp(2.75rem,10.9453vw,3.85rem)] [&_a]:text-[clamp(1rem,3.9801vw,1.4rem)]"
+          className="absolute inset-x-0 bottom-[3.5%] mx-auto flex w-[81.592%] flex-col items-center gap-[0.75rem] [&_a]:h-[clamp(2.75rem,10.9453vw,3.85rem)] [&_a]:w-full [&_a]:text-[clamp(1rem,3.9801vw,1.4rem)]"
           data-motion="hero-ctas"
         >
-          <ButtonLink className="w-full" href="#contact">
-            Contact Us
-          </ButtonLink>
+          <ButtonLink href="#contact">Contact Us</ButtonLink>
           <ButtonLink href="#about" variant="ghost">
             About
           </ButtonLink>

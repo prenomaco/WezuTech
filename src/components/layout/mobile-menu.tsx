@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { ButtonLink } from "@/components/ui/button";
 import { primaryNav } from "@/content/site-content";
 
@@ -34,6 +34,26 @@ function MenuGlyph({ open }: { open: boolean }) {
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  /* Where the panel expands from and collapses back to — the toggle button
+     itself, read at the moment it's pressed, not a fixed guess at its
+     position, so the reveal still anchors correctly if that ever changes.
+     `radius` is the distance from there to the viewport's farthest corner:
+     `circle()` only accepts the `closest-side` / `farthest-side` keywords,
+     not `farthest-corner`, so full coverage has to be a measured pixel
+     value instead. */
+  const [reveal, setReveal] = useState({ radius: 0, x: 0, y: 0 });
+
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+    setReveal({ radius, x, y });
+    setOpen((value) => !value);
+  };
 
   /* The panel covers the page, so the page behind it must not scroll under it. */
   useEffect(() => {
@@ -60,8 +80,8 @@ export function MobileMenu() {
         aria-controls="mobile-nav"
         aria-expanded={open}
         aria-label={open ? "Close menu" : "Open menu"}
-        className="absolute z-50 flex size-8 items-center justify-center"
-        onClick={() => setOpen((value) => !value)}
+        className="absolute z-[201] flex size-8 items-center justify-center"
+        onClick={toggle}
         /* Node 305:61 — 325 / 402 across, 34 down. */
         style={{ left: "80.8458%", top: "2.125rem" }}
         type="button"
@@ -70,11 +90,14 @@ export function MobileMenu() {
       </button>
 
       <div
-        className={`fixed inset-0 z-40 bg-ink/95 backdrop-blur-sm transition-opacity duration-200 ${
-          open ? "opacity-100" : "pointer-events-none opacity-0"
+        className={`fixed inset-0 z-[200] bg-ink/95 backdrop-blur-sm transition-[clip-path] duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          open ? "" : "pointer-events-none"
         }`}
-        hidden={!open}
         id="mobile-nav"
+        inert={!open}
+        style={{
+          clipPath: `circle(${open ? reveal.radius : 0}px at ${reveal.x}px ${reveal.y}px)`,
+        }}
       >
         <nav
           aria-label="Main"
