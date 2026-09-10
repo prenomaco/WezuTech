@@ -34,7 +34,6 @@ export const primaryNav: readonly NavLink[] = [
      it rather than to the home page's about section. */
   { label: "About", href: "/about" },
   { label: "Products", href: "/#products" },
-  { label: "Gallery", href: "/#gallery" },
 ];
 
 export const footerNav: readonly NavLink[] = [

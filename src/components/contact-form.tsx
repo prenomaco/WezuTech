@@ -1,10 +1,39 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/components/analytics";
 import { Button } from "@/components/ui/button";
+import { PRODUCT_INTEREST_EVENT, type ProductInterestDetail } from "@/lib/product-interest";
 
 type FormState = "idle" | "sending" | "success" | "error";
+
+/**
+ * A few different openers so every visitor who clicks a product's quote
+ * button doesn't submit the identical sentence. Each still ends in two blank
+ * lines — the point is a running start, not a finished message — so there is
+ * always room left for the visitor's own words.
+ *
+ * The pick is a hash of the product's name, not `Math.random()`: this value
+ * has to come out of render (a `defaultValue`, so an in-page navigation from
+ * one product's quote button reaches a fresh, unmounted textarea rather than
+ * an uncontrolled one React just reuses), and this component is first
+ * rendered on the server — a random pick there would rarely survive
+ * hydration's server/client comparison intact.
+ */
+const MESSAGE_VARIATIONS: readonly ((name: string) => string)[] = [
+  (name) => `Hey! I'm interested in ${name}.\n\n`,
+  (name) => `Hi, I'd like to get a quote for ${name}.\n\n`,
+  (name) => `Hello, could you tell me more about ${name}?\n\n`,
+  (name) => `Hi there — I'm looking into ${name} for a project.\n\n`,
+];
+
+function messageFor(name: string) {
+  let hash = 0;
+  for (let index = 0; index < name.length; index += 1) {
+    hash = (hash * 31 + name.charCodeAt(index)) >>> 0;
+  }
+  return MESSAGE_VARIATIONS[hash % MESSAGE_VARIATIONS.length](name);
+}
 
 /**
  * Figma: two 346px columns with a 16px gutter. Name and Email share row one,
@@ -68,9 +97,33 @@ function Field({
   );
 }
 
-export function ContactForm({ productSlug }: { readonly productSlug?: string }) {
+export function ContactForm({
+  productName,
+  productSlug,
+}: {
+  readonly productName?: string;
+  readonly productSlug?: string;
+}) {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
+  const prefilledMessage = productName ? messageFor(productName) : undefined;
+  const messageField = useRef<HTMLTextAreaElement>(null);
+
+  /* The home page's carousel cards each carry their own "Contact For
+     Purchase" button, but they all share this one Contact section rather
+     than getting a form of their own — there's no prop path from a card's
+     click to this field, so the click is broadcast as a DOM event instead
+     and applied here imperatively (the field is uncontrolled, same as its
+     `defaultValue` above). */
+  useEffect(() => {
+    function onInterest(event: Event) {
+      const detail = (event as CustomEvent<ProductInterestDetail>).detail;
+      if (!detail?.name || !messageField.current) return;
+      messageField.current.value = messageFor(detail.name);
+    }
+    window.addEventListener(PRODUCT_INTEREST_EVENT, onInterest);
+    return () => window.removeEventListener(PRODUCT_INTEREST_EVENT, onInterest);
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,6 +169,7 @@ export function ContactForm({ productSlug }: { readonly productSlug?: string }) 
         type="email"
       />
       <Field
+        className="col-span-full"
         gap="rest"
         label="Subject"
         name="subject"
@@ -129,9 +183,12 @@ export function ContactForm({ productSlug }: { readonly productSlug?: string }) 
         Message
         <textarea
           className={`${FIELD} -mt-[0.3125rem] h-[4.125rem] w-full resize-none lg:mt-[0.3125rem] lg:h-[10rem] lg:w-[43.5625rem]`}
+          defaultValue={prefilledMessage}
+          key={productSlug ?? "general"}
           minLength={10}
           name="message"
           placeholder="Lorem ipsum dolor siet amet"
+          ref={messageField}
           required
         />
       </label>

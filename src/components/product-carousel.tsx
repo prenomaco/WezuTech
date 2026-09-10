@@ -10,6 +10,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { CarouselArrow } from "@/components/ui/carousel-arrow";
 import { ProductTitle, Prose } from "@/components/ui/typography";
 import type { CatalogProduct } from "@/lib/catalog";
+import { PRODUCT_INTEREST_EVENT, type ProductInterestDetail } from "@/lib/product-interest";
 
 /**
  * Figma places the card inside the 1304px column as
@@ -65,11 +66,14 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           <ButtonLink
             className="w-full lg:w-[12.9375rem]"
             href="#contact"
-            onClick={() =>
-              trackEvent("product_contact_click", {
-                product_slug: product.slug,
-              })
-            }
+            onClick={() => {
+              trackEvent("product_contact_click", { product_slug: product.slug });
+              window.dispatchEvent(
+                new CustomEvent<ProductInterestDetail>(PRODUCT_INTEREST_EVENT, {
+                  detail: { name: product.name },
+                }),
+              );
+            }}
           >
             Contact For Purchase
           </ButtonLink>

@@ -218,7 +218,11 @@ export function ProductDetailPage({
       ) : null}
 
       <div className="relative" id="product-contact">
-        <Contact className="pt-[3.75rem] pb-[3.75rem] lg:pt-[3.5rem] lg:pb-[4.75rem]" productSlug={product.slug} />
+        <Contact
+          className="pt-[3.75rem] pb-[3.75rem] lg:pt-[3.5rem] lg:pb-[4.75rem]"
+          productName={product.name}
+          productSlug={product.slug}
+        />
       </div>
       <Footer />
     </ProductPageShell>
