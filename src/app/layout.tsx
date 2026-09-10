@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
 import { AnalyticsConsent } from "@/components/analytics";
+import { AnchorScroll } from "@/components/anchor-scroll";
 import { BackToTop } from "@/components/back-to-top";
 import { siteUrl } from "@/lib/env";
 
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <AnalyticsConsent />
+        <AnchorScroll />
         <BackToTop />
       </body>
     </html>
