@@ -17,12 +17,20 @@ export function ProductAtmosphere() {
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-ink"
     >
-      <div className="absolute left-1/2 top-0 h-full w-full max-w-[94.5rem] -translate-x-1/2">
-        {/* One continuous intro atmosphere for the hero and connected-charging
-            section: it now reaches through to Key Features (y=1229 in the
-            1512 frame) instead of being clipped at the hero's own height, and
-            fades out gradually rather than stopping on a hard edge. */}
-        <div className="product-hero-gradient absolute inset-x-0 top-0 h-[88rem] overflow-hidden lg:h-[76.8125rem]">
+      {/* One continuous intro atmosphere for the hero and connected-charging
+          section: it reaches through to Key Features (y=1229 in the 1512
+          frame) instead of being clipped at the hero's own height, and fades
+          out gradually rather than stopping on a hard edge.
+
+          This box is the screen's, not the column's, and the column is nested
+          back inside it to place the field. The field is 2420 design pixels
+          wide against a 1512 column — drawn to carry well past it on both
+          sides — but the fade is a `mask-image`, and a mask clips to its own
+          border box whatever `overflow` says. Sizing that box to the column
+          therefore cut the light off at the column edge on any screen wider
+          than 1512 and left a flat ink gutter with a lit edge against it. */}
+      <div className="product-hero-gradient absolute inset-x-0 top-0 h-[88rem] overflow-hidden lg:h-[76.8125rem]">
+        <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
           <div className="absolute left-[-22.8125rem] top-[-51.6875rem] h-[130.394rem] w-[151.302rem] max-lg:left-1/2 max-lg:-translate-x-1/2">
             <ProductHeroField height={HERO_FIELD_HEIGHT} width={HERO_FIELD_WIDTH}>
               <div className="absolute inset-0 overflow-hidden mix-blend-hard-light">
@@ -77,7 +85,9 @@ export function ProductAtmosphere() {
             </ProductHeroField>
           </div>
         </div>
+      </div>
 
+      <div className="absolute left-1/2 top-0 h-full w-full max-w-[94.5rem] -translate-x-1/2">
         {/* Connected-charging keeps only the outer edges of the glow lit, so
             it stops washing across the product image, glass panel and copy —
             the hero itself (above y=687) is untouched. */}
@@ -118,16 +128,20 @@ export function ProductAtmosphere() {
             />
           </RefractionFrame>
         </div>
+      </div>
 
-        {/* Group 13 is clipped to the footer so its broad source SVG cannot wash over the form. */}
-        <div className="product-footer-glow absolute inset-x-0 bottom-0 h-[28rem] overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            className="absolute bottom-[-48rem] left-1/2 h-[79.5775rem] w-[129.5rem] max-w-none -translate-x-1/2 object-fill mix-blend-screen"
-            src={`${FIGMA}a100626a0b36a4da8ee4cc285d6f36370f0c5270.svg`}
-          />
-        </div>
+      {/* Group 13 is clipped to the footer so its broad source SVG cannot wash
+          over the form — and, like the hero field, its band is the screen's
+          width rather than the column's, since the mask would otherwise trim
+          it back to 1512. The source is centred either way, so the placement
+          is the same one the frame draws. */}
+      <div className="product-footer-glow absolute inset-x-0 bottom-0 h-[28rem] overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt=""
+          className="absolute bottom-[-48rem] left-1/2 h-[79.5775rem] w-[max(129.5rem,100vw)] max-w-none -translate-x-1/2 object-fill mix-blend-screen"
+          src={`${FIGMA}a100626a0b36a4da8ee4cc285d6f36370f0c5270.svg`}
+        />
       </div>
     </div>
   );

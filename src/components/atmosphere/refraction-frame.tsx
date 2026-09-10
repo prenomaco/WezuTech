@@ -47,8 +47,18 @@ function frameStyle({
 /** One static surface, not four filtered, masked, additive compositing groups. */
 export function RefractionFrame(props: RefractionFrameProps) {
   const { id, box, flipY, mirrorY, bleed, phaseOffset, children } = props;
+  /*
+   * A bleeding frame paints wider than its own box on purpose — the canvas is
+   * sized to the viewport so the field keeps reaching the screen edges past
+   * the design width. Clipping across the frame threw that away and drew the
+   * frame's own rectangle as a lit vertical edge in the gutter. `clip` is what
+   * lets the other axis stay visible; `hidden` would force a scroll container
+   * and clip it again. Nothing changes at or below 1512, where the frame is
+   * already as wide as the screen.
+   */
+  const clip = bleed ? "overflow-x-visible overflow-y-clip" : "overflow-hidden";
   return (
-    <div className="pointer-events-none absolute overflow-hidden" style={frameStyle(props)}>
+    <div className={`pointer-events-none absolute ${clip}`} style={frameStyle(props)}>
       <RefractionCanvas
         id={id}
         frame={box}
