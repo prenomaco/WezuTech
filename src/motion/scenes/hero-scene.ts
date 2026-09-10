@@ -48,7 +48,20 @@ export class HeroScene extends MotionScene {
 
     const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    intro.from(this.first(root, "header"), { yPercent: -110, autoAlpha: 0, duration: 0.7 });
+    /*
+     * `clearProps: "transform"` matters here beyond tidiness: a `<header>`
+     * left with any inline `transform` — even the identity matrix GSAP
+     * settles on — becomes a new containing block for its own
+     * `position: fixed` descendants, which is exactly what `MobileMenu`
+     * renders inside it. Without this, the mobile nav overlay sizes itself
+     * against the header's own ~103px box instead of the viewport.
+     */
+    intro.from(this.first(root, "header"), {
+      autoAlpha: 0,
+      clearProps: "transform",
+      duration: 0.7,
+      yPercent: -110,
+    });
 
     this.revealHeadline(intro, lines);
 
