@@ -3,11 +3,13 @@
 import { compare, hash } from "bcryptjs";
 import { LeadStatus, ProductMediaKind, ProductSectionType, ProductStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { productInputSchema, testimonialInputSchema } from "@/lib/validation";
 
 const BCRYPT_ROUNDS = 12;
+const productIdSchema = z.string().cuid();
 
 const nullable = (value: FormDataEntryValue | null) => typeof value === "string" && value.trim() ? value.trim() : null;
 const json = (value: FormDataEntryValue | null) => JSON.parse(typeof value === "string" && value ? value : "[]") as unknown;
@@ -71,6 +73,19 @@ export async function saveProduct(formData: FormData) {
   revalidatePath("/"); revalidatePath("/admin"); revalidatePath("/admin/products");
   revalidatePath(`/products/${product.slug}`);
   if (oldSlug && oldSlug !== product.slug) revalidatePath(`/products/${oldSlug}`);
+}
+
+export async function deleteProduct(formData: FormData) {
+  await requireAdmin();
+  const id = productIdSchema.parse(formData.get("id"));
+  const product = await prisma.product.findUniqueOrThrow({ where: { id }, select: { slug: true } });
+
+  await prisma.product.delete({ where: { id } });
+  revalidatePath("/");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+  revalidatePath(`/products/${product.slug}`);
 }
 
 export async function saveTestimonial(formData: FormData) {

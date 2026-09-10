@@ -1,11 +1,71 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, type RefObject, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/components/analytics";
 import { Button } from "@/components/ui/button";
 import { PRODUCT_INTEREST_EVENT, type ProductInterestDetail } from "@/lib/product-interest";
 
 type FormState = "idle" | "sending" | "success" | "error";
+
+const MESSAGE_PLACEHOLDERS = [
+  "Tell us about your idea, challenge, or next move.",
+  "Share the system you want to improve.",
+  "What should the next version do better?",
+  "Tell us where your project feels stuck.",
+  "Describe the outcome you want to create.",
+] as const;
+
+function useTypedPlaceholder(field: RefObject<HTMLTextAreaElement | null>) {
+  const [placeholder, setPlaceholder] = useState<string>(MESSAGE_PLACEHOLDERS[0]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let phraseIndex = 0;
+    let characterIndex = 0;
+    let deleting = false;
+    let visible = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const schedule = (callback: () => void, delay: number) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(callback, delay);
+    };
+    const tick = () => {
+      if (!visible || document.hidden) return;
+      const phrase = MESSAGE_PLACEHOLDERS[phraseIndex];
+      characterIndex += deleting ? -1 : 1;
+      setPlaceholder(phrase.slice(0, characterIndex));
+      if (!deleting && characterIndex === phrase.length) {
+        deleting = true;
+        schedule(tick, 1400);
+      } else if (deleting && characterIndex === 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % MESSAGE_PLACEHOLDERS.length;
+        schedule(tick, 320);
+      } else {
+        schedule(tick, deleting ? 24 : 42);
+      }
+    };
+    const update = () => {
+      if (visible && !document.hidden) schedule(tick, 180);
+      else if (timer) clearTimeout(timer);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && characterIndex === 0) setPlaceholder("");
+      update();
+    }, { threshold: 0.35 });
+    if (field.current) observer.observe(field.current);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+      if (timer) clearTimeout(timer);
+    };
+  }, [field]);
+
+  return placeholder;
+}
 
 /**
  * A few different openers so every visitor who clicks a product's quote
@@ -108,6 +168,7 @@ export function ContactForm({
   const [message, setMessage] = useState("");
   const prefilledMessage = productName ? messageFor(productName) : undefined;
   const messageField = useRef<HTMLTextAreaElement>(null);
+  const messagePlaceholder = useTypedPlaceholder(messageField);
 
   /* The home page's carousel cards each carry their own "Contact For
      Purchase" button, but they all share this one Contact section rather
@@ -161,11 +222,11 @@ export function ContactForm({
         tabIndex={-1}
       />
 
-      <Field label="Name" name="name" placeholder="John Doe" />
+      <Field label="Name" name="name" placeholder="Your name" />
       <Field
         label="Email Address"
         name="email"
-        placeholder="john@prenoma.co"
+        placeholder="you@company.com"
         type="email"
       />
       <Field
@@ -173,7 +234,7 @@ export function ContactForm({
         gap="rest"
         label="Subject"
         name="subject"
-        placeholder="Project query"
+        placeholder="What can we help you build?"
       />
 
       <label
@@ -187,7 +248,7 @@ export function ContactForm({
           key={productSlug ?? "general"}
           minLength={10}
           name="message"
-          placeholder="Lorem ipsum dolor siet amet"
+          placeholder={messagePlaceholder}
           ref={messageField}
           required
         />
@@ -198,11 +259,11 @@ export function ContactForm({
         data-motion="contact-field"
       >
         <Button
-          className="h-8 w-full lg:h-11 lg:w-[10.625rem]"
+          className="h-8 w-full !rounded-[0.5rem] lg:h-11 lg:w-[12.5rem]"
           disabled={state === "sending"}
           type="submit"
         >
-          {state === "sending" ? "Sending…" : "Submit Message"}
+          {state === "sending" ? "Sending…" : "Start a Conversation"}
         </Button>
         {message ? (
           <p

@@ -52,7 +52,6 @@ export function AnalyticsConsent() {
       {consent === null && (
         <aside
           className="fixed bottom-[1.125rem] right-[1.125rem] z-50 max-w-[26.25rem] rounded-[1rem] border border-[rgb(218_250_245/0.3)] bg-ink-raised p-[1.125rem] shadow-[0_1rem_3.125rem_rgba(0,0,0,0.35)]"
-          role="dialog"
           aria-label="Analytics preference"
           aria-live="polite"
         >
@@ -63,7 +62,7 @@ export function AnalyticsConsent() {
             Analytics are optional and help us understand how the website is used. We never send your form
             details to Google.{" "}
             <a className="text-sky underline underline-offset-2" href="/privacy-policy">
-              Learn more
+              Read the privacy policy
             </a>
           </p>
           <div className="mt-4 flex justify-end gap-[0.875rem]">

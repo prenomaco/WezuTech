@@ -8,7 +8,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 const BAR_COUNT = 7;
 
 /**
- * Load-time intro, on every visit: the screen holds on the mark's own blue,
+ * Load-time intro, on every visit: the screen holds on the site's deep navy,
  * then splits into {@link BAR_COUNT} columns, each a top bar and a bottom
  * bar meeting at the vertical centre. On open, every column's top bar moves
  * back up and its bottom bar moves back down, staggered column to column,
@@ -83,7 +83,7 @@ export function CurtainIntro() {
         <div className="absolute inset-x-0 top-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="h-full flex-1 bg-[var(--color-sky)]"
+              className="-ml-px h-full flex-1 bg-ink first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) topRefs.current[index] = el;
@@ -95,7 +95,7 @@ export function CurtainIntro() {
         <div className="absolute inset-x-0 bottom-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="h-full flex-1 bg-[var(--color-sky)]"
+              className="-ml-px h-full flex-1 bg-ink first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) bottomRefs.current[index] = el;

@@ -1,37 +1,22 @@
-import Image from "next/image";
 import { Section } from "@/components/layout/section";
+import { EcosystemVideo } from "@/components/media/ecosystem-video";
 import { Prose, SectionHeading } from "@/components/ui/typography";
 import { about } from "@/content/site-content";
-
-/* The transparent original rather than the flattened export, so the light
-   behind it shows through instead of being covered by the crop's own ink. */
-const ARTWORK = {
-  src: "/figma/ecosystem.png",
-  width: 746,
-  height: 560,
-};
 
 /**
  * Figma node 252:478 places the artwork in an 840 x 560 box at x=766, running
  * 94px past the 1512 frame. That bleed is deliberate, so the image is clipped
  * by the section rather than squeezed into the text column.
  *
- * The transparent original is 746 x 560, a tighter crop than the flattened
- * export that filled the box, so it is drawn at its own width rather than
- * stretched to the box, where it stood 631 tall against the design's 560. Its
- * left edge is 759, found by correlating the render against Figma's export:
- * the crop is tighter on the right than the left, so it is not centred.
+ * The supplied 16:9 motion asset is cropped inside the original 746 x 560
+ * artwork ratio. Its background is the same ink token as the page, so the
+ * crop preserves the design's placement without exposing a rectangular edge.
  */
 function AboutArtwork() {
   return (
-    <Image
-      alt="Connected mobility platforms around a control module"
-      className="absolute top-[-4rem] left-[50.1984%] w-[49.3386%] max-w-none object-contain"
-      data-motion="about-artwork"
-      height={ARTWORK.height}
-      sizes="(min-width: 1512px) 840px, 56vw"
-      src={ARTWORK.src}
-      width={ARTWORK.width}
+    <EcosystemVideo
+      className="absolute top-[-4rem] left-[50.1984%] aspect-[746/560] w-[49.3386%] max-w-none"
+      variant="desktop"
     />
   );
 }
@@ -45,14 +30,9 @@ function AboutArtwork() {
 function MobileAbout() {
   return (
     <div className="overflow-clip lg:hidden">
-      <Image
-        alt="Connected mobility platforms around a control module"
-        className="mx-auto mt-[4.375rem] w-[calc(100%-0.0625rem)] max-w-[37.5rem] object-contain"
-        data-motion="about-artwork"
-        height={843}
-        sizes="(min-width: 640px) 600px, 100vw"
-        src="/figma/4ee4965ee44dd5484773156ad47d1b9d4690459e.png"
-        width={1264}
+      <EcosystemVideo
+        className="mx-auto mt-[4.375rem] aspect-[1264/843] w-[calc(100%-0.0625rem)] max-w-[37.5rem]"
+        variant="mobile"
       />
 
       {/* The measure is capped as the column widens. At a tablet width the

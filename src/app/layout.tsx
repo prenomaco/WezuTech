@@ -8,6 +8,13 @@ const DESCRIPTION =
   "Wezu Technologies builds intelligent hardware and software for vehicles and mobility platforms: " +
   "thermal management, vehicle control, power, diagnostics and connected electronics.";
 
+const SOCIAL_IMAGE = {
+  url: "/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png",
+  width: 1264,
+  height: 843,
+  alt: "Electric car, freight truck and passenger train engineered by Wezu Technologies",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -19,6 +26,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Wezu Technologies", url: siteUrl }],
   creator: "Wezu Technologies",
   publisher: "Wezu Technologies",
+  referrer: "origin-when-cross-origin",
+  category: "technology",
   keywords: [
     "EV thermal management",
     "vehicle control systems",
@@ -28,7 +37,6 @@ export const metadata: Metadata = {
     "connected vehicle hardware",
     "transportation engineering",
   ],
-  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: siteUrl,
@@ -36,11 +44,13 @@ export const metadata: Metadata = {
     title: "Wezu Technologies | Engineering the next movement",
     description: DESCRIPTION,
     locale: "en_US",
+    images: [SOCIAL_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Wezu Technologies | Engineering the next movement",
     description: DESCRIPTION,
+    images: [SOCIAL_IMAGE],
   },
   /*
    * The crawl rules live in `robots.ts` for the whole site; this repeats the

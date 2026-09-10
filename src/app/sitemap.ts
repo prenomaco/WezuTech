@@ -15,6 +15,14 @@ const STATIC_PAGES = [
   { path: "/terms-of-service", priority: 0.2, changeFrequency: "yearly" },
 ] as const;
 
+const ECOSYSTEM_VIDEO = {
+  title: "Wezu Technologies industrial technology ecosystem",
+  thumbnail_loc: `${siteUrl}/media/industrial-ecosystem-poster.jpg`,
+  description: "Connected vehicles, transport systems and industrial control electronics.",
+  content_loc: `${siteUrl}/media/industrial-ecosystem-1280p.mp4`,
+  duration: 8,
+} as const;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
 
@@ -23,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified,
     changeFrequency: page.changeFrequency,
     priority: page.priority,
+    ...(page.path === "" ? { videos: [ECOSYSTEM_VIDEO] } : {}),
   }));
 
   /* A database that is unreachable at build time should cost the site its

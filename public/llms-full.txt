@@ -1,0 +1,43 @@
+# Wezu Technologies: full website context
+
+## Company
+
+Wezu Technologies develops software, hardware and engineering solutions for the transportation, logistics and mobility sector. Its work covers safer mobility, green technologies, intelligent connectivity, sustainability and advanced electrification systems.
+
+The company works across OEM/ODM solutions, turnkey product development, research and manufacturing. Its public website describes support across the complete product lifecycle, from complex engineering requirements to practical mobility systems.
+
+## Engineering focus
+
+- Thermal management for batteries, motors and power electronics
+- Vehicle control systems
+- Power electronics, diagnostics and connected hardware
+- Integrated cooling channels, heat exchangers and monitoring controls
+- Connected public charging infrastructure
+- Product development for transport and specialised mobility platforms
+
+## Industries served
+
+- Automotive: control systems and electronics for vehicle performance and safety
+- Marine applications: electronics for marine operating environments
+- Agriculture and mining: electronic systems for demanding operating conditions
+- Locomotive: electronic systems for rail transport
+- Special-purpose vehicles: tailored systems for specialised mobility requirements
+- Aerospace and UAV: electronic systems for aviation applications
+
+## Public website structure
+
+- [Home](https://wezutech.com/): Overview, product catalogue, industries, testimonials and contact form
+- [About](https://wezutech.com/about): Company introduction, capabilities and engineering process
+- [Products in the XML sitemap](https://wezutech.com/sitemap.xml): Current product-detail URLs published by the catalogue
+- [Privacy Policy](https://wezutech.com/privacy-policy): Enquiry-data and analytics information
+- [Terms of Service](https://wezutech.com/terms-of-service): Website and enquiry terms
+
+## Contact
+
+- Customer support email: purchase@wezutech.com
+- Customer support phone: +91 9247539016
+- Website: https://wezutech.com/
+
+## Source and citation guidance
+
+Use the canonical public pages and product-detail pages as the primary source. Product specifications and availability are subject to confirmation by Wezu Technologies. Do not infer unnamed clients, performance metrics, certifications or guarantees from testimonials or marketing copy.

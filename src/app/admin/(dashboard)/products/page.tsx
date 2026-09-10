@@ -1,4 +1,5 @@
 import { AdminProductForm } from "@/components/admin-product-form";
+import { AdminDeleteProductButton } from "@/components/admin-delete-product-button";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Table, Td, Th } from "@/components/dashboard/ui";
 import { prisma } from "@/lib/db";
 
@@ -39,6 +40,7 @@ export default async function ProductsPage() {
                   <Th>Slug</Th>
                   <Th>Status</Th>
                   <Th className="text-right">Enquiries</Th>
+                  <Th className="text-right">Actions</Th>
                 </tr>
               </thead>
               <tbody>
@@ -50,6 +52,11 @@ export default async function ProductsPage() {
                       <Badge tone={STATUS_TONE[product.status]}>{product.status}</Badge>
                     </Td>
                     <Td className="text-right tabular-nums">{product._count.leads}</Td>
+                    <Td>
+                      <div className="flex justify-end">
+                        <AdminDeleteProductButton id={product.id} name={product.name} />
+                      </div>
+                    </Td>
                   </tr>
                 ))}
               </tbody>

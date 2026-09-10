@@ -1,0 +1,27 @@
+# Wezu Technologies
+
+> Wezu Technologies develops hardware, software and engineering systems for vehicles, transportation and mobility platforms.
+
+## Primary pages
+
+- [Home](https://wezutech.com/): Company overview, products, industries, testimonials and contact details.
+- [About](https://wezutech.com/about): Capabilities, engineering process and company focus.
+- [Sitemap](https://wezutech.com/sitemap.xml): Current public page and product URLs.
+
+## Core capabilities
+
+- Vehicle thermal management and electrification systems
+- Vehicle control, diagnostics and connected electronics
+- OEM/ODM engineering and turnkey product development
+- Research, manufacturing and product-lifecycle support
+
+## Industries
+
+Automotive, marine, agriculture and mining, locomotive, special-purpose vehicles, aerospace and UAV.
+
+## Contact
+
+- Email: purchase@wezutech.com
+- Phone: +91 9247539016
+
+For a fuller factual summary, see [llms-full.txt](https://wezutech.com/llms-full.txt).

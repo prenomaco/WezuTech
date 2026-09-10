@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageAtmosphere } from "@/components/atmosphere/page-atmosphere";
 import { CurtainIntro } from "@/components/intro/curtain-intro";
 import { Footer } from "@/components/layout/footer";
@@ -8,11 +9,19 @@ import { Industries } from "@/components/sections/industries";
 import { Products } from "@/components/sections/products";
 import { Testimonials } from "@/components/sections/testimonials";
 import { getPublishedProducts } from "@/lib/catalog";
-import { jsonLd, organisationSchema, websiteSchema } from "@/lib/structured-data";
+import { jsonLd, organisationSchema, videoObjectSchema, webPageSchema, websiteSchema } from "@/lib/structured-data";
 import { getPublishedTestimonials } from "@/lib/testimonials";
 import { SiteMotion } from "@/motion/site-motion";
 
 export const dynamic = "force-dynamic";
+
+const DESCRIPTION =
+  "Wezu Technologies builds intelligent hardware and software for vehicles and mobility platforms, " +
+  "including thermal management, vehicle control, diagnostics and connected electronics.";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const [products, testimonials] = await Promise.all([getPublishedProducts(), getPublishedTestimonials()]);
@@ -24,6 +33,13 @@ export default async function Home() {
       <CurtainIntro />
       <script dangerouslySetInnerHTML={jsonLd(organisationSchema())} type="application/ld+json" />
       <script dangerouslySetInnerHTML={jsonLd(websiteSchema())} type="application/ld+json" />
+      <script
+        dangerouslySetInnerHTML={jsonLd(
+          webPageSchema({ path: "/", name: "Wezu Technologies", description: DESCRIPTION }),
+        )}
+        type="application/ld+json"
+      />
+      <script dangerouslySetInnerHTML={jsonLd(videoObjectSchema())} type="application/ld+json" />
 
       <Hero />
       <About />

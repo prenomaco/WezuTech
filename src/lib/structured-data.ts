@@ -70,6 +70,22 @@ export function websiteSchema() {
   };
 }
 
+export function videoObjectSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "@id": `${siteUrl}/#industrial-ecosystem-video`,
+    name: "Wezu Technologies industrial technology ecosystem",
+    description:
+      "An animated overview of connected vehicles, transport systems and industrial control electronics.",
+    thumbnailUrl: `${siteUrl}/media/industrial-ecosystem-poster.jpg`,
+    contentUrl: `${siteUrl}/media/industrial-ecosystem-1280p.mp4`,
+    duration: "PT8S",
+    inLanguage: "en",
+    publisher: { "@id": ORGANISATION_ID },
+  };
+}
+
 export function productSchema(product: ProductDetail) {
   const images = [product.media.hero, ...product.media.gallery.map((item) => item.url)]
     .filter(Boolean)
