@@ -6,7 +6,10 @@ import { ProductPageShell } from "@/components/product/product-page-shell";
 import { SpecificationsTable } from "@/components/product/specifications-table";
 import { Contact } from "@/components/sections/contact";
 import { ButtonLink } from "@/components/ui/button";
+import type { CatalogProduct } from "@/lib/catalog";
 import type { ProductContentItem, ProductDetail } from "@/lib/product-detail";
+
+const OTHER_PRODUCTS_LIMIT = 3;
 
 /* Dynamic CMS and Cloudinary media intentionally use native images. */
 /* eslint-disable @next/next/no-img-element */
@@ -67,7 +70,37 @@ function ApplicationCards({ product }: { readonly product: ProductDetail }) {
   );
 }
 
-export function ProductDetailPage({ product }: { readonly product: ProductDetail }) {
+function OtherProducts({ products }: { readonly products: readonly CatalogProduct[] }) {
+  return (
+    <div className="grid gap-6 md:grid-cols-3">
+      {products.slice(0, OTHER_PRODUCTS_LIMIT).map((item) => (
+        <article className="group flex flex-col" data-motion="products-card" key={item.id}>
+          <div className="relative h-40 overflow-hidden rounded-2xl border border-[rgb(128_178_204/0.25)]">
+            <img
+              alt={item.name}
+              className="h-full w-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] motion-reduce:transform-none motion-reduce:transition-none"
+              src={item.imageUrl}
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 motion-reduce:transition-none" />
+          </div>
+          <h3 className="mt-4 text-xl font-bold leading-[1.4] text-white">{item.name}</h3>
+          {item.tagline ? <p className="mt-2 font-book leading-[1.4] text-white">{item.tagline}</p> : null}
+          <ButtonLink className="mt-5 self-start" href={`/products/${item.slug}`} variant="ghost">
+            Learn More
+          </ButtonLink>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+export function ProductDetailPage({
+  otherProducts = [],
+  product,
+}: {
+  readonly otherProducts?: readonly CatalogProduct[];
+  readonly product: ProductDetail;
+}) {
   return (
     <ProductPageShell>
       <div className="relative h-[6.625rem]"><Header /></div>
@@ -172,6 +205,15 @@ export function ProductDetailPage({ product }: { readonly product: ProductDetail
             {product.specifications.note ? <p className="mt-1 text-center font-book text-[#999]">{product.specifications.note}</p> : null}
             <SpecificationsTable items={product.specifications.items} />
           </div>
+        </Section>
+      ) : null}
+
+      {otherProducts.length ? (
+        <Section className="pb-[5.5rem]">
+          <h2 className="mb-[2.875rem] text-center font-display text-[1.172875rem] text-white" data-motion="product-section-heading">
+            Our Other Products
+          </h2>
+          <OtherProducts products={otherProducts} />
         </Section>
       ) : null}
 

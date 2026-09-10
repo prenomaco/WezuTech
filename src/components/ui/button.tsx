@@ -12,8 +12,13 @@ const BASE =
 
 const VARIANT: Record<Variant, string> = {
   primary:
-    "bg-sky text-[#111613] transition-[background-color,transform] duration-200 ease-out hover:bg-sky-bright hover:-translate-y-px disabled:pointer-events-none disabled:opacity-60",
-  ghost: "text-mist transition-colors duration-200 ease-out hover:text-ice",
+    "bg-sky text-[#111613] shadow-[0_0_0_rgb(9_133_204/0)] transition-[background-color,transform,box-shadow] duration-300 ease-out hover:bg-sky-bright hover:-translate-y-px hover:shadow-[0_8px_20px_-6px_rgb(35_164_236/0.55)] disabled:pointer-events-none disabled:opacity-60 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+  /* Outlined rather than bare text, so the control reads as a button at
+     rest instead of only on hover. The fill-on-hover is the same "press
+     forward" gesture the primary button makes with its own colour, just in
+     white-on-transparent instead of blue-on-dark. */
+  ghost:
+    "border border-white/60 text-white shadow-[0_0_0_rgb(255_255_255/0)] transition-[background-color,border-color,color,transform,box-shadow] duration-300 ease-out hover:-translate-y-px hover:border-white hover:bg-white hover:text-[#111613] hover:shadow-[0_8px_20px_-6px_rgb(255_255_255/0.25)] disabled:pointer-events-none disabled:opacity-60 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
 };
 
 interface CommonProps {

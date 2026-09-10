@@ -3,12 +3,13 @@
 import { FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,14 +48,25 @@ export function LoginForm() {
 
       <label className="flex flex-col gap-1.5">
         <span className="text-xs font-medium text-[var(--dash-muted)]">Password</span>
-        <input
-          autoComplete="current-password"
-          className="dash-input"
-          name="password"
-          placeholder="••••••••"
-          required
-          type="password"
-        />
+        <div className="relative">
+          <input
+            autoComplete="current-password"
+            className="dash-input w-full pr-10"
+            name="password"
+            placeholder="••••••••"
+            required
+            type={showPassword ? "text" : "password"}
+          />
+          <button
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-[var(--dash-muted)] transition-colors duration-200 hover:text-[var(--dash-fg)]"
+            onClick={() => setShowPassword((current) => !current)}
+            type="button"
+          >
+            {showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}
+          </button>
+        </div>
       </label>
 
       {error ? (

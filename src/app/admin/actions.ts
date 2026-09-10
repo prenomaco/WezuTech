@@ -1,10 +1,13 @@
 "use server";
 
+import { compare, hash } from "bcryptjs";
 import { LeadStatus, ProductMediaKind, ProductSectionType, ProductStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { productInputSchema, testimonialInputSchema } from "@/lib/validation";
+
+const BCRYPT_ROUNDS = 12;
 
 const nullable = (value: FormDataEntryValue | null) => typeof value === "string" && value.trim() ? value.trim() : null;
 const json = (value: FormDataEntryValue | null) => JSON.parse(typeof value === "string" && value ? value : "[]") as unknown;
@@ -100,4 +103,31 @@ export async function updateLead(formData: FormData) {
   if (!Object.values(LeadStatus).includes(status as LeadStatus)) throw new Error("Invalid lead status.");
   await prisma.lead.update({ where: { id }, data: { status: status as LeadStatus, internalNotes } });
   revalidatePath("/admin");
+}
+
+/**
+ * Called directly (not via `<form action>`) so the settings dialog can show
+ * its error inline without leaving the page — the return value is the whole
+ * point, which a form submission's navigation would otherwise discard.
+ */
+export async function changePassword(formData: FormData): Promise<{ readonly error?: string }> {
+  const admin = await requireAdmin();
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  if (newPassword.length < 8) return { error: "New password must be at least 8 characters." };
+  if (newPassword !== confirmPassword) return { error: "New passwords do not match." };
+
+  const user = await prisma.user.findUnique({ where: { id: admin.id } });
+  if (!user || !(await compare(currentPassword, user.passwordHash))) {
+    return { error: "Current password is incorrect." };
+  }
+  if (await compare(newPassword, user.passwordHash)) {
+    return { error: "New password must be different from the current one." };
+  }
+
+  const passwordHash = await hash(newPassword, BCRYPT_ROUNDS);
+  await prisma.user.update({ where: { id: admin.id }, data: { passwordHash } });
+  return {};
 }

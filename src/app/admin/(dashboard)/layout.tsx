@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { DashboardAtmosphere } from "@/components/dashboard/dashboard-atmosphere";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { authOptions } from "@/lib/auth";
+import { RAIL_COOKIE } from "@/lib/dashboard-rail";
 import "@/app/admin/dashboard.css";
 
 export const metadata: Metadata = {
@@ -24,11 +26,12 @@ export const dynamic = "force-dynamic";
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "ADMIN") redirect("/admin/login");
+  const initialCollapsed = (await cookies()).get(RAIL_COOKIE)?.value === "1";
 
   return (
     <div className="dashboard-root relative min-h-screen text-[var(--dash-fg)]">
       <div className="flex min-h-screen flex-col lg:flex-row">
-        <Sidebar email={session.user.email ?? ""} />
+        <Sidebar email={session.user.email ?? ""} initialCollapsed={initialCollapsed} />
 
         {/* The light belongs to the content column, not to the window: anchored
             to the page it would spend its brightest part behind the rail, which

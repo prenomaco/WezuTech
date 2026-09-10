@@ -1,20 +1,16 @@
 import { GlowLayer } from "@/components/atmosphere/glow-layer";
+import { ProductHeroField } from "@/components/atmosphere/product-hero-field";
 import { RefractionFrame } from "@/components/atmosphere/refraction-frame";
 import { StreakLayer } from "@/components/atmosphere/streak-layer";
+import { PRODUCT_HERO_RINGS, PRODUCT_HERO_ROTATE } from "@/lib/design/product-hero-vectors";
 
 const FIGMA = "/figma/";
-const MOBILE_FRAME_WIDTH = 402;
 
-const ellipses = [
-  ["d3f8ceb521dad64dc4e7e243e20e03c8cf08aa08.svg", 9.8, 101.26, 2221, 1980.484, 1269.61, 1841.864],
-  ["42106047e76b1b43f8e576a1581be609bfd0540e.svg", -15, 113.02, 2221, 1980.484, 1269.609, 1841.864],
-  ["e3c1eda15d11b97e731d51b3ad82012813b147e0.svg", -14.5, 114.01, 2221, 1980.484, 1269.609, 1841.864],
-  ["64337caf741bb1e31fca4f2a9b2322780956d67e.svg", 176.1, 13.9, 2221, 1980.484, 1269.61, 1841.864],
-  ["75ea611ef44b5473c5bcb0788931dcb233b12494.svg", 48.4, 87.57, 2187.458, 1935.871, 1227.495, 1826.103],
-  ["fcb69b518b5ff4e853c88b85b98f315e19f24bfb.svg", 142.8, 0.96, 2257.929, 1972.887, 1227.495, 1905.704],
-] as const;
+/** The shared placement box every ring's `left`/`top` is written against. */
+const HERO_FIELD_WIDTH = 2420.832;
+const HERO_FIELD_HEIGHT = 2086.304;
 
-/** Figma node 510:46 with Home's glass bars added only over the hero. */
+/** Figma node 510:46. */
 export function ProductAtmosphere() {
   return (
     <div
@@ -27,36 +23,58 @@ export function ProductAtmosphere() {
             1512 frame) instead of being clipped at the hero's own height, and
             fades out gradually rather than stopping on a hard edge. */}
         <div className="product-hero-gradient absolute inset-x-0 top-0 h-[88rem] overflow-hidden lg:h-[76.8125rem]">
-          <div className="absolute left-[-22.8125rem] top-[-51.6875rem] h-[130.394rem] w-[151.302rem] overflow-hidden mix-blend-hard-light max-lg:left-1/2 max-lg:-translate-x-1/2">
-            {ellipses.map(
-              ([asset, left, top, width, height, innerWidth, innerHeight]) => (
-                <div
-                  className="absolute flex items-center justify-center mix-blend-color-dodge"
-                  key={asset}
-                  style={{
-                    left: `${left / 16}rem`,
-                    top: `${top / 16}rem`,
-                    width: `${width / 16}rem`,
-                    height: `${height / 16}rem`,
-                  }}
-                >
-                  <div
-                    className="relative rotate-[-117.71deg]"
-                    style={{
-                      width: `${innerWidth / 16}rem`,
-                      height: `${innerHeight / 16}rem`,
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt=""
-                      className="absolute inset-[-5%_-7.5%] h-[110%] w-[115%] max-w-none object-fill"
-                      src={`${FIGMA}${asset}`}
-                    />
-                  </div>
-                </div>
-              ),
-            )}
+          <div className="absolute left-[-22.8125rem] top-[-51.6875rem] h-[130.394rem] w-[151.302rem] max-lg:left-1/2 max-lg:-translate-x-1/2">
+            <ProductHeroField height={HERO_FIELD_HEIGHT} width={HERO_FIELD_WIDTH}>
+              <div className="absolute inset-0 overflow-hidden mix-blend-hard-light">
+                {PRODUCT_HERO_RINGS.map((ring, index) => {
+                  const filterId = `product-hero-ring-${index}`;
+                  return (
+                    <div
+                      className="absolute flex items-center justify-center mix-blend-color-dodge"
+                      key={ring.d.slice(0, 24)}
+                      style={{
+                        left: `${ring.left / 16}rem`,
+                        top: `${ring.top / 16}rem`,
+                        width: `${ring.outerWidth / 16}rem`,
+                        height: `${ring.outerHeight / 16}rem`,
+                      }}
+                    >
+                      <div
+                        className="relative"
+                        style={{
+                          width: `${ring.innerWidth / 16}rem`,
+                          height: `${ring.innerHeight / 16}rem`,
+                          transform: `rotate(${PRODUCT_HERO_ROTATE}deg)`,
+                        }}
+                      >
+                        {/* A live SVG filter, not a flat image — matches how
+                            every other fallback in the atmosphere system
+                            (`GlowFallback`) reproduces its blur. */}
+                        <svg
+                          aria-hidden="true"
+                          className="absolute inset-[-5%_-7.5%] h-[110%] w-[115%] max-w-none"
+                          preserveAspectRatio="none"
+                          viewBox={`0 0 ${ring.nativeWidth} ${ring.nativeHeight}`}
+                        >
+                          <defs>
+                            <filter colorInterpolationFilters="sRGB" id={filterId}>
+                              <feGaussianBlur stdDeviation={ring.blur} />
+                            </filter>
+                          </defs>
+                          <path
+                            d={ring.d}
+                            fill="none"
+                            filter={`url(#${filterId})`}
+                            stroke={ring.stroke}
+                            strokeWidth={ring.strokeWidth}
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </ProductHeroField>
           </div>
         </div>
 
@@ -109,45 +127,6 @@ export function ProductAtmosphere() {
             className="absolute bottom-[-48rem] left-1/2 h-[79.5775rem] w-[129.5rem] max-w-none -translate-x-1/2 object-fill mix-blend-screen"
             src={`${FIGMA}a100626a0b36a4da8ee4cc285d6f36370f0c5270.svg`}
           />
-        </div>
-      </div>
-
-      {/* The glass bars carry into connected-charging too, at the same
-          prominence as the hero — only the coloured gradient wash is capped
-          at the hero's own height; the bars use their full natural extent
-          (the refraction tile's own height) and taper out through its own
-          fade mask rather than being cut short at the section boundary. */}
-      <div className="product-hero-bars-fade absolute inset-x-0 top-0 hidden h-[61.375rem] overflow-hidden lg:block">
-        <div className="product-hero-bars relative mx-auto h-full w-full max-w-[94.5rem]">
-          <RefractionFrame
-            bleed
-            box={{ left: -13, top: -10.6, width: 1545, height: 992.192 }}
-            id="product-hero-bars"
-          >
-            <GlowLayer
-              box={{ left: -64.38, top: -94.01, width: 1656.89, height: 1103.004 }}
-              vector="field"
-            />
-          </RefractionFrame>
-        </div>
-      </div>
-
-      <div className="product-hero-bars-fade absolute inset-x-0 top-0 h-[clamp(45.3125rem,180.3483vw,63.4375rem)] overflow-hidden lg:hidden">
-        <div className="product-hero-bars absolute inset-x-0 top-[17.2414%] mx-auto h-[24.403rem] max-w-[35.175rem]">
-          <RefractionFrame
-            bleed
-            box={{ left: 0, top: 0, width: 402, height: 390.455 }}
-            id="product-mobile-hero-bars"
-            phaseOffset={-24}
-            relativeTo={MOBILE_FRAME_WIDTH}
-            scaleWithWidth
-          >
-            <GlowLayer
-              box={{ left: -152.33, top: -36.99, width: 652.032, height: 434.062 }}
-              render={{ width: 740.45, height: 522.53 }}
-              vector="field"
-            />
-          </RefractionFrame>
         </div>
       </div>
     </div>

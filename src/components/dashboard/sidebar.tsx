@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useState } from "react";
 import { signOut } from "next-auth/react";
 import {
   ChevronsLeft,
@@ -11,10 +11,12 @@ import {
   LogOut,
   MessageSquareQuote,
   Package,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
+import { RAIL_COOKIE, RAIL_COOKIE_MAX_AGE } from "@/lib/dashboard-rail";
 
 const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -23,50 +25,47 @@ const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
 ];
 
-/** Where the collapsed state is remembered, so it survives a navigation. */
-const STORAGE_KEY = "wezu.dashboard.rail";
-
-/*
- * The rail's state belongs to the browser, not to React, so it is read through
- * `useSyncExternalStore` rather than copied into state by an effect. The server
- * snapshot is always "open": it has no way to know what this browser last
- * chose, and guessing would make the first paint disagree with the markup.
+/**
+ * A cookie rather than `localStorage`, so the *server* can render the rail
+ * at its remembered width on the very first response.
+ *
+ * The previous version read `localStorage` through `useSyncExternalStore`,
+ * which has no way to inform the server — `getServerSnapshot` always said
+ * "open". That is fine for one first load, but every navigation re-runs this
+ * component against that same "open" server render before the client
+ * snapshot corrects it a tick later, so a collapsed rail would flash open on
+ * every click. A cookie is available to `layout.tsx` before it renders
+ * anything, so the first paint is already correct and there is nothing to
+ * correct.
  */
-const listeners = new Set<() => void>();
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function isCollapsed() {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === "1";
-  } catch {
-    /* Private windows and blocked storage: treat the rail as open. */
-    return false;
-  }
-}
-
-function setCollapsed(next: boolean) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-  } catch {
-    /* Not worth failing the interaction over. */
-  }
-  for (const listener of listeners) listener();
-}
-
-export function Sidebar({ email }: { readonly email: string }) {
+export function Sidebar({
+  email,
+  initialCollapsed,
+}: {
+  readonly email: string;
+  readonly initialCollapsed: boolean;
+}) {
   const pathname = usePathname();
-  const collapsed = useSyncExternalStore(subscribe, isCollapsed, () => false);
-  const toggle = useCallback(() => setCollapsed(!isCollapsed()), []);
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const settingsActive = pathname.startsWith("/admin/settings");
+
+  const toggle = useCallback(() => {
+    setCollapsed((current) => {
+      const next = !current;
+      document.cookie = `${RAIL_COOKIE}=${next ? "1" : "0"}; path=/; max-age=${RAIL_COOKIE_MAX_AGE}; SameSite=Lax`;
+      return next;
+    });
+  }, []);
 
   return (
     <aside
       className={cn(
         "dashboard-rail relative z-10 flex shrink-0 flex-col border-b transition-[width] duration-300 ease-out",
-        "lg:min-h-screen lg:border-r lg:border-b-0",
+        // Pinned to the viewport and never its own scroll container — only
+        // the page (the content column) scrolls. `sticky` rather than
+        // `fixed` so it stays a normal flex sibling and the content column
+        // doesn't need a matching margin to avoid sitting underneath it.
+        "lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden lg:border-r lg:border-b-0",
         collapsed ? "lg:w-[4.5rem]" : "lg:w-60",
       )}
     >
@@ -76,18 +75,6 @@ export function Sidebar({ email }: { readonly email: string }) {
         <div className={cn("shrink-0 overflow-hidden", collapsed && "lg:w-11")}>
           <Logo className="origin-left scale-[0.86]" href="/admin" />
         </div>
-
-        <button
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto hidden size-7 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)] lg:grid"
-          onClick={toggle}
-          type="button"
-        >
-          <ChevronsLeft
-            aria-hidden
-            className={cn("size-4 transition-transform duration-300", collapsed && "rotate-180")}
-          />
-        </button>
       </div>
 
       <nav className="flex gap-1.5 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible">
@@ -110,14 +97,51 @@ export function Sidebar({ email }: { readonly email: string }) {
         })}
       </nav>
 
-      {/* The account sits at the foot of the rail, where a dashboard puts it,
-          rather than in the page header where it competed with the title. It is
-          given a panel of its own so it reads as the account control it is,
-          not as a caption under the navigation. */}
-      <div className="mt-auto p-3">
+      {/* Everything below lives at the foot of the rail: the controls that
+          act on the rail/account rather than navigate the page (Collapse,
+          Settings), and the account panel itself, in that order. Grouping
+          them here — rather than Collapse up by the logo — keeps every
+          "not a page" control in one place at the bottom. */}
+      <div className="mt-auto flex flex-col gap-1.5 p-3">
+        {/* Collapse sits beside Settings rather than above it as its own
+            row — a small square icon button, not a full nav-style row,
+            since it acts on the rail rather than navigating anywhere.
+            Collapsed, there isn't room for both side by side, so they stack
+            instead, still as the same two controls. */}
+        <div className={cn("flex gap-1.5", collapsed ? "flex-col items-center" : "items-center")}>
+          <Link
+            className="dashboard-link flex flex-1 items-center gap-3 rounded-lg px-3 py-2.5 text-[0.9375rem] whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]"
+            data-active={settingsActive}
+            href="/admin/settings"
+            title={collapsed ? "Settings" : undefined}
+          >
+            <Settings aria-hidden className="size-[1.125rem] shrink-0" />
+            <span className={cn("transition-opacity duration-200", collapsed && "lg:hidden")}>
+              Settings
+            </span>
+          </Link>
+
+          <button
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="hidden size-9 shrink-0 place-items-center rounded-md text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)] lg:grid"
+            onClick={toggle}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            type="button"
+          >
+            <ChevronsLeft
+              aria-hidden
+              className={cn("size-[1.125rem] transition-transform duration-300", collapsed && "rotate-180")}
+            />
+          </button>
+        </div>
+
+        {/* The account sits at the foot of the rail, where a dashboard puts
+            it, rather than in the page header where it competed with the
+            title. It is given a panel of its own so it reads as the account
+            control it is, not as a caption under the navigation. */}
         <div
           className={cn(
-            "flex items-center gap-3 rounded-lg border border-[var(--dash-border-strong)] bg-[var(--dash-card)] p-2.5",
+            "mt-1.5 flex items-center gap-3 rounded-lg border border-[var(--dash-border-strong)] bg-[var(--dash-card)] p-2.5",
             collapsed && "lg:justify-center lg:p-2",
           )}
         >
