@@ -474,9 +474,10 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "Container-class BESS from 250 kWh to 5 MWh, scaling 500 kWh to 50 MWh modular, with AI-enabled load balancing for utility, microgrid and grid-services duty.",
     media: {
-      hero: shot("large-load-balancing-energy-storage", "hero", "Container-class battery energy storage system"),
+      hero: shot("large-load-balancing-energy-storage", "hero", "Container-class battery energy storage system, doors closed"),
       detail: shot("large-load-balancing-energy-storage", "detail", "Load-balancing energy storage rack"),
       gallery: [
+        shot("large-load-balancing-energy-storage", "product-photo", "Container-class battery energy storage system on site"),
         shot("large-load-balancing-energy-storage", "gallery-1", "Modular grid-services energy storage rack"),
         shot("large-load-balancing-energy-storage", "gallery-2", "Energy storage paired with a multi-point charging kiosk"),
       ],

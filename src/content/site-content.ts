@@ -70,16 +70,15 @@ export const contactDetails: readonly ContactDetail[] = [
   { icon: "phone", label: "+91 9247539016", href: "tel:+919247539016" },
   {
     icon: "address",
-    label:
-      "1/B, Plot No 94, beside Eenadu Press, Gandhi Nagar Industrial Area, Balanagar, Hyderabad, Telangana 500037",
+    label: "1/B, Plot No 94, Gandhi Nagar Industrial Area, Hyderabad, Telangana 500037",
     wraps: true,
   },
 ];
 
 /** The address split into the parts a postal schema expects. */
 export const postalAddress = {
-  streetAddress: "1/B, Plot No 94, beside Eenadu Press, Gandhi Nagar Industrial Area",
-  addressLocality: "Balanagar, Hyderabad",
+  streetAddress: "1/B, Plot No 94, Gandhi Nagar Industrial Area",
+  addressLocality: "Hyderabad",
   addressRegion: "Telangana",
   postalCode: "500037",
   addressCountry: "IN",
