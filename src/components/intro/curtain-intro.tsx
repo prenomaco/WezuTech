@@ -8,7 +8,52 @@ import { useLayoutEffect, useRef, useState } from "react";
 const BAR_COUNT = 7;
 
 /**
- * Load-time intro, on every visit: the screen holds on the site's deep navy,
+ * Marks the intro as played for this tab.
+ *
+ * `sessionStorage`, not `localStorage`: the intro is meant to open a visit, so
+ * a new tab or a return tomorrow should still get it — only the second
+ * arrival at the home page inside the same visit should not.
+ */
+const SEEN_KEY = "wezu:intro-played";
+
+/**
+ * Hides the cover before it can paint on a reload that has already seen it.
+ *
+ * The layout effect below is enough for a client-side navigation — it runs
+ * before the browser paints, so `Home` from another page never shows the
+ * cover a second time. A full reload is different: the server has no way to
+ * know the tab's `sessionStorage`, so its HTML always contains the cover, and
+ * it would paint for however long hydration takes. This runs while the
+ * document is still parsing, so the rule is in place before the first frame.
+ *
+ * It appends a stylesheet rather than putting a class on `<html>`, which is
+ * what it did first: `<html>` is rendered by the root layout, so React owns
+ * its attributes, and a class that appeared before hydration was reported as
+ * a mismatch ("some attributes of the server rendered HTML didn't match").
+ * An extra `<style>` in the head is a node React never claimed, so there is
+ * nothing for it to disagree with.
+ */
+const HIDE_IF_PLAYED = `try{if(sessionStorage.getItem(${JSON.stringify(SEEN_KEY)})==="1"){var s=document.createElement("style");s.textContent=".curtain-intro{display:none!important}";document.head.appendChild(s)}}catch(e){}`;
+
+/** `sessionStorage` throws in a private window rather than returning null. */
+function readPlayed() {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markPlayed() {
+  try {
+    sessionStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    /* A tab that cannot remember simply gets the intro again. */
+  }
+}
+
+/**
+ * Load-time intro, once per visit: the screen holds on the site's deep navy,
  * then splits into {@link BAR_COUNT} columns, each a top bar and a bottom
  * bar meeting at the vertical centre. On open, every column's top bar moves
  * back up and its bottom bar moves back down, staggered column to column,
@@ -37,9 +82,27 @@ export function CurtainIntro() {
   const topRefs = useRef<HTMLDivElement[]>([]);
   const bottomRefs = useRef<HTMLDivElement[]>([]);
   const logoRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /*
+     * Once per visit.
+     *
+     * This effect runs before the browser paints, so coming back to the home
+     * page from anywhere else hides the cover in the very frame it would
+     * otherwise have appeared in — there is no flash to see. Going through
+     * React state instead would mean either a re-render after that paint or a
+     * `useState` initialiser that disagrees with the server's HTML.
+     */
+    if (readPlayed()) {
+      /* The element itself, through its own ref — a style written here lands
+         before the browser paints and touches nothing React reconciles. */
+      if (coverRef.current) coverRef.current.style.display = "none";
+      return;
+    }
+    markPlayed();
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -79,11 +142,16 @@ export function CurtainIntro() {
 
   return (
     <>
-      <div aria-hidden="true" className="curtain-intro fixed inset-0 z-[100] overflow-hidden">
+      <script dangerouslySetInnerHTML={{ __html: HIDE_IF_PLAYED }} />
+      <div
+        aria-hidden="true"
+        className="curtain-intro fixed inset-0 z-[100] overflow-hidden"
+        ref={coverRef}
+      >
         <div className="absolute inset-x-0 top-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="-ml-px h-full flex-1 bg-sky-bright first:ml-0"
+              className="-ml-px h-full flex-1 bg-ink first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) topRefs.current[index] = el;
@@ -95,7 +163,7 @@ export function CurtainIntro() {
         <div className="absolute inset-x-0 bottom-0 flex h-1/2">
           {Array.from({ length: BAR_COUNT }).map((_, index) => (
             <div
-              className="-ml-px h-full flex-1 bg-sky-bright first:ml-0"
+              className="-ml-px h-full flex-1 bg-ink first:ml-0"
               key={index}
               ref={(el) => {
                 if (el) bottomRefs.current[index] = el;

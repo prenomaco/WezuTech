@@ -4,16 +4,19 @@
  * copy can move to the CMS later without touching layout.
  */
 
+import { PRODUCT_CATEGORIES, type ProductCategory } from "@/lib/product-categories";
+
 export interface NavLink {
   readonly label: string;
   readonly href: string;
 }
 
-export interface Industry {
-  readonly title: string;
-  readonly body: string;
-  readonly image: string;
-}
+/**
+ * The industries section and the product taxonomy are the same six things, so
+ * the copy lives with the taxonomy in `lib/product-categories` and this is an
+ * alias kept for the section components that already import it.
+ */
+export type Industry = ProductCategory;
 
 export interface Testimonial {
   readonly lead: string;
@@ -33,13 +36,15 @@ export const primaryNav: readonly NavLink[] = [
   /* There is a dedicated About page (Figma node 307:165), so the nav goes to
      it rather than to the home page's about section. */
   { label: "About", href: "/about" },
-  { label: "Products", href: "/#products" },
+  /* Likewise the catalogue index, rather than the home page's carousel — that
+     section is still there, it is simply no longer the only way in. */
+  { label: "Products", href: "/products" },
 ];
 
 export const footerNav: readonly NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Product", href: "/#products" },
+  { label: "Products", href: "/products" },
   { label: "Gallery", href: "/#gallery" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -78,38 +83,7 @@ export const testimonialsSection = {
   eyebrow: "WHAT PEOPLE SAY",
 } as const;
 
-export const industries: readonly Industry[] = [
-  {
-    title: "Automotive",
-    body: "Innovative control systems and electronics to enhance vehicle performance and safety.",
-    image: "/industry/automotive.png",
-  },
-  {
-    title: "Marine Applications",
-    body: "Durable electronics built for marine environments, ensuring operational excellence.",
-    image: "/industry/marine.png",
-  },
-  {
-    title: "Agriculture & Mining",
-    body: "Reliable electronic solutions improving efficiency, safety, and productivity in demanding conditions.",
-    image: "/industry/agriculture-mining.png",
-  },
-  {
-    title: "Locomotive",
-    body: "Reliable electronic solutions designed for optimal performance in rail transport.",
-    image: "/industry/locomotive.png",
-  },
-  {
-    title: "Special Purpose Vehicles",
-    body: "Tailored technology solutions for unique mobility and specialized vehicle needs.",
-    image: "/industry/special-purpose.png",
-  },
-  {
-    title: "Aerospace and UAV",
-    body: "High-performance electronic systems built for safety, reliability, and demanding aviation applications.",
-    image: "/industry/aerospace-uav.png",
-  },
-];
+export const industries: readonly Industry[] = PRODUCT_CATEGORIES;
 
 export const testimonials: readonly Testimonial[] = [
   {

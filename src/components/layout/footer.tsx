@@ -1,3 +1,4 @@
+import { NavLink } from "@/components/layout/nav-link";
 import { IconMail, IconPhone, IconUser } from "@/components/ui/icons";
 import { Logo } from "@/components/ui/logo";
 import {
@@ -109,9 +110,9 @@ export function Footer() {
                 second column starting 134.35px across. */}
             <div className="mt-[1.210625rem] grid grid-flow-col grid-rows-3 justify-start gap-x-[5.375rem] gap-y-[0.586437rem] pl-[0.25rem]">
               {footerNav.map(({ label, href }) => (
-                <a className={LINK} href={href} key={label}>
+                <NavLink className={LINK} href={href} key={label}>
                   {label}
-                </a>
+                </NavLink>
               ))}
             </div>
           </nav>
@@ -123,9 +124,9 @@ export function Footer() {
             <h2 className={`lg:mt-[1.5rem] ${HEADING}`}>Legal</h2>
             <div className="mt-[1.210625rem] flex flex-col gap-[0.53625rem]">
               {legalNav.map(({ label, href }) => (
-                <a className={LINK} href={href} key={label}>
+                <NavLink className={LINK} href={href} key={label}>
                   {label}
-                </a>
+                </NavLink>
               ))}
             </div>
           </nav>

@@ -80,8 +80,41 @@ model Product {
   media           ProductMedia[]
   sections        ProductSection[]
   leads           Lead[]
+  categories      ProductCategory[]
 
   @@index([status, sortOrder])
+}
+
+/// One of the six application areas the site groups products by. Rows are
+/// seeded rather than user-created: the set matches the home page's industries
+/// section and the `/products` index, so a seventh would need artwork and copy
+/// alongside it.
+model Category {
+  id        String            @id @default(cuid())
+  slug      String            @unique
+  name      String
+  blurb     String
+  image     String
+  sortOrder Int               @default(0)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  products  ProductCategory[]
+
+  @@index([sortOrder])
+}
+
+/// A product sits in as many categories as it serves — a DC fast charger is
+/// both Automotive and Special Purpose Vehicles — so this is an explicit join
+/// rather than a column on Product.
+model ProductCategory {
+  productId  String
+  categoryId String
+  sortOrder  Int      @default(0)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId, sortOrder])
 }
 
 model ProductMedia {

@@ -32,14 +32,22 @@ export function ProductGallery({ name, hero, gallery }: { readonly name: string;
       </div>
       {gallery.length ? (
         <div className="relative mt-4 flex flex-row justify-center gap-2 lg:absolute lg:right-0 lg:top-0 lg:mt-0 lg:flex-col">
+          {/* `contain`, not `cover`.
+              The frame is portrait (93 x 108) and the product photography is
+              landscape, so `cover` scaled each shot until it filled the
+              height and then cropped about a third off each side — the
+              charger in the thumbnail was a different picture from the one it
+              selected. Contained, the whole frame shows; the box keeps its
+              designed size and fills the spare height with the page's own ink
+              so the letterboxing reads as a mount rather than a gap. */}
           {images.slice(1).map((image, index) => (
             <div
-              className={`h-[6.75rem] w-[5.8125rem] overflow-hidden rounded-[0.45rem] border transition-colors ${active === index + 1 ? "border-sky" : "border-transparent"}`}
+              className={`grid h-[6.75rem] w-[5.8125rem] place-items-center overflow-hidden rounded-[0.45rem] border bg-[rgb(2_7_28/0.55)] transition-colors ${active === index + 1 ? "border-sky" : "border-[rgb(218_250_245/0.12)]"}`}
               key={image.url}
               onPointerEnter={(event) => preview(event, index + 1)}
               onPointerLeave={() => setActive(0)}
             >
-              <img alt={image.alt} className="h-full w-full object-cover" src={image.url} />
+              <img alt={image.alt} className="h-full w-full object-contain p-1" src={image.url} />
             </div>
           ))}
         </div>

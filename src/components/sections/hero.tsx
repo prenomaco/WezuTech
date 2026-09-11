@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/header";
+import { HERO_VIDEO, HeroVideo } from "@/components/media/hero-video";
 import { MobileHero } from "@/components/sections/mobile-hero";
 import { ButtonLink } from "@/components/ui/button";
 import { DisplayTitle } from "@/components/ui/typography";
@@ -15,14 +16,6 @@ const FRAME = { width: 1512, height: 940 } as const;
 
 const pct = (value: number, axis: "width" | "height" = "width") =>
   `${(value / FRAME[axis]) * 100}%`;
-
-/*
- * The hero footage is a 1920 x 440 banner, so the stage box is given the clip's
- * own ratio rather than a Figma height. `object-cover` then has nothing to crop:
- * any other box turns a 4.36:1 clip into a single hugely magnified frame, which
- * is what the fixed 1174.5 x 783 slot used to do.
- */
-const VEHICLES = { src: "/videos/hero-section.mp4", aspect: "aspect-[1920/440]" };
 
 /**
  * Each headline line gets its own clip so the motion layer can slide it up from
@@ -53,30 +46,21 @@ export function Hero() {
           (1194 against 940 at a 1920 monitor) while the type stayed 36px, so
           the page ran 254px long and the composition opened up. */}
       <div className="relative z-10 mx-auto hidden aspect-[1512/940] w-full max-w-[94.5rem] lg:block">
-        {/* Two layers on purpose: the wrapper owns the scroll-scrubbed drift and
-            the image owns the entrance. Animating `y` on one element from both
-            scenes lets ScrollTrigger latch the mid-entrance value on refresh and
-            leaves the artwork stranded off its mark. */}
+        {/* No `hero-vehicles-drift` here any more: the scroll-scrubbed parallax
+            was choreographed for the still vehicles PNG this clip replaced, and
+            on footage that is already moving it read as the banner sliding out
+            of its own frame. The box stays — it is what crops the clip to the
+            rounded band — it simply no longer moves with the scroll. */}
         <div
-          className={`absolute overflow-hidden rounded-xl ${VEHICLES.aspect}`}
-          data-motion="hero-vehicles-drift"
+          className={`absolute overflow-hidden rounded-xl ${HERO_VIDEO.aspect}`}
           style={{ left: pct(166), top: pct(319, "height"), width: pct(1186) }}
         >
-          {/* A third wrapper: the drift above is scroll-scrubbed and the video
-              below is owned by the intro timeline, so the idle float needs a
-              transform of its own rather than a share of either. */}
-          <div className="size-full" data-motion="hero-vehicles-float">
-            <video
-              autoPlay
-              className="block size-full object-cover"
-              data-motion="hero-vehicles"
-              loop
-              muted
-              playsInline
-            >
-              <source src={VEHICLES.src} type="video/mp4" />
-            </video>
-          </div>
+          {/* The idle float is gone with the parallax, and for a second
+              reason: the clip fills this box exactly, so lifting it 7px
+              exposed a 7px strip of page along the bottom edge of the band
+              every time the float came back up. The still it was written for
+              was a transparent PNG, where that strip was invisible. */}
+          <HeroVideo />
         </div>
 
         <DisplayTitle as="h1" className="absolute" style={{ left: pct(166), top: pct(231, "height") }}>

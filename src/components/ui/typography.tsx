@@ -124,18 +124,26 @@ export function DisplayTitle({
  * Product name — node 252:484 on the 1512 frame (Centauri 23.866 / 26.98) and
  * node 305:124 on the 402 one, which drops to 15px in a 275-wide box that is
  * 54 tall for its two lines.
+ *
+ * `card` is the catalogue grid's own size, and it is a variant rather than a
+ * `className` override for the reason at the top of this file: two arbitrary
+ * values of the same utility have equal specificity, so Tailwind's output
+ * order would pick the winner and the carousel's 23.9px was winning.
+ * Centauri is a wide all-caps face — at that size a name like "Large &
+ * Load-Balancing Energy Storage" ran to four lines in a 370px cell.
  */
-export function ProductTitle({ children, className, ...rest }: TypeProps) {
+const PRODUCT_TITLE_SIZE = {
+  carousel: "text-[0.9375rem] leading-[1.6875rem] lg:text-[1.491625rem] lg:leading-[1.68625rem]",
+  card: "text-[1rem] leading-[1.25rem] lg:text-[1.0625rem] lg:leading-[1.375rem]",
+} as const;
+
+interface ProductTitleProps extends TypeProps {
+  readonly size?: keyof typeof PRODUCT_TITLE_SIZE;
+}
+
+export function ProductTitle({ children, className, size = "carousel", ...rest }: ProductTitleProps) {
   return (
-    <h3
-      className={join(
-        DISPLAY,
-        "text-[0.9375rem] leading-[1.6875rem] text-ice",
-        "lg:text-[1.491625rem] lg:leading-[1.68625rem]",
-        className,
-      )}
-      {...rest}
-    >
+    <h3 className={join(DISPLAY, PRODUCT_TITLE_SIZE[size], "text-ice", className)} {...rest}>
       {children}
     </h3>
   );

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { HERO_VIDEO, HeroVideo } from "@/components/media/hero-video";
 import { ButtonLink } from "@/components/ui/button";
 import { hero } from "@/content/site-content";
 
@@ -7,24 +7,20 @@ const STAGE =
   "relative mx-auto h-[clamp(45.3125rem,180.3483vw,63.4375rem)] w-full max-w-[35.175rem]";
 const HEADLINE = "absolute font-display leading-[normal] text-ice";
 
+/*
+ * The still this replaced was a transparent PNG, so it could span the headline
+ * and let the type read through it. The clip is opaque, so it takes the gap
+ * between the two headline halves instead of their full height: 33.8% is where
+ * "THE" ends and 49.5% is where "NEXT" begins, and the banner is 11.3-11.7% of
+ * the stage across the whole mobile range, so 36% centres it in that gap with
+ * roughly 2% of clearance either side.
+ */
+const ARTWORK = "absolute left-[4.2289%] top-[36%] w-[92.0398%]";
+
 function HeroArtwork() {
   return (
-    <div
-      className="absolute left-[4.2289%] top-[20.3862%] h-[34.023%] w-[92.0398%]"
-      data-motion="hero-vehicles-drift"
-    >
-      <div className="size-full" data-motion="hero-vehicles-float">
-        <Image
-          alt="Electric car, freight truck and passenger train"
-          className="size-full object-contain"
-          data-motion="hero-vehicles"
-          height={843}
-          priority
-          sizes="(min-width: 563px) 518px, 92vw"
-          src="/figma/80d9a6f7455db9ebe3011c930e9d2a30d69a29c2.png"
-          width={1264}
-        />
-      </div>
+    <div className={`${ARTWORK} overflow-hidden rounded-xl ${HERO_VIDEO.aspect}`}>
+      <HeroVideo />
     </div>
   );
 }

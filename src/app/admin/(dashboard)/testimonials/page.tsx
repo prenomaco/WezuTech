@@ -1,18 +1,38 @@
-import { AdminTestimonialForm } from "@/components/admin-testimonial-form";
+import { Plus } from "lucide-react";
+import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
+import { TestimonialsTable, type TestimonialRow } from "@/components/dashboard/testimonials-table";
 import { prisma } from "@/lib/db";
 
 export const metadata = { title: "Testimonials" };
 export const dynamic = "force-dynamic";
 
 export default async function TestimonialsAdminPage() {
-  const testimonials = await prisma.testimonial.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] });
+  const testimonials = await prisma.testimonial.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      client: true,
+      title: true,
+      quote: true,
+      lead: true,
+      isPublished: true,
+      sortOrder: true,
+    },
+  });
+
   return (
     <div className="flex flex-col gap-6">
-      <div><h2 className="font-display text-xl text-[var(--dash-fg)]">Testimonials</h2><p className="text-sm text-[var(--dash-muted)]">Manage the quotes shared by the Home and About page carousel.</p></div>
-      <section className="flex flex-col gap-4">
-        <AdminTestimonialForm />
-        {testimonials.map((testimonial) => <AdminTestimonialForm key={testimonial.id} testimonial={testimonial} />)}
-      </section>
+      <PageHeader
+        action={
+          <PrimaryActionLink href="/admin/testimonials/new">
+            <Plus aria-hidden className="size-4" /> Add testimonial
+          </PrimaryActionLink>
+        }
+        description="The quotes carried by the home page and About page carousels, in display order."
+        title="Testimonials"
+      />
+
+      <TestimonialsTable testimonials={testimonials as TestimonialRow[]} />
     </div>
   );
 }

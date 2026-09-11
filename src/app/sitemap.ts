@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublishedProducts } from "@/lib/catalog";
 import { siteUrl } from "@/lib/env";
+import { PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
 
 /**
  * The sitemap follows what is actually published: the static pages plus a URL
@@ -10,6 +11,7 @@ import { siteUrl } from "@/lib/env";
  */
 const STATIC_PAGES = [
   { path: "", priority: 1, changeFrequency: "weekly" },
+  { path: "/products", priority: 0.9, changeFrequency: "weekly" },
   { path: "/about", priority: 0.8, changeFrequency: "monthly" },
   { path: "/privacy-policy", priority: 0.2, changeFrequency: "yearly" },
   { path: "/terms-of-service", priority: 0.2, changeFrequency: "yearly" },
@@ -33,6 +35,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: page.priority,
     ...(page.path === "" ? { videos: [ECOSYSTEM_VIDEO] } : {}),
   }));
+
+  for (const category of PRODUCT_CATEGORIES) {
+    pages.push({
+      url: `${siteUrl}${categoryPath(category.slug)}`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    });
+  }
 
   /* A database that is unreachable at build time should cost the site its
      product URLs, not its sitemap. */

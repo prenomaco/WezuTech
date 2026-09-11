@@ -1,78 +1,57 @@
-import { AdminProductForm } from "@/components/admin-product-form";
-import { AdminDeleteProductButton } from "@/components/admin-delete-product-button";
-import { Badge, Card, CardContent, CardHeader, CardTitle, Table, Td, Th } from "@/components/dashboard/ui";
+import { Plus } from "lucide-react";
+import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
+import { ProductsTable, type ProductRow } from "@/components/dashboard/products-table";
 import { prisma } from "@/lib/db";
 
 export const metadata = { title: "Products" };
 export const dynamic = "force-dynamic";
 
-const STATUS_TONE = {
-  PUBLISHED: "success",
-  DRAFT: "warning",
-  ARCHIVED: "neutral",
-} as const;
-
+/**
+ * The catalogue index.
+ *
+ * Selects only what the table draws. The previous version included every
+ * product's media rows, every section row and a lead count, because it also
+ * rendered a full edit form per product on the same page — several hundred
+ * rows of JSON to paint a five-column table, and the single biggest reason
+ * this route took twice as long to navigate to as any other.
+ */
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
-    include: { media: { orderBy: { sortOrder: "asc" } }, sections: { orderBy: { sortOrder: "asc" } }, _count: { select: { leads: true } } },
     orderBy: { sortOrder: "asc" },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      status: true,
+      sortOrder: true,
+      _count: { select: { leads: true } },
+      categories: { select: { category: { select: { slug: true } } } },
+    },
   });
+
+  const rows: ProductRow[] = products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    status: product.status,
+    sortOrder: product.sortOrder,
+    leadCount: product._count.leads,
+    categorySlugs: product.categories.map((row) => row.category.slug),
+  }));
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="font-display text-xl text-[var(--dash-fg)]">Products</h2>
-        <p className="text-sm text-[var(--dash-muted)]">
-          What the catalogue shows on the home page, in its running order.
-        </p>
-      </div>
+      <PageHeader
+        action={
+          <PrimaryActionLink href="/admin/products/new">
+            <Plus aria-hidden className="size-4" /> Add product
+          </PrimaryActionLink>
+        }
+        description="The catalogue behind the home page carousel, the products index and every category page."
+        title="Products"
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Catalogue</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {products.length ? (
-            <Table>
-              <thead>
-                <tr>
-                  <Th>Name</Th>
-                  <Th>Slug</Th>
-                  <Th>Status</Th>
-                  <Th className="text-right">Enquiries</Th>
-                  <Th className="text-right">Actions</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <Td className="font-medium">{product.name}</Td>
-                    <Td className="text-[var(--dash-muted)]">{product.slug}</Td>
-                    <Td>
-                      <Badge tone={STATUS_TONE[product.status]}>{product.status}</Badge>
-                    </Td>
-                    <Td className="text-right tabular-nums">{product._count.leads}</Td>
-                    <Td>
-                      <div className="flex justify-end">
-                        <AdminDeleteProductButton id={product.id} name={product.name} />
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p className="p-5 text-sm text-[var(--dash-muted)]">Nothing published yet.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      <section className="flex flex-col gap-4">
-        <AdminProductForm />
-        {products.map((product) => (
-          <AdminProductForm key={product.id} media={product.media} product={product} sections={product.sections} />
-        ))}
-      </section>
+      <ProductsTable products={rows} />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { MouseEvent, useEffect, useState } from "react";
 import { ButtonLink } from "@/components/ui/button";
+import { NavLink } from "@/components/layout/nav-link";
 import { primaryNav } from "@/content/site-content";
 
 /**
@@ -104,14 +105,14 @@ export function MobileMenu() {
           className="flex h-full flex-col items-center justify-center gap-8 text-[1.125rem] leading-[1.5rem]"
         >
           {primaryNav.map(({ label, href }) => (
-            <a
+            <NavLink
               className="nav-link text-mist transition-colors duration-200 ease-out hover:text-sky"
               href={href}
               key={label}
               onClick={() => setOpen(false)}
             >
               {label}
-            </a>
+            </NavLink>
           ))}
           <ButtonLink href="#contact" onClick={() => setOpen(false)}>
             Contact Us

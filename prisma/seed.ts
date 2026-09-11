@@ -1,6 +1,7 @@
 import { hash } from "bcryptjs";
 import { ProductStatus } from "@prisma/client";
 import { prisma } from "../src/lib/db";
+import { writeCategories } from "./categories";
 import { writePortfolio } from "./portfolio";
 
 async function main() {
@@ -15,6 +16,11 @@ async function main() {
      publishes it; after that, `npm run db:portfolio` is the way to write
      product changes without also resetting the admin password below. */
   await writePortfolio(ProductStatus.PUBLISHED, (line) => console.log(line));
+
+  /* After the catalogue, because the assignments are looked up by product
+     slug. Same module as `npm run db:categories`, so a fresh database and an
+     existing one end up with the same six categories. */
+  await writeCategories(prisma, (line) => console.log(line));
 
   const testimonials = [
     ["seed-testimonial-1", "Wezu Technologies", " has consistently provided innovative solutions for our automotive projects. Their ability to understand our requirements and translate them into practical designs is remarkable. We were impressed by their commitment to quality and attention to detail throughout the process.", "Automotive OEM Client", "Exceptional Innovation and Service", 0],

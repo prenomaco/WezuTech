@@ -14,7 +14,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:portfolio": "tsx --env-file=.env.local prisma/seed-portfolio.ts",
     "postinstall": "DATABASE_URL='postgresql://user:password@localhost:5432/wezu' prisma generate",
-    "db:admins": "tsx scripts/seed-admins.ts"
+    "db:admins": "tsx scripts/seed-admins.ts",
+    "db:categories": "tsx --env-file=.env.local prisma/seed-categories.ts"
   },
   "dependencies": {
     "@prisma/client": "6.12.0",

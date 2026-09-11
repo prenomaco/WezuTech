@@ -14,7 +14,7 @@ const REVEAL_AFTER = 560;
  * per-frame backdrop read, least of all in the engines that do it on the CPU.
  */
 const BASE =
-  "fixed bottom-[1.375rem] left-[1.375rem] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised text-ice transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
+  "fixed bottom-[1.375rem] right-[1.375rem] z-40 grid h-10 w-10 place-items-center rounded-full border border-[rgb(218_250_245/0.28)] bg-ink-raised text-ice transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-ink-raised";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);

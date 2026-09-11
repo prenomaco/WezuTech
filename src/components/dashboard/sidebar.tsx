@@ -86,6 +86,19 @@ export function Sidebar({
               data-active={active}
               href={href}
               key={href}
+              /*
+               * Explicit `true`, not the default.
+               *
+               * These routes are `force-dynamic`, and for a dynamic route the
+               * default prefetch fetches only the shared layout — the page
+               * itself is still fetched on click, which is the 210-560ms every
+               * navigation in this rail was waiting on. `true` prefetches the
+               * full payload, so by the time the pointer arrives the page is
+               * usually already in the router cache. There are four
+               * destinations and one of them is where you already are, so this
+               * is three small requests, not a crawl of the app.
+               */
+              prefetch
               title={collapsed ? label : undefined}
             >
               <Icon aria-hidden className="size-[1.125rem] shrink-0" />
@@ -113,6 +126,7 @@ export function Sidebar({
             className="dashboard-link flex flex-1 items-center gap-3 rounded-lg px-3 py-2.5 text-[0.9375rem] whitespace-nowrap text-[var(--dash-muted)] transition-colors hover:bg-[var(--dash-rail-hover)] hover:text-[var(--dash-fg)]"
             data-active={settingsActive}
             href="/admin/settings"
+            prefetch
             title={collapsed ? "Settings" : undefined}
           >
             <Settings aria-hidden className="size-[1.125rem] shrink-0" />

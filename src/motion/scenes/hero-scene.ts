@@ -65,14 +65,17 @@ export class HeroScene extends MotionScene {
 
     this.revealHeadline(intro, lines);
 
-    intro
-      .from(
-        vehicles,
-        { autoAlpha: 0, y: 46, scale: 1.06, duration: 1.25, ease: "power2.out" },
-        "-=0.85",
-      )
-      .from(this.query(root, "hero-intro"), { autoAlpha: 0, y: 20, duration: 0.6 }, "-=0.7")
-      .from(this.query(root, "hero-ctas"), { autoAlpha: 0, y: 14, duration: 0.5 }, "-=0.4");
+    /*
+     * Each of these is skipped when the page has none of that element.
+     *
+     * `gsap.from([])` warns ("GSAP target not found") and leaves a zero-length
+     * tween on the timeline, which is what the catalogue pages produced: they
+     * carry a clipped headline but no vehicles and no CTA row, so two of the
+     * three tweens below had nothing to act on.
+     */
+    this.add(intro, vehicles, { autoAlpha: 0, y: 46, scale: 1.06, duration: 1.25, ease: "power2.out" }, "-=0.85");
+    this.add(intro, this.query(root, "hero-intro"), { autoAlpha: 0, y: 20, duration: 0.6 }, "-=0.7");
+    this.add(intro, this.query(root, "hero-ctas"), { autoAlpha: 0, y: 14, duration: 0.5 }, "-=0.4");
 
     for (const drift of drifts) this.buildExit(drift);
   }
@@ -80,6 +83,17 @@ export class HeroScene extends MotionScene {
   dispose(): void {
     this.restoreLetters?.();
     this.restoreLetters = null;
+  }
+
+  /** `from` only when there is something to tween. */
+  private add(
+    intro: gsap.core.Timeline,
+    targets: HTMLElement[] | HTMLElement | null,
+    vars: gsap.TweenVars,
+    position: string,
+  ): void {
+    const list = Array.isArray(targets) ? targets : targets ? [targets] : [];
+    if (list.length) intro.from(list, vars, position);
   }
 
   /**

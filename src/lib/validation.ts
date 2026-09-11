@@ -61,6 +61,10 @@ export const productInputSchema = z.object({
   specifications: z.array(specificationSchema).max(30),
   specificationsNote: z.string().trim().max(500).optional(),
   cta: ctaSchema,
+  /* Slugs rather than ids: the form's checkboxes are labelled by the six
+     categories the site defines, and resolving them to rows server-side keeps
+     the client from having to know database ids. */
+  categorySlugs: z.array(z.string().trim().max(80)).max(12).default([]),
 });
 
 export const testimonialInputSchema = z.object({

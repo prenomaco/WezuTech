@@ -1,5 +1,6 @@
 import { HeaderPlate } from "@/components/layout/header-plate";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import { NavLink } from "@/components/layout/nav-link";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { primaryNav } from "@/content/site-content";
@@ -51,13 +52,13 @@ export function Header() {
         style={{ left: NAV_LEFT, width: NAV_WIDTH, top: NAV_TOP }}
       >
         {primaryNav.map(({ label, href }) => (
-          <a
+          <NavLink
             key={label}
             href={href}
             className="nav-link text-mist transition-colors duration-200 ease-out hover:text-sky"
           >
             {label}
-          </a>
+          </NavLink>
         ))}
         <ButtonLink href="#contact">Contact Us</ButtonLink>
       </nav>

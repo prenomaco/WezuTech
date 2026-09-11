@@ -3,9 +3,11 @@
 import { compare, hash } from "bcryptjs";
 import { LeadStatus, ProductMediaKind, ProductSectionType, ProductStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
 import { productInputSchema, testimonialInputSchema } from "@/lib/validation";
 
 const BCRYPT_ROUNDS = 12;
@@ -38,6 +40,9 @@ export async function saveProduct(formData: FormData) {
     applications: json(formData.get("applications")), specificationsTitle: nullable(formData.get("specificationsTitle")) ?? undefined,
     specifications: json(formData.get("specifications")), specificationsNote: nullable(formData.get("specificationsNote")) ?? undefined,
     cta: { quoteLabel: formData.get("quoteLabel"), datasheetLabel: formData.get("datasheetLabel") },
+    /* `getAll`: the picker is a checkbox group, so an unchecked box sends
+       nothing and several checked boxes send the same name repeatedly. */
+    categorySlugs: formData.getAll("categorySlugs").map(String),
   });
   const oldSlug = input.id ? (await prisma.product.findUnique({ where: { id: input.id }, select: { slug: true } }))?.slug : undefined;
   const product = await prisma.$transaction(async (tx) => {
@@ -68,13 +73,48 @@ export async function saveProduct(formData: FormData) {
     ] as const;
     const present = media.filter((entry): entry is typeof entry & readonly [ProductMediaKind, string, string | undefined, number, string] => Boolean(entry[1]));
     if (present.length) await tx.productMedia.createMany({ data: present.map(([kind, url, publicId, sortOrder, alt]) => ({ productId: saved.id, kind, url, cloudinaryPublicId: publicId || null, sortOrder, alt })) });
+
+    /* Replaced wholesale, like the sections above: the form posts the complete
+       set of ticked boxes, so a category that is absent from the payload is
+       one the editor has just cleared. Unknown slugs are dropped rather than
+       throwing — the six are defined in code, and a stale form should not be
+       able to create a seventh. */
+    await tx.productCategory.deleteMany({ where: { productId: saved.id } });
+    const categories = await tx.category.findMany({
+      where: { slug: { in: input.categorySlugs } },
+      select: { id: true, slug: true },
+    });
+    if (categories.length) {
+      await tx.productCategory.createMany({
+        data: categories.map((category, sortOrder) => ({ productId: saved.id, categoryId: category.id, sortOrder })),
+      });
+    }
     return saved;
   });
-  revalidatePath("/"); revalidatePath("/admin"); revalidatePath("/admin/products");
+  revalidateCatalogue(product.slug, oldSlug);
+  /* Back to the index: the form is a page now, so saving has somewhere to go
+     and "did that save?" is answered by the row being right. */
+  redirect("/admin/products");
+}
+
+/**
+ * Every public surface a product appears on.
+ *
+ * The catalogue index and the six category pages are included because a
+ * product's categories are editable: publishing one into Marine has to make
+ * it appear on `/products/category/marine`, not on that page's next
+ * 60-second revalidation.
+ */
+function revalidateCatalogue(slug: string, oldSlug?: string) {
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
   revalidatePath("/products/[slug]", "page");
   revalidatePath("/sitemap.xml");
-  revalidatePath(`/products/${product.slug}`);
-  if (oldSlug && oldSlug !== product.slug) revalidatePath(`/products/${oldSlug}`);
+  revalidatePath(`/products/${slug}`);
+  if (oldSlug && oldSlug !== slug) revalidatePath(`/products/${oldSlug}`);
+  for (const category of PRODUCT_CATEGORIES) revalidatePath(categoryPath(category.slug));
 }
 
 export async function deleteProduct(formData: FormData) {
@@ -83,12 +123,7 @@ export async function deleteProduct(formData: FormData) {
   const product = await prisma.product.findUniqueOrThrow({ where: { id }, select: { slug: true } });
 
   await prisma.product.delete({ where: { id } });
-  revalidatePath("/");
-  revalidatePath("/sitemap.xml");
-  revalidatePath("/products/[slug]", "page");
-  revalidatePath("/admin");
-  revalidatePath("/admin/products");
-  revalidatePath(`/products/${product.slug}`);
+  revalidateCatalogue(product.slug);
 }
 
 export async function saveTestimonial(formData: FormData) {
@@ -103,6 +138,9 @@ export async function saveTestimonial(formData: FormData) {
   if (input.id) await prisma.testimonial.update({ where: { id: input.id }, data });
   else await prisma.testimonial.create({ data });
   revalidatePath("/"); revalidatePath("/about"); revalidatePath("/admin/testimonials");
+  /* As with products: the form is its own page, so saving returns to the list
+     where the change is visible. */
+  redirect("/admin/testimonials");
 }
 
 export async function deleteTestimonial(formData: FormData) {
