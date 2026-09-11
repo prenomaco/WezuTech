@@ -2,7 +2,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { MotionScene } from "@/motion/motion-scene";
 import { HeroScene } from "@/motion/scenes/hero-scene";
-import { IdleScene } from "@/motion/scenes/idle-scene";
 import { RevealScene } from "@/motion/scenes/reveal-scene";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,6 +10,12 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
  * Owns the lifecycle of every scene on the page.
+ *
+ * `IdleScene` is not among them any more either. It floated the hero artwork
+ * 7px up and down forever, which was written for a transparent still; the clip
+ * that replaced it fills its cropped box exactly, so the float exposed a strip
+ * of page along the bottom edge of the band on every cycle. With the hook gone
+ * from both hero compositions the scene had no targets left to find.
  *
  * The background's drift is not among them. It was five scrubbed
  * ScrollTriggers writing transforms to layers whose contents are a Gaussian,
@@ -31,11 +36,7 @@ export class MotionRegistry {
   constructor(private readonly scenes: readonly MotionScene[]) {}
 
   static withDefaults(): MotionRegistry {
-    return new MotionRegistry([
-      new HeroScene(),
-      new RevealScene(),
-      new IdleScene(),
-    ]);
+    return new MotionRegistry([new HeroScene(), new RevealScene()]);
   }
 
   mount(root: HTMLElement): void {

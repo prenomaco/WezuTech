@@ -11,6 +11,10 @@ import { PrismaClient } from "@prisma/client";
  * the `Lead` table holds names and email addresses.
  *
  * Run before anything that rewrites data: `npm run db:backup`.
+ *
+ * `DATABASE_URL` here is the production Neon branch, so `prisma migrate dev`
+ * and any `--shadow-database-url` pointed at it will empty every table. See
+ * `prisma/MIGRATIONS.md` before running either.
  */
 const prisma = new PrismaClient();
 
