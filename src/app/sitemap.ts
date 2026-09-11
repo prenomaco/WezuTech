@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublishedProducts } from "@/lib/catalog";
 import { siteUrl } from "@/lib/env";
-import { PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
+import { categoryPath, getCategorySlugs } from "@/lib/categories";
 
 /**
  * The sitemap follows what is actually published: the static pages plus a URL
@@ -36,9 +36,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(page.path === "" ? { videos: [ECOSYSTEM_VIDEO] } : {}),
   }));
 
-  for (const category of PRODUCT_CATEGORIES) {
+  /* Categories are rows now, so an unreachable database costs the sitemap its
+     category URLs rather than throwing — `getCategorySlugs` returns []. */
+  for (const slug of await getCategorySlugs()) {
     pages.push({
-      url: `${siteUrl}${categoryPath(category.slug)}`,
+      url: `${siteUrl}${categoryPath(slug)}`,
       lastModified,
       changeFrequency: "weekly",
       priority: 0.7,

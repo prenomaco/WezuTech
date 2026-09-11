@@ -4,33 +4,29 @@ import { cn } from "@/lib/cn";
 /**
  * A record's state, as coloured text.
  *
- * Not a pill, and not shouting. A pill is a control's shape — it reads as
- * something to press — and a table that pills every row turns its busiest
+ * Not a pill, and not shouting. A pill is a control's shape, so it reads as
+ * something to press, and a table that pills every row turns its quietest
  * column into a row of buttons that do nothing. `PUBLISHED` in caps on seven
- * consecutive rows is also the loudest thing on the page while being the
+ * consecutive rows was also the loudest thing on the page while being the
  * least surprising: everything is published, so the column should be quiet
  * and only the exceptions should catch the eye.
  *
- * So: sentence case, the state's own colour, and a small dot to carry that
- * colour at a glance without boxing the word.
+ * No dot either. With the colour already carried by the word, the dot was a
+ * second marker for the same fact, and six of them down a column made a
+ * stray vertical line of bullets beside the text.
+ *
+ * The colours are `--dash-status-*`, defined in `dashboard.css` inside the
+ * site's own range rather than taken from Tailwind's default scale.
  */
 const TONE = {
-  neutral: "text-[var(--dash-muted)]",
-  info: "text-sky-400",
-  success: "text-emerald-400",
-  warning: "text-amber-400",
-  danger: "text-red-400",
+  neutral: "text-[var(--dash-status-neutral)]",
+  info: "text-[var(--dash-status-info)]",
+  success: "text-[var(--dash-status-success)]",
+  warning: "text-[var(--dash-status-warning)]",
+  danger: "text-[var(--dash-status-danger)]",
 } as const;
 
 export type StatusTone = keyof typeof TONE;
-
-const DOT = {
-  neutral: "bg-[var(--dash-muted)]",
-  info: "bg-sky-400",
-  success: "bg-emerald-400",
-  warning: "bg-amber-400",
-  danger: "bg-red-400",
-} as const;
 
 /** `PUBLISHED` -> `Published`, `LOAD_BALANCING` -> `Load balancing`. */
 export function titleCase(value: string) {
@@ -62,9 +58,6 @@ export function StatusText({
   readonly className?: string;
 }) {
   return (
-    <span className={cn("inline-flex items-center gap-2 text-sm font-medium", TONE[tone], className)}>
-      <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", DOT[tone])} />
-      {titleCase(children)}
-    </span>
+    <span className={cn("text-sm font-medium", TONE[tone], className)}>{titleCase(children)}</span>
   );
 }

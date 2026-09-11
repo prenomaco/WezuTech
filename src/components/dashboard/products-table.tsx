@@ -1,15 +1,17 @@
 "use client";
+/* Product renders are admin-uploaded to Cloudinary; no remote pattern is
+   configured for next/image. */
+/* eslint-disable @next/next/no-img-element */
 
 import type { ProductStatus } from "@prisma/client";
 import Link from "next/link";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, ImageOff, Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import { deleteProduct } from "@/app/admin/actions";
 import { DeleteRowButton } from "@/components/dashboard/delete-row-button";
 import { PRODUCT_STATUS_TONE, StatusText, titleCase } from "@/components/dashboard/status-text";
 import { EmptyState, FilterSelect, ResultCount, SearchField, Toolbar } from "@/components/dashboard/toolbar";
 import { Table, Td, Th } from "@/components/dashboard/ui";
-import { PRODUCT_CATEGORIES } from "@/lib/product-categories";
 
 export interface ProductRow {
   readonly id: string;
@@ -18,7 +20,15 @@ export interface ProductRow {
   readonly status: ProductStatus;
   readonly sortOrder: number;
   readonly leadCount: number;
-  readonly categorySlugs: readonly string[];
+  readonly categories: readonly { slug: string; name: string }[];
+  /** The catalogue card image, so the row can be recognised by its picture. */
+  readonly imageUrl: string | null;
+}
+
+/** The taxonomy to filter by, passed in because it lives in the database. */
+export interface CategoryOption {
+  readonly slug: string;
+  readonly name: string;
 }
 
 const STATUS_OPTIONS = (["PUBLISHED", "DRAFT", "ARCHIVED"] as const).map((status) => ({
@@ -43,26 +53,34 @@ const ACTION =
  * row; adding is a button in the page header. Search and the two filters run
  * in the browser over rows already fetched, so they respond on the keystroke.
  */
-export function ProductsTable({ products }: { readonly products: readonly ProductRow[] }) {
+export function ProductsTable({
+  products,
+  categories,
+}: {
+  readonly products: readonly ProductRow[];
+  readonly categories: readonly CategoryOption[];
+}) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ProductStatus | "">("");
   const [category, setCategory] = useState<string | "">("");
 
   const categoryOptions = useMemo(
     () =>
-      PRODUCT_CATEGORIES.map((entry) => ({
+      categories.map((entry) => ({
         value: entry.slug,
-        label: entry.title,
-        count: products.filter((product) => product.categorySlugs.includes(entry.slug)).length,
+        label: entry.name,
+        count: products.filter((product) =>
+          product.categories.some((tag) => tag.slug === entry.slug),
+        ).length,
       })),
-    [products],
+    [products, categories],
   );
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return products.filter((product) => {
       if (status && product.status !== status) return false;
-      if (category && !product.categorySlugs.includes(category)) return false;
+      if (category && !product.categories.some((tag) => tag.slug === category)) return false;
       if (!needle) return true;
       return `${product.name} ${product.slug}`.toLowerCase().includes(needle);
     });
@@ -111,21 +129,42 @@ export function ProductsTable({ products }: { readonly products: readonly Produc
               {filtered.map((product) => (
                 <tr key={product.id}>
                   <Td>
-                    <Link
-                      className="font-medium text-[var(--dash-fg)] hover:text-[var(--dash-primary)]"
-                      href={`/admin/products/${product.id}/edit`}
-                    >
-                      {product.name}
-                    </Link>
-                    <span className="block text-xs text-[var(--dash-muted)]">/products/{product.slug}</span>
+                    {/* The card image, at thumbnail size. A catalogue of
+                        similarly-named chargers and packs is hard to scan as
+                        text alone, and this is the same picture the client
+                        sees on the site, so a row is recognisable at a glance
+                        rather than by reading its slug. */}
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-md border border-[var(--dash-border)] bg-[rgb(2_7_28/0.45)]">
+                        {product.imageUrl ? (
+                          <img
+                            alt=""
+                            className="h-full w-full object-contain p-0.5"
+                            loading="lazy"
+                            src={product.imageUrl}
+                          />
+                        ) : (
+                          <ImageOff aria-hidden className="size-4 text-[var(--dash-muted)]" />
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <Link
+                          className="font-medium text-[var(--dash-fg)] hover:text-[var(--dash-primary)]"
+                          href={`/admin/products/${product.id}/edit`}
+                        >
+                          {product.name}
+                        </Link>
+                        <span className="block text-xs text-[var(--dash-muted)]">
+                          /products/{product.slug}
+                        </span>
+                      </div>
+                    </div>
                   </Td>
 
                   <Td className="hidden md:table-cell">
-                    {product.categorySlugs.length ? (
+                    {product.categories.length ? (
                       <span className="text-xs text-[var(--dash-muted)]">
-                        {product.categorySlugs
-                          .map((slug) => PRODUCT_CATEGORIES.find((entry) => entry.slug === slug)?.title ?? slug)
-                          .join(", ")}
+                        {product.categories.map((tag) => tag.name).join(", ")}
                       </span>
                     ) : (
                       <span className="text-xs text-amber-400">Uncategorised</span>

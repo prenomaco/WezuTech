@@ -4,7 +4,7 @@
    stays a plain <img>. */
 /* eslint-disable @next/next/no-img-element */
 
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/components/analytics";
 import { ButtonLink } from "@/components/ui/button";
 import { CarouselArrow } from "@/components/ui/carousel-arrow";
@@ -91,23 +91,104 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   );
 }
 
+/** How long each product holds before the rail advances, in milliseconds. */
+const AUTOPLAY_MS = 5000;
+
 export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
   const rail = useRef<HTMLDivElement>(null);
+  /*
+   * Paused while the pointer is over the rail, and for the rest of the visit
+   * once someone uses the arrows: a carousel that keeps moving under the
+   * reader after they have taken control of it is fighting them.
+   *
+   * `surrendered` is state rather than a ref on purpose. As a ref it did stop
+   * *future* runs of the effect, but the interval already scheduled kept
+   * firing, so pressing an arrow appeared to do nothing about the autoplay and
+   * the rail carried on advancing under the reader. State re-runs the effect,
+   * which clears the interval in its cleanup.
+   */
+  const [paused, setPaused] = useState(false);
+  const [surrendered, setSurrendered] = useState(false);
 
-  const move = (direction: number) =>
-    rail.current?.scrollBy({
-      left: direction * rail.current.clientWidth,
-      behavior: "smooth",
-    });
+  /**
+   * Scroll one card, wrapping at both ends.
+   *
+   * `scrollBy` alone stops dead at the rail's limits, so on the last product
+   * the next arrow did nothing and on the first the previous arrow did nothing
+   * either: two controls that look active and are not. Snapping to the
+   * opposite end instead keeps both arrows meaningful at every position.
+   */
+  const move = useCallback((direction: number) => {
+    const node = rail.current;
+    if (!node) return;
+
+    const page = node.clientWidth;
+    const maxScroll = node.scrollWidth - page;
+    /*
+     * Half a card of tolerance, not a pixel.
+     *
+     * The rail is `snap-mandatory` and the card carries the frame's own left
+     * inset, so its resting position at the first card is 18px rather than 0,
+     * and a 1px test for "at the start" was never true: pressing Previous on
+     * the first product fell through to `scrollBy`, which clamps, so the
+     * control did nothing. Half a card is unambiguous, since a genuine
+     * neighbouring position is a whole card away.
+     */
+    const tolerance = page / 2;
+    const atStart = node.scrollLeft < tolerance;
+    const atEnd = node.scrollLeft > maxScroll - tolerance;
+
+    if (direction > 0 && atEnd) {
+      node.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
+    if (direction < 0 && atStart) {
+      /*
+       * The exact maximum, not `scrollWidth`.
+       *
+       * Asking to scroll past the end is normally clamped, but this rail is
+       * `snap-mandatory`, and an out-of-range target left the snap engine to
+       * pick a snap point for itself: it chose the nearest one, which from the
+       * start edge is the start, so the backward wrap went nowhere.
+       */
+      node.scrollTo({ left: maxScroll, behavior: "smooth" });
+      return;
+    }
+    node.scrollBy({ left: direction * page, behavior: "smooth" });
+  }, []);
+
+  const step = useCallback(
+    (direction: number) => {
+      setSurrendered(true);
+      move(direction);
+    },
+    [move],
+  );
+
+  useEffect(() => {
+    if (products.length < 2) return;
+    if (paused || surrendered) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      move(1);
+    }, AUTOPLAY_MS);
+    return () => window.clearInterval(timer);
+  }, [move, paused, surrendered, products.length]);
 
   /* 402 frame: eyebrow 1615 -> card 1660, i.e. 24. The 1512 frame puts 32. */
   return (
-    <div className="relative mt-6 lg:mt-8">
+    <div
+      className="relative mt-6 lg:mt-8"
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={() => setPaused(false)}
+    >
       <CarouselArrow
         className={`hidden lg:flex ${ARROW_LEFT}`}
         direction="prev"
         label="Previous product"
-        onClick={() => move(-1)}
+        onClick={() => step(-1)}
         scale="product"
       />
 
@@ -124,7 +205,7 @@ export function ProductCarousel({ products }: { products: CatalogProduct[] }) {
         className={`hidden lg:flex ${ARROW_RIGHT}`}
         direction="next"
         label="Next product"
-        onClick={() => move(1)}
+        onClick={() => step(1)}
         scale="product"
       />
     </div>

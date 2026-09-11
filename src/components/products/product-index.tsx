@@ -5,17 +5,17 @@ import { CategoryGrid } from "@/components/products/category-grid";
 import { PRODUCT_GRID, ProductCard } from "@/components/products/product-card";
 import { SectionHeading } from "@/components/ui/typography";
 import type { CatalogProduct } from "@/lib/catalog";
+import type { ProductCategorySummary } from "@/lib/categories";
 
 /**
  * The index's two ways in: browse by application area, or see the whole
  * catalogue.
  *
- * Categories are the default because that is how the site talks about the
- * work everywhere else, and because a visitor who knows which vehicle they
- * are building for can get to the shortlist in one click. "Show all products"
- * is the escape hatch for the visitor who would rather scan everything, so it
- * is a toggle on this page rather than a second page to navigate to — the
- * catalogue is already loaded either way.
+ * Categories are the default: a visitor who knows they need charging
+ * hardware rather than a battery pack gets to the shortlist in one click.
+ * "Show all products" is the escape hatch for the visitor who would rather
+ * scan everything, so it is a toggle on this page rather than a second page
+ * to navigate to — the catalogue is already loaded either way.
  */
 const TOGGLE =
   "press inline-flex items-center gap-2 rounded-control border px-5 py-[0.625rem] " +
@@ -26,9 +26,9 @@ const TOGGLE_STATE = {
   off: "border-white/40 text-ice hover:border-white hover:bg-white/10",
 } as const;
 
-export function ProductIndex({ products, counts }: {
+export function ProductIndex({ products, categories }: {
   readonly products: readonly CatalogProduct[];
-  readonly counts: Readonly<Record<string, number>>;
+  readonly categories: readonly ProductCategorySummary[];
 }) {
   const [showAll, setShowAll] = useState(false);
 
@@ -36,7 +36,7 @@ export function ProductIndex({ products, counts }: {
     <>
       <div className="flex flex-col gap-[0.875rem] sm:flex-row sm:items-center sm:justify-between">
         <SectionHeading as="h2" data-motion="products-heading">
-          {showAll ? "ALL PRODUCTS" : "BY APPLICATION"}
+          {showAll ? "ALL PRODUCTS" : "BY CATEGORY"}
         </SectionHeading>
 
         <button
@@ -45,7 +45,7 @@ export function ProductIndex({ products, counts }: {
           onClick={() => setShowAll((current) => !current)}
           type="button"
         >
-          {showAll ? "Browse by application" : "Show all products"}
+          {showAll ? "Browse by category" : "Show all products"}
           <span className="text-[0.9375rem] opacity-70">
             {showAll ? "" : `(${products.length})`}
           </span>
@@ -66,7 +66,7 @@ export function ProductIndex({ products, counts }: {
             </p>
           )
         ) : (
-          <CategoryGrid counts={counts} />
+          <CategoryGrid categories={categories} />
         )}
       </div>
     </>

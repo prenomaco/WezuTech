@@ -30,6 +30,23 @@
   --dash-primary: #0985cc;
   --dash-primary-hover: #1b9ae4;
 
+  /*
+   * Status colours, kept inside the site's own range.
+   *
+   * Tailwind's `emerald-400` / `amber-400` / `red-400` are correct signals and
+   * the wrong palette: against this ink they sit far more saturated than
+   * anything else on the page, so a table of seven published rows read as a
+   * row of warning lights. These are desaturated into the same band as
+   * `--dash-muted` (#8fa3bd), which is where the rest of the interface lives,
+   * so a state still reads at a glance but stops shouting. Danger keeps a
+   * little more chroma than the others, because it is the one that should.
+   */
+  --dash-status-neutral: #8fa3bd;
+  --dash-status-info: #74acd6;
+  --dash-status-success: #7fb59a;
+  --dash-status-warning: #c6a473;
+  --dash-status-danger: #c98185;
+
   color-scheme: dark;
   background: var(--dash-bg);
 }

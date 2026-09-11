@@ -7,8 +7,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
-import { productInputSchema, testimonialInputSchema } from "@/lib/validation";
+import { categoryPath, getCategorySlugs } from "@/lib/categories";
+import { categoryInputSchema, productInputSchema, testimonialInputSchema } from "@/lib/validation";
 
 const BCRYPT_ROUNDS = 12;
 const productIdSchema = z.string().cuid();
@@ -24,11 +24,9 @@ export async function saveProduct(formData: FormData) {
     tagline: nullable(formData.get("tagline")) ?? undefined, cardDescription: nullable(formData.get("cardDescription")) ?? undefined,
     introduction: nullable(formData.get("introduction")) ?? undefined, seoTitle: nullable(formData.get("seoTitle")) ?? undefined,
     seoDescription: nullable(formData.get("seoDescription")) ?? undefined,
-    cardUrl: nullable(formData.get("cardUrl")) ?? undefined, cardUrlPublicId: nullable(formData.get("cardUrlPublicId")) ?? undefined,
     heroUrl: nullable(formData.get("heroUrl")) ?? undefined, heroUrlPublicId: nullable(formData.get("heroUrlPublicId")) ?? undefined,
     detailUrl: nullable(formData.get("detailUrl")) ?? undefined, detailUrlPublicId: nullable(formData.get("detailUrlPublicId")) ?? undefined,
-    galleryOneUrl: nullable(formData.get("galleryOneUrl")) ?? undefined, galleryOneUrlPublicId: nullable(formData.get("galleryOneUrlPublicId")) ?? undefined,
-    galleryTwoUrl: nullable(formData.get("galleryTwoUrl")) ?? undefined, galleryTwoUrlPublicId: nullable(formData.get("galleryTwoUrlPublicId")) ?? undefined,
+    gallery: json(formData.get("gallery")),
     applicationOneUrl: nullable(formData.get("applicationOneUrl")) ?? undefined, applicationOneUrlPublicId: nullable(formData.get("applicationOneUrlPublicId")) ?? undefined,
     applicationTwoUrl: nullable(formData.get("applicationTwoUrl")) ?? undefined, applicationTwoUrlPublicId: nullable(formData.get("applicationTwoUrlPublicId")) ?? undefined,
     applicationThreeUrl: nullable(formData.get("applicationThreeUrl")) ?? undefined, applicationThreeUrlPublicId: nullable(formData.get("applicationThreeUrlPublicId")) ?? undefined,
@@ -61,11 +59,16 @@ export async function saveProduct(formData: FormData) {
 
     await tx.productMedia.deleteMany({ where: { productId: saved.id, kind: { in: [ProductMediaKind.CARD, ProductMediaKind.HERO, ProductMediaKind.DETAIL, ProductMediaKind.GALLERY, ProductMediaKind.APPLICATION, ProductMediaKind.DATASHEET] } } });
     const media = [
-      [ProductMediaKind.CARD, input.cardUrl, input.cardUrlPublicId, 0, `${saved.name} catalogue image`],
+      /*
+       * No CARD row is written any more. The catalogue card shows the hero
+       * image, so a separate "carousel card image" was a second picture to
+       * keep in step with the first, and the seeded kiosk proved the point by
+       * shipping a compressor drawing on its card and the actual charger only
+       * on its page. The kind is still deleted above, which retires any row
+       * left over from that field.
+       */
       [ProductMediaKind.HERO, input.heroUrl, input.heroUrlPublicId, 0, `${saved.name} hero image`],
       [ProductMediaKind.DETAIL, input.detailUrl, input.detailUrlPublicId, 0, `${saved.name} detail image`],
-      [ProductMediaKind.GALLERY, input.galleryOneUrl, input.galleryOneUrlPublicId, 0, `${saved.name} alternate view 1`],
-      [ProductMediaKind.GALLERY, input.galleryTwoUrl, input.galleryTwoUrlPublicId, 1, `${saved.name} alternate view 2`],
       [ProductMediaKind.APPLICATION, input.applicationOneUrl, input.applicationOneUrlPublicId, 0, `${saved.name} application 1`],
       [ProductMediaKind.APPLICATION, input.applicationTwoUrl, input.applicationTwoUrlPublicId, 1, `${saved.name} application 2`],
       [ProductMediaKind.APPLICATION, input.applicationThreeUrl, input.applicationThreeUrlPublicId, 2, `${saved.name} application 3`],
@@ -73,6 +76,20 @@ export async function saveProduct(formData: FormData) {
     ] as const;
     const present = media.filter((entry): entry is typeof entry & readonly [ProductMediaKind, string, string | undefined, number, string] => Boolean(entry[1]));
     if (present.length) await tx.productMedia.createMany({ data: present.map(([kind, url, publicId, sortOrder, alt]) => ({ productId: saved.id, kind, url, cloudinaryPublicId: publicId || null, sortOrder, alt })) });
+
+    /* The gallery, in the order the editor arranged it. */
+    if (input.gallery.length) {
+      await tx.productMedia.createMany({
+        data: input.gallery.map((image, index) => ({
+          productId: saved.id,
+          kind: ProductMediaKind.GALLERY,
+          url: image.url,
+          cloudinaryPublicId: image.publicId || null,
+          sortOrder: index,
+          alt: `${saved.name} view ${index + 2}`,
+        })),
+      });
+    }
 
     /* Replaced wholesale, like the sections above: the form posts the complete
        set of ticked boxes, so a category that is absent from the payload is
@@ -91,7 +108,7 @@ export async function saveProduct(formData: FormData) {
     }
     return saved;
   });
-  revalidateCatalogue(product.slug, oldSlug);
+  await revalidateCatalogue(product.slug, oldSlug);
   /* Back to the index: the form is a page now, so saving has somewhere to go
      and "did that save?" is answered by the row being right. */
   redirect("/admin/products");
@@ -105,7 +122,7 @@ export async function saveProduct(formData: FormData) {
  * it appear on `/products/category/marine`, not on that page's next
  * 60-second revalidation.
  */
-function revalidateCatalogue(slug: string, oldSlug?: string) {
+async function revalidateCatalogue(slug: string, oldSlug?: string) {
   revalidatePath("/");
   revalidatePath("/products");
   revalidatePath("/admin");
@@ -114,7 +131,7 @@ function revalidateCatalogue(slug: string, oldSlug?: string) {
   revalidatePath("/sitemap.xml");
   revalidatePath(`/products/${slug}`);
   if (oldSlug && oldSlug !== slug) revalidatePath(`/products/${oldSlug}`);
-  for (const category of PRODUCT_CATEGORIES) revalidatePath(categoryPath(category.slug));
+  for (const categorySlug of await getCategorySlugs()) revalidatePath(categoryPath(categorySlug));
 }
 
 export async function deleteProduct(formData: FormData) {
@@ -123,7 +140,72 @@ export async function deleteProduct(formData: FormData) {
   const product = await prisma.product.findUniqueOrThrow({ where: { id }, select: { slug: true } });
 
   await prisma.product.delete({ where: { id } });
-  revalidateCatalogue(product.slug);
+  await revalidateCatalogue(product.slug);
+}
+
+/**
+ * Creates or updates a product family.
+ *
+ * The slug is what every public URL is built from, so changing it has to
+ * revalidate the old path as well as the new one — otherwise the renamed
+ * category keeps serving from its previous address until the cache expires.
+ */
+export async function saveCategory(formData: FormData) {
+  await requireAdmin();
+  const input = categoryInputSchema.parse({
+    id: nullable(formData.get("id")) ?? undefined,
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    blurb: formData.get("blurb"),
+    image: nullable(formData.get("image")) ?? undefined,
+    imagePublicId: nullable(formData.get("imagePublicId")) ?? undefined,
+    icon: formData.get("icon"),
+    sortOrder: formData.get("sortOrder"),
+  });
+
+  const previousSlug = input.id
+    ? (await prisma.category.findUnique({ where: { id: input.id }, select: { slug: true } }))?.slug
+    : undefined;
+
+  const data = {
+    name: input.name,
+    slug: input.slug,
+    blurb: input.blurb,
+    image: input.image || null,
+    imagePublicId: input.imagePublicId || null,
+    icon: input.icon,
+    sortOrder: input.sortOrder,
+  };
+
+  if (input.id) await prisma.category.update({ where: { id: input.id }, data });
+  else await prisma.category.create({ data });
+
+  await revalidateCategories(previousSlug);
+  redirect("/admin/categories");
+}
+
+/**
+ * Deletes a family. Its `ProductCategory` rows go with it through the
+ * schema's cascade, so the products themselves are untouched — they simply
+ * stop being filed under it.
+ */
+export async function deleteCategory(formData: FormData) {
+  await requireAdmin();
+  const id = z.string().cuid().parse(formData.get("id"));
+  const category = await prisma.category.findUniqueOrThrow({ where: { id }, select: { slug: true } });
+  await prisma.category.delete({ where: { id } });
+  await revalidateCategories(category.slug);
+}
+
+/** Every surface a category appears on, plus a slug that has just stopped existing. */
+async function revalidateCategories(goneSlug?: string) {
+  revalidatePath("/products");
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/products/category/[category]", "page");
+  for (const slug of await getCategorySlugs()) revalidatePath(categoryPath(slug));
+  if (goneSlug) revalidatePath(categoryPath(goneSlug));
 }
 
 export async function saveTestimonial(formData: FormData) {

@@ -85,20 +85,29 @@ model Product {
   @@index([status, sortOrder])
 }
 
-/// One of the six application areas the site groups products by. Rows are
-/// seeded rather than user-created: the set matches the home page's industries
-/// section and the `/products` index, so a seventh would need artwork and copy
-/// alongside it.
+/// A product family the catalogue is grouped by — EV Charging, Battery
+/// Systems, and so on. These are the rows behind `/products` and every
+/// `/products/category/...` page, and they are edited in the dashboard rather
+/// than defined in code: the taxonomy is the client's to change as the range
+/// grows.
+///
+/// Not to be confused with the home page's industries section, which is the
+/// markets served (Automotive, Marine, Locomotive...) and stays as designed
+/// content in `content/site-content.ts`.
 model Category {
-  id        String            @id @default(cuid())
-  slug      String            @unique
-  name      String
-  blurb     String
-  image     String
-  sortOrder Int               @default(0)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  products  ProductCategory[]
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  name          String
+  blurb         String
+  /// Artwork, once there is any. Until then the card falls back to `icon`.
+  image         String?
+  imagePublicId String?
+  /// Key into the dashboard's icon set — see `lib/category-icons.ts`.
+  icon          String            @default("package")
+  sortOrder     Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  products      ProductCategory[]
 
   @@index([sortOrder])
 }

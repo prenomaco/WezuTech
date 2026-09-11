@@ -1,146 +1,103 @@
-import Image from "next/image";
+/* Category artwork is admin-uploaded to Cloudinary, and no remote pattern is
+   configured for next/image — so it stays a plain <img>, as product renders
+   do. */
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
-import { CATEGORY_IMAGE_HEIGHT, PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
+import { CategoryIcon } from "@/components/category-icon";
+import { categoryPath, type ProductCategorySummary } from "@/lib/categories";
 
 /**
- * The six application areas, laid out as the Figma frame lays them out.
+ * The product families, as cards on `/products`.
  *
- * Lifted out of `sections/industries.tsx` unchanged so the home page and the
- * `/products` index render the same cells from the same measurements rather
- * than one being a copy of the other that drifts. Every cell is a link to its
- * category page; the home page needed that anyway, and it is what the
- * `/products` index is for.
- */
-
-/**
- * Figma: two rows of three. Icons sit at x=136 / 566 / 958 with their text at
- * x=274 / 693 / 1091, so the columns are 430 / 392 / rest wide inside the
- * 1304px content column, offset 32px from its left edge.
- */
-/* The 402 frame stacks these as six rows on a 151px pitch, each 121 tall.
-   Between the two designed widths there is a tablet, where six full-width rows
-   leave most of the screen empty and the eye has to travel the whole way down
-   a single column; two columns there keep the same cells and simply use the
-   room. */
-/*
- * The three tracks are the design's, as ratios rather than lengths.
+ * A card rather than the home page's icon-and-copy row. The industries
+ * section is a fixed composition measured against a Figma frame; this is an
+ * index whose contents are managed in the dashboard, so it has to hold six
+ * categories or nine without being redrawn, and it has to look deliberate
+ * whether or not a category has artwork yet.
  *
- * `430fr 392fr 450fr` divides whatever the row is given in exactly the
- * proportion the frame does, so at 1512 the icons land on x=136 / 566 / 958 to
- * the pixel and at any narrower width the columns keep their relative
- * measures instead of one of them collapsing to a word per line — which is
- * what three equal columns did to the third one, and what three fixed lengths
- * did to all of them below the width they were measured at.
+ * Which is what the icon is for. Most families will not have a render for a
+ * while, and some — Thermal Management, Diagnostics — have no single obvious
+ * picture at all, so every category carries an icon and the card falls back
+ * to it inside a lit panel built from the site's own tokens. Uploading art in
+ * the dashboard replaces the panel with the image and needs no code change.
  */
-const GRID =
-  "-mx-[0.75rem] grid grid-cols-1 gap-y-[1.875rem] " +
-  "sm:mx-0 sm:grid-cols-2 sm:gap-x-[1.5rem] sm:gap-y-[2rem] " +
-  "lg:mx-0 lg:grid-cols-[430fr_392fr_450fr] lg:gap-x-0 lg:gap-y-[2.0625rem] lg:pl-8";
-
-/** Every icon renders 146px tall; Figma varies the width with the artwork. */
-const ICON_SLOT = "flex w-[6.3125rem] shrink-0 justify-end lg:w-[7.625rem]";
+const CARD =
+  "lift group flex h-full flex-col gap-4 rounded-xl border border-[rgb(218_250_245/0.12)] " +
+  "bg-ink-raised/60 p-5 transition-[border-color,background-color] duration-300 ease-out " +
+  "hover:border-[rgb(35_164_236/0.45)] hover:bg-ink-raised lg:p-6";
 
 /**
- * Per-column measurements from the frame: the gap between the icon slot and
- * the copy, and the text-box width that decides where each body wraps.
+ * The icon's panel: the design's own recessed ink with a lit top edge, the
+ * same treatment the site gives its panels, so a category without a render
+ * reads as designed rather than as a missing image.
  */
-/*
- * The measures are given as a share of the copy's own column rather than as a
- * length, for the same reason the tracks are ratios: the frame's 241 / 242 /
- * 284 are what is left of a 430 / 392 / 450 track once the 122 icon slot and
- * the column's own gap are taken out, and stated that way they stay the design
- * at any width the row is handed.
- */
-const COLUMN = [
-  {
-    gap: "gap-[0.8125rem] lg:gap-[1rem]",
-    body: "max-w-[16.1875rem] lg:max-w-[82.53%]",
-  },
-  {
-    gap: "gap-[0.8125rem] lg:gap-[0.3125rem]",
-    body: "max-w-[16.1875rem] lg:max-w-[91.32%]",
-  },
-  {
-    gap: "gap-[0.8125rem] lg:gap-[0.6875rem]",
-    body: "max-w-[16.1875rem] lg:max-w-[89.59%]",
-  },
-] as const;
+const ICON_PANEL =
+  "relative grid size-[3.25rem] shrink-0 place-items-center overflow-hidden rounded-[0.75rem] " +
+  "border border-[rgb(35_164_236/0.28)] bg-[linear-gradient(160deg,rgb(35_164_236/0.18),rgb(2_7_28/0.55))] " +
+  "text-sky-bright transition-colors duration-300 ease-out group-hover:border-[rgb(35_164_236/0.55)]";
 
-/**
- * How far the copy sits below the top of its icon, per row.
- *
- * The frame does not use one value: row one puts all three titles 14px below
- * the icon (y=2105 against icons at 2091), row two puts them 17px below
- * (y=2287 against icons at 2270). Row two's left cell is a further 6px down
- * again at 2293, on its own — that one is a stray nudge rather than a rhythm,
- * so the row follows the two cells that agree.
- */
-const ROW_OFFSET = [
-  "pt-[0.25rem] lg:pt-[0.875rem]",
-  "pt-[0.25rem] lg:pt-[1.0625rem]",
-] as const;
+function CategoryMark({ category }: { readonly category: ProductCategorySummary }) {
+  if (category.image) {
+    return (
+      <div className="grid size-[3.25rem] shrink-0 place-items-center overflow-hidden rounded-[0.75rem] border border-[rgb(218_250_245/0.12)] bg-[rgb(2_7_28/0.45)]">
+        <img alt="" className="h-full w-full object-contain p-1" loading="lazy" src={category.image} />
+      </div>
+    );
+  }
 
-interface CategoryCellProps {
-  readonly category: (typeof PRODUCT_CATEGORIES)[number];
-  readonly column: (typeof COLUMN)[number];
-  readonly row: string;
-  /** Rendered under the body, when the caller knows how many products there are. */
-  readonly count?: number;
+  return (
+    <div className={ICON_PANEL}>
+      <CategoryIcon className="size-6" icon={category.icon} />
+    </div>
+  );
 }
 
-function CategoryCell({ category, column, row, count }: CategoryCellProps) {
+function CategoryCard({ category }: { readonly category: ProductCategorySummary }) {
   return (
-    <Link
-      className={`lift group flex items-start ${column.gap}`}
-      data-motion="industry-item"
-      href={categoryPath(category.slug)}
-    >
-      <div className={ICON_SLOT}>
-        <Image
-          alt=""
-          className="h-[7.5625rem] w-auto max-w-none object-contain lg:h-[9.125rem]"
-          height={CATEGORY_IMAGE_HEIGHT}
-          sizes="122px"
-          src={category.image}
-          width={category.imageWidth}
-        />
-      </div>
-      {/* Type is 18px throughout (nodes 252:492 bold / 252:495 book), both in
-          #dafaf5 — at 16px the body wraps a word early in every column. */}
-      <div className={`min-w-0 flex-1 ${row}`}>
-        <h3 className="text-[1.125rem] font-bold leading-[1.5rem] text-ice group-hover:text-frost">
-          {category.title}
-        </h3>
-        <p
-          className={`mt-[0.4375rem] text-[1rem] font-book leading-[1.3125rem] text-ice lg:mt-1.5 lg:text-[1.125rem] lg:leading-[1.5rem] ${column.body}`}
-        >
-          {category.body}
-        </p>
-        {count === undefined ? null : (
-          <p className="mt-[0.5rem] text-[0.875rem] font-book leading-[1.125rem] text-sky-bright">
-            {count} {count === 1 ? "product" : "products"}
+    <Link className={CARD} data-motion="industry-item" href={categoryPath(category.slug)}>
+      <div className="flex items-start gap-4">
+        <CategoryMark category={category} />
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[1.125rem] font-bold leading-[1.5rem] text-ice group-hover:text-frost">
+            {category.name}
+          </h3>
+          <p className="mt-1 text-[0.875rem] leading-[1.125rem] text-sky-bright">
+            {category.productCount} {category.productCount === 1 ? "product" : "products"}
           </p>
-        )}
+        </div>
       </div>
+
+      <p className="text-[1rem] font-book leading-[1.3125rem] text-ice/80 lg:text-[1.0625rem] lg:leading-[1.4375rem]">
+        {category.blurb}
+      </p>
+
+      <span className="mt-auto pt-1 text-[1rem] leading-[1.5rem] text-ice/70 transition-colors duration-200 group-hover:text-sky-bright">
+        Browse
+        <span
+          aria-hidden
+          className="ml-1.5 inline-block transition-transform duration-300 ease-out group-hover:translate-x-1 motion-reduce:transition-none"
+        >
+          →
+        </span>
+      </span>
     </Link>
   );
 }
 
-/**
- * @param counts Product totals by category slug. Omitted on the home page,
- *   where the section is an introduction rather than an index.
- */
-export function CategoryGrid({ counts }: { readonly counts?: Readonly<Record<string, number>> }) {
+export function CategoryGrid({ categories }: { readonly categories: readonly ProductCategorySummary[] }) {
+  if (!categories.length) {
+    return (
+      <p className="text-[1.125rem] leading-[1.5rem] text-ice/70">
+        Categories are being set up. The full catalogue is available below.
+      </p>
+    );
+  }
+
   return (
-    <div className={GRID}>
-      {PRODUCT_CATEGORIES.map((category, index) => (
-        <CategoryCell
-          category={category}
-          column={COLUMN[index % COLUMN.length]}
-          count={counts?.[category.slug]}
-          key={category.slug}
-          row={ROW_OFFSET[Math.min(Math.floor(index / COLUMN.length), ROW_OFFSET.length - 1)]}
-        />
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      {categories.map((category) => (
+        <CategoryCard category={category} key={category.id} />
       ))}
     </div>
   );

@@ -535,3 +535,23 @@
     display: none;
   }
 }
+
+/*
+ * A scroll container with no visible scrollbar.
+ *
+ * Used by the product gallery's thumbnail rail, where the point is that a
+ * partly-visible thumbnail at the edge is the affordance: a scrollbar drawn
+ * over a 93px column of images is heavier than the images it describes, and
+ * on this dark panel it reads as a stray light line. The container still
+ * scrolls by wheel, trackpad, touch and keyboard, so nothing is lost but the
+ * chrome.
+ */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

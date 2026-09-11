@@ -6,15 +6,26 @@ import type { Product, ProductMedia, ProductSection } from "@prisma/client";
 import { useFormStatus } from "react-dom";
 import { saveProduct } from "@/app/admin/actions";
 import { Button, Input, Label, Select, Textarea } from "@/components/dashboard/ui";
-import { MediaUpload } from "@/components/media-upload";
-import { PRODUCT_CATEGORIES } from "@/lib/product-categories";
+import { GalleryUpload, MediaUpload, type GalleryImage } from "@/components/media-upload";
 
 type Pair = { title: string; body: string };
 
-function Field({ children, label, wide }: { readonly children: React.ReactNode; readonly label: string; readonly wide?: boolean }) {
+function Field({
+  children,
+  label,
+  hint,
+  wide,
+}: {
+  readonly children: React.ReactNode;
+  readonly label: string;
+  /** A line under the label, for fields whose effect is not obvious. */
+  readonly hint?: string;
+  readonly wide?: boolean;
+}) {
   return (
     <label className={`flex flex-col gap-1.5 ${wide ? "sm:col-span-2" : ""}`}>
       <Label>{label}</Label>
+      {hint ? <span className="-mt-1 text-xs text-[var(--dash-muted)]">{hint}</span> : null}
       {children}
     </label>
   );
@@ -98,26 +109,43 @@ function PairEditor({ name, title, firstLabel, secondLabel, initial }: { readonl
 }
 
 /**
- * Which of the six application areas this product serves.
+ * Which product families this product belongs to.
  *
- * Checkboxes rather than a `<select multiple>`: there are exactly six, they
- * all fit, and a multi-select requires the reader to know to hold a modifier
- * key. A product genuinely belongs to several — a DC fast charger is
- * automotive and special-purpose both — which is why the join is
- * many-to-many rather than a column.
+ * Checkboxes rather than a `<select multiple>`: a handful of categories all
+ * fit on screen, and a multi-select requires the reader to know to hold a
+ * modifier key. A product genuinely belongs to several — a DC fast charger is
+ * charging hardware, power electronics and thermal management at once — which
+ * is why the join is many-to-many rather than a column.
+ *
+ * The options come from the database, so adding a family in Categories makes
+ * it selectable here with no code change.
  */
-function CategoryPicker({ selected }: { readonly selected: readonly string[] }) {
+function CategoryPicker({
+  selected,
+  options,
+}: {
+  readonly selected: readonly string[];
+  readonly options: readonly { slug: string; name: string }[];
+}) {
   const [chosen, setChosen] = useState<readonly string[]>(selected);
+
+  if (!options.length) {
+    return (
+      <p className="rounded-lg border border-dashed border-[var(--dash-border-strong)] p-4 text-xs text-[var(--dash-muted)] sm:col-span-2">
+        No categories yet. Add them under Categories and they will appear here.
+      </p>
+    );
+  }
 
   return (
     <fieldset className="sm:col-span-2">
       <legend className="text-sm font-semibold text-[var(--dash-fg)]">Categories</legend>
       <p className="mt-0.5 text-xs text-[var(--dash-muted)]">
         Decides which category pages list this product. Leaving all of them clear hides it from
-        every category page — it still shows in the full catalogue.
+        every category page, though it still shows in the full catalogue.
       </p>
       <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {PRODUCT_CATEGORIES.map((category) => {
+        {options.map((category) => {
           const active = chosen.includes(category.slug);
           return (
             <label
@@ -142,7 +170,7 @@ function CategoryPicker({ selected }: { readonly selected: readonly string[] }) 
                 type="checkbox"
                 value={category.slug}
               />
-              {category.title}
+              {category.name}
             </label>
           );
         })}
@@ -174,11 +202,13 @@ export function AdminProductForm({
   media = [],
   sections = [],
   categorySlugs = [],
+  categoryOptions,
 }: {
   readonly product?: Product;
   readonly media?: ProductMedia[];
   readonly sections?: ProductSection[];
   readonly categorySlugs?: readonly string[];
+  readonly categoryOptions: readonly { slug: string; name: string }[];
 }) {
   const findSection = (type: ProductSection["type"]) => sections.find((section) => section.type === type);
   const findMedia = (kind: ProductMedia["kind"], index = 0) => media.filter((item) => item.kind === kind).sort((a, b) => a.sortOrder - b.sortOrder)[index];
@@ -186,21 +216,28 @@ export function AdminProductForm({
   const specifications = findSection("SPECIFICATIONS");
   const cta = dataObject(findSection("CTA"));
   const isNew = !product;
+  const galleryImages: GalleryImage[] = media
+    .filter((item) => item.kind === "GALLERY")
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((item) => ({ url: item.url, publicId: item.cloudinaryPublicId ?? "" }));
 
   return (
     <form action={saveProduct} className="flex flex-col gap-4">
       <input name="id" type="hidden" value={product?.id ?? ""} />
 
-      <FormSection title="Basics" whereItAppears="Not shown on the product page itself — controls the URL, publish state, and where the product sits in the homepage carousel.">
+      <FormSection title="Basics" whereItAppears="Not shown on the product page itself. Controls the URL, publish state, and where the product sits in the homepage carousel.">
         <Field label="Name"><Input defaultValue={product?.name} name="name" required /></Field>
         <Field label="Slug"><Input defaultValue={product?.slug} name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" required /></Field>
         <Field label="Status"><Select defaultValue={product?.status ?? "DRAFT"} name="status"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></Select></Field>
         <Field label="Carousel order"><Input defaultValue={product?.sortOrder ?? 0} min={0} name="sortOrder" type="number" /></Field>
-        <CategoryPicker selected={categorySlugs} />
-        <Field label="Homepage card description" wide><Textarea defaultValue={product?.cardDescription ?? ""} name="cardDescription" rows={3} /></Field>
-        <div className="sm:col-span-2">
-          <MediaUpload hint="The image on this product's card in the homepage carousel, the products index and its category pages." initialPublicId={findMedia("CARD")?.cloudinaryPublicId ?? ""} initialUrl={findMedia("CARD")?.url} label="Catalogue card image" name="cardUrl" />
-        </div>
+        <CategoryPicker options={categoryOptions} selected={categorySlugs} />
+        <Field
+          hint="Two short paragraphs read best: what it is, then what it is for. A blank line starts a new paragraph."
+          label="Catalogue card description"
+          wide
+        >
+          <Textarea defaultValue={product?.cardDescription ?? ""} name="cardDescription" rows={6} />
+        </Field>
       </FormSection>
 
       <FormSection title="Hero" whereItAppears="The top of the product page: the big heading, the intro paragraph under it, and the row of stat boxes (e.g. 'Up to 5 kW').">
@@ -208,12 +245,15 @@ export function AdminProductForm({
         <Field label="Hero introduction" wide><Textarea defaultValue={product?.introduction ?? ""} name="introduction" rows={4} /></Field>
         <PairEditor firstLabel="Metric value" initial={itemArray(findSection("METRICS"))} name="metrics" secondLabel="Metric label" title="Stat boxes (up to 3 show)" />
         <div className="sm:col-span-2">
-          <MediaUpload hint="The large image shown first in the hero gallery viewer." initialPublicId={findMedia("HERO")?.cloudinaryPublicId ?? ""} initialUrl={findMedia("HERO")?.url} label="Main hero image" name="heroUrl" />
+          <MediaUpload
+            hint="Used in three places: the main image at the top of this product's page, its card in the home page carousel, and its thumbnail on the products index and category pages. Upload once and all three follow."
+            initialPublicId={findMedia("HERO")?.cloudinaryPublicId ?? ""}
+            initialUrl={findMedia("HERO")?.url}
+            label="Main product image"
+            name="heroUrl"
+          />
         </div>
-        <div className="grid gap-3 sm:col-span-2 sm:grid-cols-2">
-          <MediaUpload hint="First hero thumbnail, beside the main image — hover it to preview." initialPublicId={findMedia("GALLERY", 0)?.cloudinaryPublicId ?? ""} initialUrl={findMedia("GALLERY", 0)?.url} label="Gallery thumbnail 1" name="galleryOneUrl" />
-          <MediaUpload hint="Second hero thumbnail." initialPublicId={findMedia("GALLERY", 1)?.cloudinaryPublicId ?? ""} initialUrl={findMedia("GALLERY", 1)?.url} label="Gallery thumbnail 2" name="galleryTwoUrl" />
-        </div>
+        <GalleryUpload initial={galleryImages} />
         <Field label="Quote button label"><Input defaultValue={String(cta.quoteLabel ?? "Request a Quote")} name="quoteLabel" /></Field>
         <Field label="Datasheet button label"><Input defaultValue={String(cta.datasheetLabel ?? "Download Datasheet")} name="datasheetLabel" /></Field>
         <div className="sm:col-span-2">
@@ -221,7 +261,7 @@ export function AdminProductForm({
         </div>
       </FormSection>
 
-      <FormSection title="Overview" whereItAppears="The glass panel just below the hero, titled by 'Overview heading' — the second thing a visitor scrolls to.">
+      <FormSection title="Overview" whereItAppears="The glass panel just below the hero, titled by 'Overview heading'. The second thing a visitor scrolls to.">
         <Field label="Overview heading" wide><Input defaultValue={overview?.title ?? "Built for connected public charging."} name="overviewTitle" /></Field>
         <Field label="Overview introduction" wide><Textarea defaultValue={String(dataObject(overview).intro ?? "")} name="overviewIntro" rows={3} /></Field>
         <PairEditor firstLabel="Benefit title" initial={itemArray(overview)} name="overviewItems" secondLabel="Benefit description" title="Benefits listed in the panel" />
@@ -230,12 +270,12 @@ export function AdminProductForm({
         </div>
       </FormSection>
 
-      <FormSection title="Key Features" whereItAppears="The icon grid section below the Overview panel — up to 6 items show, each with a fixed icon assigned by its position.">
+      <FormSection title="Key Features" whereItAppears="The icon grid section below the Overview panel. Up to 6 items show, each with a fixed icon assigned by its position.">
         <Field label="Section heading" wide><Input defaultValue={findSection("FEATURES")?.title ?? "Key Features"} name="featuresTitle" /></Field>
         <PairEditor firstLabel="Feature title" initial={itemArray(findSection("FEATURES"))} name="features" secondLabel="Feature description" title="Features (first 6 show)" />
       </FormSection>
 
-      <FormSection title="Applications" whereItAppears="The 3-photo card section below Key Features — each photo below pairs with the application item above it, in order.">
+      <FormSection title="Applications" whereItAppears="The 3-photo card section below Key Features. Each photo below pairs with the application item above it, in order.">
         <Field label="Section heading" wide><Input defaultValue={findSection("ENVIRONMENTS")?.title ?? "Applications"} name="applicationsTitle" /></Field>
         <PairEditor firstLabel="Application title" initial={itemArray(findSection("ENVIRONMENTS"))} name="applications" secondLabel="Application description" title="Applications (first 3 show)" />
         <div className="grid gap-3 sm:col-span-2 sm:grid-cols-3">
@@ -245,13 +285,13 @@ export function AdminProductForm({
         </div>
       </FormSection>
 
-      <FormSection title="Specifications" whereItAppears="The 'Technical Specifications' table — the first 5 rows show by default, the rest sit behind a 'View all' button.">
+      <FormSection title="Specifications" whereItAppears="The 'Technical Specifications' table. The first 5 rows show by default, the rest sit behind a 'View all' button.">
         <Field label="Section heading" wide><Input defaultValue={specifications?.title ?? "Technical Specifications"} name="specificationsTitle" /></Field>
         <Field label="Disclaimer under the heading" wide><Input defaultValue={String(dataObject(specifications).note ?? "Specifications vary by product configuration")} name="specificationsNote" /></Field>
         <PairEditor firstLabel="Specification" initial={itemArray(specifications)} name="specifications" secondLabel="Details" title="Table rows" />
       </FormSection>
 
-      <FormSection title="SEO" whereItAppears="Not shown on the page — used for search engine results and link previews when this page is shared.">
+      <FormSection title="SEO" whereItAppears="Not shown on the page. Used for search engine results and link previews when this page is shared.">
         <Field label="SEO title"><Input defaultValue={product?.seoTitle ?? ""} maxLength={70} name="seoTitle" /></Field>
         <Field label="SEO description"><Input defaultValue={product?.seoDescription ?? ""} maxLength={160} name="seoDescription" /></Field>
       </FormSection>

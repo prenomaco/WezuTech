@@ -66,7 +66,18 @@ function ContactRow({ detail }: { detail: ContactDetail }) {
 export function Footer() {
   return (
     <footer
-      className={`relative overflow-clip pb-[0.8125rem] lg:pb-[2.375rem] ${PANEL_INSET}`}
+      /*
+       * Capped and centred on the same 1512 column every other section uses.
+       *
+       * Without the cap the panel's percentage insets resolved against the
+       * whole viewport, so on a wide monitor it grew past 1512 while the rule
+       * and the copyright line inside it kept the frame's fixed measures
+       * (`lg:w-[74.34375rem]`, the 86px indent). Measured at 1920 the rule sat
+       * 166px left of centre and the copyright 180px right of it. Capping here
+       * makes the insets resolve against the design's own width, which is what
+       * those fixed measures were drawn against.
+       */
+      className={`relative mx-auto w-full max-w-[94.5rem] overflow-clip pb-[0.8125rem] lg:pb-[2.375rem] ${PANEL_INSET}`}
     >
       <div
         /* Figma "Rectangle 38" (node 252:541) is rgba(0,0,0,0.2) at a 20px
@@ -135,7 +146,18 @@ export function Footer() {
         {/* Figma "Vector 53": x=176..1365.5, i.e. 86px in from the panel edge. */}
         <hr className="mx-auto mt-[1.7175rem] w-[80.22%] border-0 border-t border-[rgb(218_250_245/0.28)] lg:ml-[5.375rem] lg:w-[74.34375rem]" />
 
-        <p className="-mx-[0.09375rem] mt-[1.25rem] text-center text-[0.875rem] leading-[1.1666875rem] text-white lg:mx-0 lg:ml-[23.4375rem] lg:mt-[1.34375rem] lg:whitespace-nowrap lg:text-left lg:text-[1rem] lg:leading-[1.375rem]">
+        {/*
+          * Centred, rather than pinned to the frame's measured left edge.
+          *
+          * Figma puts this line's left edge at x=375 inside the 1331 panel,
+          * which for the width that string happened to be came out exactly
+          * centred (375 + 580/2 = 665, the panel's middle). Reproducing the
+          * 375 literally only lands correctly at that one text width: ours
+          * renders 957px on one line, so the fixed margin pushed its centre
+          * 187px right of the panel's. Centring states what the design
+          * actually does and holds at any string length.
+          */}
+        <p className="-mx-[0.09375rem] mt-[1.25rem] text-center text-[0.875rem] leading-[1.1666875rem] text-white lg:mx-0 lg:mt-[1.34375rem] lg:whitespace-nowrap lg:text-[1rem] lg:leading-[1.375rem]">
           {contact.copyright}{" "}
           <a
             className="text-sky underline decoration-solid"

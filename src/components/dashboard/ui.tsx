@@ -97,7 +97,22 @@ export function Label({ className, ...props }: HTMLAttributes<HTMLLabelElement>)
 export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
   return (
     <div className="w-full overflow-x-auto">
-      <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
+      {/*
+       * The last row loses its bottom border.
+       *
+       * `Td` carries `border-b` so rows separate, but a table dropped into a
+       * card with `p-0` reaches the card's own edge, so the final row drew its
+       * separator one pixel inside the card's border. The result was a faint
+       * doubled line across the bottom of every card that ends in a table,
+       * with nothing below it to separate.
+       */}
+      <table
+        className={cn(
+          "w-full caption-bottom text-sm [&_tbody_tr:last-child_td]:border-b-0",
+          className,
+        )}
+        {...props}
+      />
     </div>
   );
 }

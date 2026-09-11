@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { ProductTitle } from "@/components/ui/typography";
 import type { CatalogProduct } from "@/lib/catalog";
-import { PRODUCT_CATEGORIES, categoryPath } from "@/lib/product-categories";
+import { categoryPath } from "@/lib/categories";
 
 /**
  * A product in a grid, rather than in the home page's carousel.
@@ -30,10 +30,6 @@ const CARD =
 function summarise(product: CatalogProduct) {
   const source = product.tagline ?? product.cardDescription ?? product.introduction ?? "";
   return source.split(/\n\s*\n/)[0] ?? "";
-}
-
-function categoryTitle(slug: string) {
-  return PRODUCT_CATEGORIES.find((category) => category.slug === slug)?.title ?? slug;
 }
 
 export function ProductCard({ product }: { readonly product: CatalogProduct }) {
@@ -74,15 +70,15 @@ export function ProductCard({ product }: { readonly product: CatalogProduct }) {
 
       {/* Outside the card link: nesting an anchor inside an anchor is invalid
           and the browser drops one of them. */}
-      {product.categorySlugs.length ? (
+      {product.categories.length ? (
         <div className="flex flex-wrap gap-x-3 gap-y-1 px-5 pb-5 lg:px-6 lg:pb-6">
-          {product.categorySlugs.map((slug) => (
+          {product.categories.map((category) => (
             <Link
               className="text-[0.875rem] leading-[1.125rem] text-ice/55 underline-offset-4 transition-colors duration-200 hover:text-ice hover:underline"
-              href={categoryPath(slug)}
-              key={slug}
+              href={categoryPath(category.slug)}
+              key={category.slug}
             >
-              {categoryTitle(slug)}
+              {category.name}
             </Link>
           ))}
         </div>

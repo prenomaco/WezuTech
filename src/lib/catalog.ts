@@ -1,12 +1,18 @@
 import { ProductMediaKind, ProductStatus, type Product } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { figmaAssets } from "@/lib/figma-assets";
-import { PRODUCT_CATEGORIES } from "@/lib/product-categories";
 
 export type CatalogProduct = Pick<Product, "id" | "slug" | "name" | "tagline" | "cardDescription" | "introduction" | "seoTitle" | "seoDescription"> & {
   imageUrl: string;
-  /** Slugs of every category this product is tagged against. */
-  categorySlugs: readonly string[];
+  /**
+   * Every category this product is tagged against, name included.
+   *
+   * The name travels with the slug because the taxonomy is editable now: a
+   * card that only knew slugs would have to look each one up against a
+   * constant, which is exactly the coupling that moving categories into the
+   * database removes.
+   */
+  categories: readonly { slug: string; name: string }[];
 };
 
 /**
@@ -27,27 +33,46 @@ const showcaseProduct: CatalogProduct = {
   seoDescription:
     "Battery, motor and inverter cooling, integrated cooling channels, heat exchangers and real-time monitoring from Wezu Technologies.",
   imageUrl: figmaAssets.productIllustration,
-  categorySlugs: ["automotive"],
+  categories: [{ slug: "thermal-management", name: "Thermal Management" }],
 };
 
-/** Shared shape: the card image and the category tags every surface needs. */
+/**
+ * Shared shape: the card image and the category tags every surface needs.
+ *
+ * Both the hero and the legacy card row are fetched, because the catalogue
+ * card now shows the hero image. There used to be a separate "carousel card
+ * image" upload, which meant every product had two pictures to keep in step
+ * and the seeded kiosk shipped with a compressor drawing on its card and the
+ * actual charger only on its page. One image, used everywhere, cannot drift.
+ * `CARD` rows are still read so anything uploaded under the old field keeps
+ * working until its product is next saved.
+ */
 const catalogSelection = {
   include: {
-    media: { where: { kind: ProductMediaKind.CARD }, orderBy: { sortOrder: "asc" }, take: 1 },
-    categories: { select: { category: { select: { slug: true } } } },
+    media: {
+      where: { kind: { in: [ProductMediaKind.HERO, ProductMediaKind.CARD] } },
+      orderBy: { sortOrder: "asc" as const },
+      select: { url: true, kind: true },
+    },
+    categories: {
+      orderBy: { sortOrder: "asc" as const },
+      select: { category: { select: { slug: true, name: true } } },
+    },
   },
-} as const;
+};
 
 type CatalogRow = Product & {
-  media: { url: string }[];
-  categories: { category: { slug: string } }[];
+  media: { url: string; kind: ProductMediaKind }[];
+  categories: { category: { slug: string; name: string } }[];
 };
 
 function toCatalogProduct({ media, categories, ...product }: CatalogRow): CatalogProduct {
+  const hero = media.find((item) => item.kind === ProductMediaKind.HERO);
+  const legacyCard = media.find((item) => item.kind === ProductMediaKind.CARD);
   return {
     ...product,
-    imageUrl: media[0]?.url ?? figmaAssets.productIllustration,
-    categorySlugs: categories.map((row) => row.category.slug),
+    imageUrl: hero?.url ?? legacyCard?.url ?? figmaAssets.productIllustration,
+    categories: categories.map((row) => row.category),
   };
 }
 
@@ -77,29 +102,4 @@ export async function getProductsInCategory(slug: string): Promise<CatalogProduc
   } catch {
     return [];
   }
-}
-
-/**
- * How many published products sit in each category, keyed by slug.
- *
- * One grouped count rather than six queries, and every category appears even
- * when it holds nothing — the index has to be able to say "0 products" rather
- * than leave a cell looking broken.
- */
-export async function getCategoryCounts(): Promise<Record<string, number>> {
-  const counts: Record<string, number> = Object.fromEntries(
-    PRODUCT_CATEGORIES.map((category) => [category.slug, 0]),
-  );
-  try {
-    const rows = await prisma.productCategory.findMany({
-      where: { product: { status: ProductStatus.PUBLISHED } },
-      select: { category: { select: { slug: true } } },
-    });
-    for (const row of rows) {
-      counts[row.category.slug] = (counts[row.category.slug] ?? 0) + 1;
-    }
-  } catch {
-    /* The index still renders, with every category reading zero. */
-  }
-  return counts;
 }

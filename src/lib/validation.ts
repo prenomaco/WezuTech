@@ -26,20 +26,23 @@ export const productInputSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   sortOrder: z.coerce.number().int().min(0).max(10000).default(0),
   tagline: z.string().trim().max(200).optional(),
-  cardDescription: z.string().trim().max(500).optional(),
+  /* The carousel card carries two paragraphs, which runs past 500. Raised to
+     match what the seeded copy actually is: at 500 the form silently refused
+     to save any product written to fill that card. */
+  cardDescription: z.string().trim().max(2000).optional(),
   introduction: z.string().trim().max(5000).optional(),
   seoTitle: z.string().trim().max(70).optional(),
   seoDescription: z.string().trim().max(160).optional(),
-  cardUrl: mediaUrl.optional(),
-  cardUrlPublicId: z.string().max(500).optional(),
   heroUrl: mediaUrl.optional(),
   heroUrlPublicId: z.string().max(500).optional(),
   detailUrl: mediaUrl.optional(),
   detailUrlPublicId: z.string().max(500).optional(),
-  galleryOneUrl: mediaUrl.optional(),
-  galleryOneUrlPublicId: z.string().max(500).optional(),
-  galleryTwoUrl: mediaUrl.optional(),
-  galleryTwoUrlPublicId: z.string().max(500).optional(),
+  /* The gallery is a list now, posted as JSON from one hidden field, so a
+     product can carry as many extra views as it has. */
+  gallery: z
+    .array(z.object({ url: mediaUrl, publicId: z.string().max(500).default("") }))
+    .max(24)
+    .default([]),
   applicationOneUrl: mediaUrl.optional(),
   applicationOneUrlPublicId: z.string().max(500).optional(),
   applicationTwoUrl: mediaUrl.optional(),
@@ -65,6 +68,18 @@ export const productInputSchema = z.object({
      categories the site defines, and resolving them to rows server-side keeps
      the client from having to know database ids. */
   categorySlugs: z.array(z.string().trim().max(80)).max(12).default([]),
+});
+
+export const categoryInputSchema = z.object({
+  id: z.string().cuid().optional(),
+  name: z.string().trim().min(2).max(80),
+  slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  blurb: z.string().trim().min(10).max(400),
+  /* Optional artwork: a category card falls back to its icon without one. */
+  image: mediaUrl.optional(),
+  imagePublicId: z.string().max(500).optional(),
+  icon: z.string().trim().max(60),
+  sortOrder: z.coerce.number().int().min(0).max(10000).default(0),
 });
 
 export const testimonialInputSchema = z.object({

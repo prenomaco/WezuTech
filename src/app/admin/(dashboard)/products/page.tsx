@@ -1,6 +1,8 @@
+import { ProductMediaKind } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
 import { ProductsTable, type ProductRow } from "@/components/dashboard/products-table";
+import { getProductCategories } from "@/lib/categories";
 import { prisma } from "@/lib/db";
 
 export const metadata = { title: "Products" };
@@ -16,18 +18,33 @@ export const dynamic = "force-dynamic";
  * this route took twice as long to navigate to as any other.
  */
 export default async function ProductsPage() {
-  const products = await prisma.product.findMany({
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      status: true,
-      sortOrder: true,
-      _count: { select: { leads: true } },
-      categories: { select: { category: { select: { slug: true } } } },
-    },
-  });
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      orderBy: { sortOrder: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        status: true,
+        sortOrder: true,
+        _count: { select: { leads: true } },
+        categories: {
+          orderBy: { sortOrder: "asc" },
+          select: { category: { select: { slug: true, name: true } } },
+        },
+        /* The hero, which is also what the catalogue card shows, and only
+           its URL: enough for a 40px thumbnail without pulling every media
+           row per product, which is what made this page the slowest in the
+           rail. */
+        media: {
+          where: { kind: { in: [ProductMediaKind.HERO, ProductMediaKind.CARD] } },
+          orderBy: { kind: "asc" },
+          select: { url: true, kind: true },
+        },
+      },
+    }),
+    getProductCategories(),
+  ]);
 
   const rows: ProductRow[] = products.map((product) => ({
     id: product.id,
@@ -36,7 +53,11 @@ export default async function ProductsPage() {
     status: product.status,
     sortOrder: product.sortOrder,
     leadCount: product._count.leads,
-    categorySlugs: product.categories.map((row) => row.category.slug),
+    categories: product.categories.map((row) => row.category),
+    imageUrl:
+      product.media.find((item) => item.kind === ProductMediaKind.HERO)?.url ??
+      product.media.find((item) => item.kind === ProductMediaKind.CARD)?.url ??
+      null,
   }));
 
   return (
@@ -51,7 +72,7 @@ export default async function ProductsPage() {
         title="Products"
       />
 
-      <ProductsTable products={rows} />
+      <ProductsTable categories={categories} products={rows} />
     </div>
   );
 }

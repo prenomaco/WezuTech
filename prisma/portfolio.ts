@@ -28,7 +28,6 @@ interface MediaItem {
 
 /** The media slots the product page reads, in the order it reads them. */
 interface MediaPlan {
-  readonly card: MediaItem;
   readonly hero: MediaItem;
   readonly detail?: MediaItem;
   readonly gallery?: readonly MediaItem[];
@@ -41,6 +40,15 @@ export interface PortfolioProduct {
   readonly sortOrder: number;
   readonly tagline: string;
   readonly introduction: string;
+  /**
+   * The home carousel's copy, and the catalogue card's.
+   *
+   * Separate from `introduction`, which is one sentence sized for the product
+   * page's hero. The carousel card is a 610px column beside a 377px render and
+   * one sentence left most of it empty, so this is two paragraphs: what the
+   * thing is, then what it is for. A blank line becomes a paragraph break.
+   */
+  readonly cardDescription: string;
   readonly seoDescription: string;
   readonly media: MediaPlan;
   readonly metrics: readonly { value: string; label: string }[];
@@ -52,14 +60,15 @@ export interface PortfolioProduct {
 
 const SPEC_NOTE = "Specifications vary by product configuration";
 
-/** The webp set exported from the portfolio deck, under `public/products/<slug>`. */
-function shot(slug: string, file: string, alt: string): MediaItem {
-  return { url: `${IMAGE_ROOT}/${slug}/${file}.webp`, alt };
-}
-
-/** The Public Kiosk Charger's artwork, which predates the deck and came from Figma. */
-function figma(name: string, alt: string): MediaItem {
-  return { url: `/figma/${name}`, alt };
+/**
+ * An image under `public/products/<slug>`.
+ *
+ * The deck's exports are webp, which is the default. The kiosk's are png:
+ * they came from Figma rather than the deck and were named by content hash
+ * until they were moved in here beside everything else.
+ */
+function shot(slug: string, file: string, alt: string, extension = "webp"): MediaItem {
+  return { url: `${IMAGE_ROOT}/${slug}/${file}.${extension}`, alt };
 }
 
 export const PORTFOLIO: readonly PortfolioProduct[] = [
@@ -70,6 +79,8 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     tagline: "Charge infrastructure, built for everywhere.",
     introduction:
       "A weather-sealed public AC/DC charging kiosk designed for open-environment charging across public spaces, parking areas, and workplace sites.",
+    cardDescription:
+      "A weather-sealed public AC/DC charging kiosk for open-environment charging across public spaces, parking areas and workplace sites. One kiosk covers 2.5 to 25 kW with one or two tethered guns, and mounts to a wall, a pole or a panel depending on the site.\n\nEverything a managed site needs is built in: a toughened glass touchscreen, RFID, Bluetooth, Wi-Fi and LoRa-WAN access, an IoT payment gateway, receptacle and gun locking, load-shared two-wheeler charging, and full diagnostics and reporting. IP65 and IP68 options cover exposed installations.",
     seoDescription: "Connected, weather-sealed public charging infrastructure by Wezu Technologies.",
     /*
      * The deck gives this product three pages and three different builds
@@ -78,17 +89,16 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
      * three products, so the range spans all three rather than picking a page.
      */
     media: {
-      card: figma("4e3fa066be6f748b58327aa09b039a99b2d14394.png", "Public Kiosk Charger catalogue image"),
-      hero: figma("8384c03f1cb890da0410e0a8b138fae483ff3a99.png", "Public Kiosk Charger annotated hero view"),
-      detail: figma("0529044b984d351e17b45130541d776828be4381.png", "Public Kiosk Charger front view"),
+      hero: shot("public-kiosk-charger", "hero", "Public Kiosk Charger annotated hero view", "png"),
+      detail: shot("public-kiosk-charger", "detail", "Public Kiosk Charger front view", "png"),
       gallery: [
-        figma("66617baaaeac843d46dcf432724ecbbf89643e59.png", "Public Kiosk Charger wall-mounted view"),
-        figma("dc3dbe7493ab4d8123e212e078c31de01a51110a.png", "Public Kiosk Charger cable-hook view"),
+        shot("public-kiosk-charger", "gallery-1", "Public Kiosk Charger wall-mounted view", "png"),
+        shot("public-kiosk-charger", "gallery-2", "Public Kiosk Charger cable-hook view", "png"),
       ],
       applications: [
-        figma("f244f86516f41aac4f54fdef2c7943b8e6413c4d.png", "Public charging space"),
-        figma("964e4d39b3740c17a805897874e5c3497bf679f5.png", "Parking and workplace charging"),
-        figma("ee3aa089783daeb934cee841a5dca039bc96811f.png", "Managed charging fleet"),
+        shot("public-kiosk-charger", "application-1", "Public charging space", "png"),
+        shot("public-kiosk-charger", "application-2", "Parking and workplace charging", "png"),
+        shot("public-kiosk-charger", "application-3", "Managed charging fleet", "png"),
       ],
     },
     metrics: [
@@ -142,10 +152,11 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     tagline: "Charging built for a rank of two-wheelers.",
     introduction:
       "A rise-mount kiosk that charges several two-wheelers at once, sharing the available power between four to eight tethered guns and holding the station open through heat and outage.",
+    cardDescription:
+      "A multi-point charging station built for ranks of two-wheelers and light EVs, so one grid connection and one footprint serve a whole bay rather than a single vehicle. Outputs are shared intelligently across points, which keeps the supply sized to the site instead of to the worst case.\n\nIt suits shared-mobility fleets, campuses, residential parking and delivery hubs, where many small batteries arrive at once and each one needs a metered, identified session. Access, payment and remote monitoring are handled on the station itself.",
     seoDescription:
       "Up to 22 kW per kiosk across 4–8 tethered guns at 3.3 kW each, with load-shared two-wheeler charging, integrated backup and AI-enabled load balancing.",
     media: {
-      card: shot("multi-bike-charging-station", "card", "Multi-Bike Charging Station catalogue image"),
       hero: shot("multi-bike-charging-station", "hero", "Multi-Bike Charging Station with two-wheelers on charge"),
       detail: shot("multi-bike-charging-station", "detail", "Multi-Bike Charging Station bay detail"),
       gallery: [
@@ -208,11 +219,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     sortOrder: 3,
     tagline: "High power, for the corridor and the depot.",
     introduction:
-      "Wezu's flagship high-power DC charger, built for highway corridors and commercial fleets — 30, 60 or 100 kW DC through dual CCS-2 and CHAdeMO connectors on liquid-cooled cables, with an optional 22 kW AC outlet.",
+      "Wezu's flagship high-power DC charger, built for highway corridors and commercial fleets, delivering 30, 60 or 100 kW DC through dual CCS-2 and CHAdeMO connectors on liquid-cooled cables, with an optional 22 kW AC outlet.",
+    cardDescription:
+      "Wezu's flagship high-power DC charger for highway corridors and commercial fleets, delivering 30, 60 or 100 kW through dual CCS-2 and CHAdeMO connectors on liquid-cooled cables, with an optional 22 kW AC outlet for lighter vehicles.\n\nLiquid cooling keeps the cable manageable at full current and holds output through back-to-back sessions instead of derating once the unit warms. Built for depots and public corridors where uptime, session throughput and remote diagnostics decide whether the site pays for itself.",
     seoDescription:
       "30 / 60 / 100 kW DC fast charging at up to 250 A per gun, with dual CCS-2 and CHAdeMO connectors, liquid-cooled cables and an optional 22 kW AC outlet.",
     media: {
-      card: shot("dc-fast-charging-station", "card", "DC Fast Charging Station catalogue image"),
       hero: shot("dc-fast-charging-station", "hero", "DC Fast Charging Station at a highway forecourt"),
       detail: shot("dc-fast-charging-station", "detail", "DC Fast Charging Station front view"),
       applications: [
@@ -265,11 +277,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     sortOrder: 4,
     tagline: "Lithium-ion packs for 2W, 3W and 4W.",
     introduction:
-      "Lithium-ion mobility packs sized for India's most common EV form factors — from scooter and bike packs, through auto, e-rickshaw and cargo three-wheelers, to LCV and passenger four-wheelers.",
+      "Lithium-ion mobility packs sized for India's most common EV form factors, from scooter and bike packs, through auto, e-rickshaw and cargo three-wheelers, to LCV and passenger four-wheelers.",
+    cardDescription:
+      "Lithium-ion mobility packs sized for India's most common EV form factors, from scooter and bike packs, through auto, e-rickshaw and cargo three-wheelers, to LCV and passenger four-wheelers.\n\nEach pack is engineered around its vehicle rather than adapted to it: cell selection, pack architecture, thermal path and BMS are matched to the duty cycle the vehicle actually sees. The result is usable range that holds up over the life of the vehicle, with diagnostics the operator can read.",
     seoDescription:
       "Lithium-ion mobility battery packs from 1.5 to 35 kWh at 48–320 V across 2W, 3W and 4W form factors, with IP67 enclosures, in-house BMS and CAN telemetry.",
     media: {
-      card: shot("mobility-battery-packs", "card", "Mobility battery packs catalogue image"),
       hero: shot("mobility-battery-packs", "hero", "Four-wheeler mobility battery pack"),
       detail: shot("mobility-battery-packs", "detail", "Three-wheeler mobility battery pack"),
       gallery: [
@@ -329,11 +342,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     sortOrder: 5,
     tagline: "Engineered for the shift that does not stop.",
     introduction:
-      "Battery packs engineered for 24/7 duty cycles — material handling, vehicle sub-systems and back-up — from drop-in 12 V and 24 V auxiliary replacements to DIN-tray forklift packs.",
+      "Battery packs engineered for 24/7 duty cycles across material handling, vehicle sub-systems and back-up, from drop-in 12 V and 24 V auxiliary replacements to DIN-tray forklift packs.",
+    cardDescription:
+      "Battery packs engineered for 24/7 duty cycles across material handling, vehicle sub-systems and back-up, from drop-in 12 V and 24 V auxiliary replacements to DIN-tray forklift packs.\n\nThese are specified for the shifts that do not stop, where a pack is expected to work every hour the site is open and a failure stops more than one machine. Thermal design, cycle life and state-of-health reporting are the priorities, and the mechanical envelope matches what the equipment already accepts.",
     seoDescription:
       "Industrial and auxiliary lithium-ion packs from 0.25 to 60 kWh at 12 / 24 / 48 / 80 V, as drop-in lead-acid replacements and DIN-tray forklift packs for 2–5 ton handling.",
     media: {
-      card: shot("industrial-auxiliary-battery-packs", "card", "Industrial and auxiliary battery packs catalogue image"),
       hero: shot("industrial-auxiliary-battery-packs", "hero", "Forklift battery pack on a material handling floor"),
       detail: shot("industrial-auxiliary-battery-packs", "detail", "Auxiliary 12 V battery pack"),
       gallery: [shot("industrial-auxiliary-battery-packs", "gallery-1", "Auxiliary battery pack")],
@@ -351,7 +365,7 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     overview: {
       title: "Engineered for continuous duty.",
       intro:
-        "These packs are specified for the shifts that do not stop — material handling floors, vehicle sub-systems and back-up duty, where the pack is expected to work every hour the site is open.",
+        "These packs are specified for the shifts that do not stop: material handling floors, vehicle sub-systems and back-up duty, where the pack is expected to work every hour the site is open.",
       items: [
         { title: "Auxiliary Pack", body: "A drop-in replacement for 12 V and 24 V lead-acid vehicle batteries." },
         { title: "Forklift Pack", body: "DIN-tray industrial packs for 2 to 5 ton material handling." },
@@ -387,11 +401,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     sortOrder: 6,
     tagline: "Backup that travels, storage that stays.",
     introduction:
-      "Backup, off-grid and small-commercial energy storage — a suitcase-class portable unit from 1 to 5 kWh, and an outdoor cabinet from 10 to 100 kWh for small-commercial and society duty.",
+      "Backup, off-grid and small-commercial energy storage: a suitcase-class portable unit from 1 to 5 kWh, and an outdoor cabinet from 10 to 100 kWh for small-commercial and society duty.",
+    cardDescription:
+      "Backup, off-grid and small-commercial energy storage: a suitcase-class portable unit from 1 to 5 kWh, and an outdoor cabinet from 10 to 100 kWh for small-commercial and society duty.\n\nThe portable units go where the work is, for sites, events and field equipment with no supply to draw on. The cabinets stay put, ride through outages and shave peaks for shops, clinics and residential blocks. Both are site-ready and grid-ready out of the box.",
     seoDescription:
-      "Portable energy storage from 1 to 5 kWh and medium systems from 10 to 100 kWh — suitcase-class backup and outdoor cabinets, site-ready and grid-ready.",
+      "Portable energy storage from 1 to 5 kWh and medium systems from 10 to 100 kWh, covering suitcase-class backup and outdoor cabinets, site-ready and grid-ready.",
     media: {
-      card: shot("portable-medium-energy-storage", "card", "Portable and medium energy storage catalogue image"),
       hero: shot("portable-medium-energy-storage", "hero", "Portable energy storage unit"),
       detail: shot("portable-medium-energy-storage", "detail", "Medium energy storage cabinet"),
       gallery: [shot("portable-medium-energy-storage", "gallery-1", "Medium energy storage cabinet, open")],
@@ -444,11 +459,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     sortOrder: 7,
     tagline: "Container-class storage for utility duty.",
     introduction:
-      "AI-enabled container-class battery energy storage for utility, microgrid and grid-services duty — 250 kWh to 5 MWh per container, scaling modularly from 500 kWh to 50 MWh, and pairing with multi-point charging kiosks for power backup and energy provisioning.",
+      "AI-enabled container-class battery energy storage for utility, microgrid and grid-services duty, from 250 kWh to 5 MWh per container, scaling modularly from 500 kWh to 50 MWh, and pairing with multi-point charging kiosks for power backup and energy provisioning.",
+    cardDescription:
+      "AI-enabled container-class battery energy storage for utility, microgrid and grid-services duty, from 250 kWh to 5 MWh per container and scaling modularly from 500 kWh to 50 MWh.\n\nThe control layer is the point: forecasting and scheduling decide when to store and when to release, so the same asset can firm renewable output, balance load across a site and sell grid services. Containers pair with multi-point charging kiosks where a depot needs both power backup and energy provisioning.",
     seoDescription:
       "Container-class BESS from 250 kWh to 5 MWh, scaling 500 kWh to 50 MWh modular, with AI-enabled load balancing for utility, microgrid and grid-services duty.",
     media: {
-      card: shot("large-load-balancing-energy-storage", "card", "Large and load-balancing energy storage catalogue image"),
       hero: shot("large-load-balancing-energy-storage", "hero", "Container-class battery energy storage system"),
       detail: shot("large-load-balancing-energy-storage", "detail", "Load-balancing energy storage rack"),
       gallery: [
@@ -502,13 +518,19 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
   },
 ];
 
-/** Every media row for one product, flattened into the shape the table takes. */
+/**
+ * Every media row for one product, flattened into the shape the table takes.
+ *
+ * No CARD row. The catalogue card shows the hero image, so a separate card
+ * asset was a second picture to keep in step with the first, and this seed
+ * proved why that fails: the kiosk's card was a compressor drawing while its
+ * hero was the actual charger, so the home carousel advertised the wrong
+ * product. `writePortfolio` deletes the CARD kind explicitly to clear rows
+ * left behind by that field.
+ */
 function mediaRows(entry: PortfolioProduct) {
-  const { card, hero, detail, gallery = [], applications = [] } = entry.media;
-  const rows = [
-    { kind: ProductMediaKind.CARD, ...card, sortOrder: 0 },
-    { kind: ProductMediaKind.HERO, ...hero, sortOrder: 0 },
-  ];
+  const { hero, detail, gallery = [], applications = [] } = entry.media;
+  const rows = [{ kind: ProductMediaKind.HERO, ...hero, sortOrder: 0 }];
   if (detail) rows.push({ kind: ProductMediaKind.DETAIL, ...detail, sortOrder: 0 });
   gallery.forEach((item, index) => rows.push({ kind: ProductMediaKind.GALLERY, ...item, sortOrder: index }));
   applications.forEach((item, index) => rows.push({ kind: ProductMediaKind.APPLICATION, ...item, sortOrder: index }));
@@ -546,7 +568,7 @@ export async function writePortfolio(
       name: entry.name,
       status,
       tagline: entry.tagline,
-      cardDescription: entry.introduction,
+      cardDescription: entry.cardDescription,
       introduction: entry.introduction,
       seoTitle: `${entry.name} | Wezu Technologies`,
       seoDescription: entry.seoDescription,
@@ -560,7 +582,10 @@ export async function writePortfolio(
     });
 
     const media = mediaRows(entry);
-    await prisma.productMedia.deleteMany({ where: { productId: product.id, kind: { in: media.map((row) => row.kind) } } });
+    /* `CARD` is included in the delete but never written, which is what
+       retires the old per-product card asset. */
+    const kinds = [...new Set([...media.map((row) => row.kind), ProductMediaKind.CARD])];
+    await prisma.productMedia.deleteMany({ where: { productId: product.id, kind: { in: kinds } } });
     await prisma.productMedia.createMany({ data: media.map((row) => ({ productId: product.id, ...row })) });
 
     const sections = sectionRows(entry);

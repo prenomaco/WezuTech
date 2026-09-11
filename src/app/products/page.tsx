@@ -6,14 +6,14 @@ import { Section } from "@/components/layout/section";
 import { ProductIndex } from "@/components/products/product-index";
 import { Contact } from "@/components/sections/contact";
 import { DisplayTitle, Prose } from "@/components/ui/typography";
-import { getCategoryCounts, getPublishedProducts } from "@/lib/catalog";
+import { getPublishedProducts } from "@/lib/catalog";
+import { getProductCategories } from "@/lib/categories";
 import { jsonLd, webPageSchema } from "@/lib/structured-data";
 import { SiteMotion } from "@/motion/site-motion";
 
 const DESCRIPTION =
-  "Charging, battery and energy storage hardware from Wezu Technologies, grouped by the " +
-  "application areas it is built for — automotive, marine, agriculture and mining, rail, " +
-  "special purpose vehicles and aerospace.";
+  "Charging, battery and energy storage hardware from Wezu Technologies, with the thermal " +
+  "management, power electronics and diagnostics that go around it.";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -36,7 +36,7 @@ export const revalidate = 60;
  * the hero and every section heading use.
  */
 export default async function ProductsIndexPage() {
-  const [products, counts] = await Promise.all([getPublishedProducts(), getCategoryCounts()]);
+  const [products, categories] = await Promise.all([getPublishedProducts(), getProductCategories()]);
 
   return (
     <main className="relative">
@@ -62,7 +62,7 @@ export default async function ProductsIndexPage() {
         </Prose>
 
         <div className="mt-[3rem] lg:mt-[3.75rem]">
-          <ProductIndex counts={counts} products={products} />
+          <ProductIndex categories={categories} products={products} />
         </div>
       </Section>
 

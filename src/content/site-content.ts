@@ -4,19 +4,28 @@
  * copy can move to the CMS later without touching layout.
  */
 
-import { PRODUCT_CATEGORIES, type ProductCategory } from "@/lib/product-categories";
-
 export interface NavLink {
   readonly label: string;
   readonly href: string;
 }
 
 /**
- * The industries section and the product taxonomy are the same six things, so
- * the copy lives with the taxonomy in `lib/product-categories` and this is an
- * alias kept for the section components that already import it.
+ * A market Wezu builds for, as the home page's own section shows them.
+ *
+ * These are deliberately NOT the product categories. The catalogue is filed
+ * under product families — EV Charging, Battery Systems, Thermal Management —
+ * which live in the database and are edited in the dashboard. This is the
+ * other question: who the work is for. The six cells, their copy and their
+ * isometric artwork are matched to the Figma frame, so they stay here as
+ * designed content.
  */
-export type Industry = ProductCategory;
+export interface Industry {
+  readonly title: string;
+  readonly body: string;
+  readonly image: string;
+  /** Natural width of the artwork at the shared 377px height. */
+  readonly imageWidth: number;
+}
 
 export interface Testimonial {
   readonly lead: string;
@@ -83,7 +92,47 @@ export const testimonialsSection = {
   eyebrow: "WHAT PEOPLE SAY",
 } as const;
 
-export const industries: readonly Industry[] = PRODUCT_CATEGORIES;
+export const industries: readonly Industry[] = [
+  {
+    title: "Automotive",
+    body: "Innovative control systems and electronics to enhance vehicle performance and safety.",
+    image: "/industry/automotive.png",
+    imageWidth: 315,
+  },
+  {
+    title: "Marine Applications",
+    body: "Durable electronics built for marine environments, ensuring operational excellence.",
+    image: "/industry/marine.png",
+    imageWidth: 315,
+  },
+  {
+    title: "Agriculture & Mining",
+    body: "Reliable electronic solutions improving efficiency, safety, and productivity in demanding conditions.",
+    image: "/industry/agriculture-mining.png",
+    imageWidth: 315,
+  },
+  {
+    title: "Locomotive",
+    body: "Reliable electronic solutions designed for optimal performance in rail transport.",
+    image: "/industry/locomotive.png",
+    imageWidth: 299,
+  },
+  {
+    title: "Special Purpose Vehicles",
+    body: "Tailored technology solutions for unique mobility and specialized vehicle needs.",
+    image: "/industry/special-purpose.png",
+    imageWidth: 299,
+  },
+  {
+    title: "Aerospace and UAV",
+    body: "High-performance electronic systems built for safety, reliability, and demanding aviation applications.",
+    image: "/industry/aerospace-uav.png",
+    imageWidth: 281,
+  },
+];
+
+/** Every industry icon renders at this height; Figma varies the width. */
+export const INDUSTRY_IMAGE_HEIGHT = 377;
 
 export const testimonials: readonly Testimonial[] = [
   {

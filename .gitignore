@@ -11,3 +11,7 @@ src/generated/prisma
 
 # figma reference exports used for visual measurement only
 .figma/
+
+# database snapshots taken before a migration or reseed — these contain
+# enquiry names and email addresses, so they stay out of the repository
+.backups/

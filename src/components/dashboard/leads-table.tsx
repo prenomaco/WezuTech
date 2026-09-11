@@ -28,10 +28,10 @@ const STATUSES: readonly LeadStatus[] = ["NEW", "CONTACTED", "QUALIFIED", "CLOSE
 /**
  * Enquiries, as a reading surface rather than a table.
  *
- * The old page put three columns in a row — sender, message, and a status
+ * The old page put three columns in a row: sender, message, and a status
  * select with a notes box and a Save button stacked inside the third cell.
  * That made every row as tall as a form, wrapped the message into a narrow
- * column beside it, and repeated the caps status twice: once as a pill and
+ * column beside it, and repeated the caps status twice, once as a pill and
  * again as the first option of the select directly beneath it.
  *
  * An enquiry is a message, so each one is a card: who it is from and how to
@@ -43,7 +43,7 @@ const STATUSES: readonly LeadStatus[] = ["NEW", "CONTACTED", "QUALIFIED", "CLOSE
 function SaveButton() {
   const { pending } = useFormStatus();
   return (
-    <Button className="w-full" disabled={pending} size="sm" type="submit">
+    <Button disabled={pending} size="sm" type="submit">
       {pending ? "Saving…" : "Save"}
     </Button>
   );
@@ -72,7 +72,7 @@ function Contact({ icon: Icon, children, href }: {
 function LeadCard({ lead }: { readonly lead: LeadRow }) {
   return (
     <article className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-card)]">
-      <div className="grid gap-5 p-5 lg:grid-cols-[15rem_minmax(0,1fr)_16rem]">
+      <div className="grid gap-5 p-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
         <div className="flex min-w-0 flex-col gap-1.5">
           <p className="font-medium text-[var(--dash-fg)]">{lead.name}</p>
           <Contact href={`mailto:${lead.email}`} icon={Mail}>
@@ -102,11 +102,30 @@ function LeadCard({ lead }: { readonly lead: LeadRow }) {
           ) : null}
         </div>
 
-        <form action={updateLead} className="flex flex-col gap-2">
+        {/*
+          * The editor, as its own labelled panel.
+          *
+          * It used to be a loose stack: the status as coloured text, then a
+          * select repeating that same status directly beneath it, then a
+          * three-row notes box, then a full-width Save. Four full-width
+          * blocks for two fields, with the state stated twice.
+          *
+          * Now the state is a label/value line at the top, the select is the
+          * thing that changes it rather than a second readout, the notes box
+          * is two rows, and Save sits right-aligned at its natural width the
+          * way a form's submit does.
+          */}
+        <form
+          action={updateLead}
+          className="flex flex-col gap-2.5 rounded-lg border border-[var(--dash-border)] bg-[rgb(2_7_28/0.35)] p-3.5"
+        >
           <input name="id" type="hidden" value={lead.id} />
-          <div className="flex items-center justify-between gap-2">
+
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="text-xs font-medium text-[var(--dash-muted)]">Status</span>
             <StatusText tone={LEAD_STATUS_TONE[lead.status]}>{lead.status}</StatusText>
           </div>
+
           <Select aria-label={`Status for ${lead.name}`} defaultValue={lead.status} name="status">
             {STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -114,14 +133,19 @@ function LeadCard({ lead }: { readonly lead: LeadRow }) {
               </option>
             ))}
           </Select>
+
           <Textarea
             aria-label={`Internal notes for ${lead.name}`}
+            className="min-h-0"
             defaultValue={lead.internalNotes ?? ""}
             name="internalNotes"
-            placeholder="Internal notes — not sent to the sender"
-            rows={3}
+            placeholder="Internal notes, never sent to the sender"
+            rows={2}
           />
-          <SaveButton />
+
+          <div className="flex justify-end">
+            <SaveButton />
+          </div>
         </form>
       </div>
     </article>

@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import {
   ChevronsLeft,
   Inbox,
+  Layers,
   LayoutDashboard,
   LogOut,
   MessageSquareQuote,
@@ -22,6 +23,7 @@ const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Enquiries", icon: Inbox },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/categories", label: "Categories", icon: Layers },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
 ];
 

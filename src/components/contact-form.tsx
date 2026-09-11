@@ -84,7 +84,7 @@ const MESSAGE_VARIATIONS: readonly ((name: string) => string)[] = [
   (name) => `Hey! I'm interested in ${name}.\n\n`,
   (name) => `Hi, I'd like to get a quote for ${name}.\n\n`,
   (name) => `Hello, could you tell me more about ${name}?\n\n`,
-  (name) => `Hi there — I'm looking into ${name} for a project.\n\n`,
+  (name) => `Hi there, I'm looking into ${name} for a project.\n\n`,
 ];
 
 function messageFor(name: string) {

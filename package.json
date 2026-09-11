@@ -15,7 +15,9 @@
     "db:portfolio": "tsx --env-file=.env.local prisma/seed-portfolio.ts",
     "postinstall": "DATABASE_URL='postgresql://user:password@localhost:5432/wezu' prisma generate",
     "db:admins": "tsx scripts/seed-admins.ts",
-    "db:categories": "tsx --env-file=.env.local prisma/seed-categories.ts"
+    "db:categories": "tsx --env-file=.env.local prisma/seed-categories.ts",
+    "db:backup": "tsx --env-file=.env.local scripts/backup-db.ts",
+    "db:restore": "tsx --env-file=.env.local scripts/restore-db.ts"
   },
   "dependencies": {
     "@prisma/client": "6.12.0",
