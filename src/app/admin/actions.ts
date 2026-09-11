@@ -71,6 +71,8 @@ export async function saveProduct(formData: FormData) {
     return saved;
   });
   revalidatePath("/"); revalidatePath("/admin"); revalidatePath("/admin/products");
+  revalidatePath("/products/[slug]", "page");
+  revalidatePath("/sitemap.xml");
   revalidatePath(`/products/${product.slug}`);
   if (oldSlug && oldSlug !== product.slug) revalidatePath(`/products/${oldSlug}`);
 }
@@ -83,6 +85,7 @@ export async function deleteProduct(formData: FormData) {
   await prisma.product.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/sitemap.xml");
+  revalidatePath("/products/[slug]", "page");
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath(`/products/${product.slug}`);

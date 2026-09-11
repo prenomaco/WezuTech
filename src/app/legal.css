@@ -5,14 +5,14 @@
 
 .legal-page {
   min-height: 100vh;
-  max-width: 840px;
+  max-width: 1040px;
   margin: auto;
   padding: 80px 30px;
   color: var(--color-mist);
   line-height: 1.65;
 }
 
-.legal-page > a {
+.legal-page a {
   color: var(--color-sky);
 }
 
@@ -20,7 +20,7 @@
   margin: 35px 0 20px;
   color: var(--color-ice);
   font-family: var(--font-display);
-  font-size: 44px;
+  font-size: clamp(22px, 3vw, 40px);
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -29,4 +29,10 @@
 .legal-page h2 {
   margin-top: 35px;
   color: var(--color-ice);
+  font-weight: 600;
+  font-size: 20px;
 }
+
+.legal-page p + p { margin-top: 16px; }
+.legal-page a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.legal-page a:focus-visible { outline: 2px solid var(--color-sky); outline-offset: 4px; }

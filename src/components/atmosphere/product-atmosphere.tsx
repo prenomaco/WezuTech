@@ -113,21 +113,21 @@ export function ProductAtmosphere() {
           rotate={80.82}
           vector="streakRight"
         />
+      </div>
 
-        {/* Home's testimonial glow stays behind Technical Specifications. */}
-        <div className="hidden lg:block">
-          <RefractionFrame
-            bleed
-            box={{ left: -22, top: 1179, width: 1565, height: 648 }}
-            id="product-specifications"
-            mirrorY
-          >
-            <GlowLayer
-              box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
-              vector="fieldDim"
-            />
-          </RefractionFrame>
-        </div>
+      {/* Stretch the original tile once across the screen, like Home. */}
+      <div className="absolute inset-0 hidden lg:block">
+        <RefractionFrame
+          relativeTo={1512}
+          box={{ left: -22, top: 1179, width: 1565, height: 648 }}
+          id="product-specifications"
+          mirrorY
+        >
+          <GlowLayer
+            box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
+            vector="fieldDim"
+          />
+        </RefractionFrame>
       </div>
 
       {/* Group 13 is clipped to the footer so its broad source SVG cannot wash

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
  * their own offsets here; the introduction, capabilities panel and process line
  * are this page's alone.
  */
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function AboutPage() {
   const testimonials = await getPublishedTestimonials();

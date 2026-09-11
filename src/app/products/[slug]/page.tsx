@@ -6,7 +6,10 @@ import { getPublishedProducts } from "@/lib/catalog";
 import { getProductDetail } from "@/lib/product-detail";
 import { jsonLd, productSchema } from "@/lib/structured-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+// Generate on first visit, then reuse until expiry or an admin mutation.
+export function generateStaticParams() { return []; }
 
 type ProductPageProps = { params: Promise<{ slug: string }> };
 

@@ -10,9 +10,8 @@ import { StreakLayer } from "@/components/atmosphere/streak-layer";
  * holding a 2123-wide group, against 1545 x 992 holding 1657 — which is what
  * makes the top of this page read as one wide wash rather than an hourglass.
  *
- * Split the same way as the home page: the tiles carry structure and belong to
- * the content column, the streaks decorate the screen's edges and hang off the
- * full-width parent so they keep reaching them past 1512.
+ * Like Home, tiles stretch horizontally across the screen without mirrored
+ * overflow. The streaks remain edge-pinned and the footer stays column-aligned.
  */
 export function AboutAtmosphere() {
   return (
@@ -55,11 +54,11 @@ export function AboutAtmosphere() {
         vector="streakLower"
       />
 
-      <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
+      <div className="relative h-full w-full">
         {/* Frame 8 (374:268) — the wide tile behind the introduction. */}
         <RefractionFrame
           box={{ left: -142, top: -439, width: 1675, height: 1335 }}
-          bleed
+          relativeTo={1512}
           id="about-hero"
         >
           {/* Use the About export itself, including its Gaussian margins. */}
@@ -74,7 +73,7 @@ export function AboutAtmosphere() {
           box={{ left: -22, top: 991, width: 1565, height: 648 }}
           id="about-capabilities"
           mirrorY
-          bleed
+          relativeTo={1512}
         >
           <GlowLayer
             box={{ left: 0, top: 353, width: 1596.426, height: 1103.004 }}
@@ -83,10 +82,12 @@ export function AboutAtmosphere() {
         </RefractionFrame>
 
         {/* Group 13 (307:181) — the footer band. */}
-        <GlowLayer
-          box={{ left: -166, top: 2726.18, width: 1852, height: 1053.236 }}
-          vector="footerAbout"
-        />
+        <div className="relative mx-auto h-full w-full max-w-[94.5rem]">
+          <GlowLayer
+            box={{ left: -166, top: 2726.18, width: 1852, height: 1053.236 }}
+            vector="footerAbout"
+          />
+        </div>
       </div>
     </div>
   );

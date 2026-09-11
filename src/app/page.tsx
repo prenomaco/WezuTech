@@ -13,7 +13,8 @@ import { jsonLd, organisationSchema, videoObjectSchema, webPageSchema, websiteSc
 import { getPublishedTestimonials } from "@/lib/testimonials";
 import { SiteMotion } from "@/motion/site-motion";
 
-export const dynamic = "force-dynamic";
+// Public content is shared; admin mutations invalidate it immediately.
+export const revalidate = 60;
 
 const DESCRIPTION =
   "Wezu Technologies builds intelligent hardware and software for vehicles and mobility platforms, " +
