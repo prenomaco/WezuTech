@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/layout/nav-link";
-import { IconMail, IconPhone, IconUser } from "@/components/ui/icons";
+import { IconMail, IconPhone, IconPin } from "@/components/ui/icons";
 import { Logo } from "@/components/ui/logo";
 import {
   contact,
@@ -31,24 +31,29 @@ const HEADING =
 const LINK =
   "nav-link w-fit max-w-full text-[1rem] font-book leading-[1.3125rem] text-white transition-colors hover:text-sky lg:text-[1.172875rem] lg:leading-[1.6125rem]";
 const DETAIL =
-  "flex items-center gap-[0.4375rem] text-[1.125rem] leading-[1.5rem] text-white";
+  "flex gap-[0.4375rem] text-[1.125rem] leading-[1.5rem] text-white";
+/* The single-line rows centre against their glyph; a wrapping row has to
+   align to the first line instead, and takes a measure so the address breaks
+   into two or three readable lines rather than running the column's width. */
+const DETAIL_SINGLE = "items-center";
+const DETAIL_WRAPS = "items-start max-w-[20rem]";
 
 const DETAIL_ICON = {
-  name: IconUser,
   email: IconMail,
   phone: IconPhone,
+  address: IconPin,
 } as const;
 
 function ContactRow({ detail }: { detail: ContactDetail }) {
   const Icon = DETAIL_ICON[detail.icon];
   const content = (
     <>
-      <Icon className="shrink-0" />
+      <Icon className={detail.wraps ? "mt-[0.1875rem] shrink-0" : "shrink-0"} />
       <span>{detail.label}</span>
     </>
   );
   return (
-    <li className={DETAIL}>
+    <li className={`${DETAIL} ${detail.wraps ? DETAIL_WRAPS : DETAIL_SINGLE}`}>
       {detail.href ? (
         <a
           className="flex items-center gap-[0.4375rem] transition-colors hover:text-sky"

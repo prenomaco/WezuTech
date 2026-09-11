@@ -40,6 +40,18 @@ export function IconPhone(props: IconProps) {
   );
 }
 
+/** Map pin, for the footer's postal address. */
+export function IconPin(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path
+        d="M9 1.6875A5.63 5.63 0 0 0 3.375 7.3125c0 4.3875 5.0625 8.7188 5.2781 8.9016a.5625.5625 0 0 0 .6938 0C9.5625 16.0312 14.625 11.7 14.625 7.3125A5.63 5.63 0 0 0 9 1.6875Zm0 12.9094C7.8 13.5 4.5 10.2656 4.5 7.3125a4.5 4.5 0 0 1 9 0c0 2.9531-3.3 6.1875-4.5 7.2844ZM9 4.5a2.8125 2.8125 0 1 0 0 5.625A2.8125 2.8125 0 0 0 9 4.5Zm0 4.5A1.6875 1.6875 0 1 1 9 5.625 1.6875 1.6875 0 0 1 9 9Z"
+        fill="currentColor"
+      />
+    </Icon>
+  );
+}
+
 /** Carousel chevron. Mirrored with a CSS transform for the "next" direction. */
 export function IconChevron(props: IconProps) {
   return (

@@ -1,4 +1,4 @@
-import { contactDetails } from "@/content/site-content";
+import { contactDetails, postalAddress } from "@/content/site-content";
 import { siteUrl } from "@/lib/env";
 import type { ProductDetail } from "@/lib/product-detail";
 
@@ -25,6 +25,10 @@ export function organisationSchema() {
     description:
       "Intelligent hardware and software systems for vehicles and mobility platforms, " +
       "from thermal management and vehicle control to power, diagnostics and connected electronics.",
+    /* The registered address, now that the footer states it. Local search
+       reconciles a business by name plus address, so leaving it out of the
+       schema while printing it on the page was a missed signal. */
+    address: { "@type": "PostalAddress", ...postalAddress },
     ...(email || phone
       ? {
           contactPoint: {

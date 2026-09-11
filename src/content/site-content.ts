@@ -35,9 +35,11 @@ export interface Testimonial {
 }
 
 export interface ContactDetail {
-  readonly icon: "name" | "email" | "phone";
+  readonly icon: "email" | "phone" | "address";
   readonly label: string;
   readonly href?: string;
+  /** Set for a row too long to sit on one line, such as the address. */
+  readonly wraps?: boolean;
 }
 
 export const primaryNav: readonly NavLink[] = [
@@ -64,10 +66,24 @@ export const legalNav: readonly NavLink[] = [
 ];
 
 export const contactDetails: readonly ContactDetail[] = [
-  { icon: "name", label: "Customer Support" },
   { icon: "email", label: "purchase@wezutech.com", href: "mailto:purchase@wezutech.com" },
   { icon: "phone", label: "+91 9247539016", href: "tel:+919247539016" },
+  {
+    icon: "address",
+    label:
+      "1/B, Plot No 94, beside Eenadu Press, Gandhi Nagar Industrial Area, Balanagar, Hyderabad, Telangana 500037",
+    wraps: true,
+  },
 ];
+
+/** The address split into the parts a postal schema expects. */
+export const postalAddress = {
+  streetAddress: "1/B, Plot No 94, beside Eenadu Press, Gandhi Nagar Industrial Area",
+  addressLocality: "Balanagar, Hyderabad",
+  addressRegion: "Telangana",
+  postalCode: "500037",
+  addressCountry: "IN",
+} as const;
 
 export const hero = {
   titleLeft: ["ENGINEERING", "THE"],
