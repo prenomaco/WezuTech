@@ -174,3 +174,24 @@
 .dash-input:autofill:focus {
   border-color: var(--dash-primary);
 }
+
+/*
+ * Selects, with our own chevron.
+ *
+ * `padding-right` does not move a native select's arrow: the browser draws it
+ * against the border box, so padding only pushed the text away and left the
+ * glyph sitting on the border. Stripping `appearance` and painting the chevron
+ * as a background image puts it where we say, and gives every select the same
+ * arrow across browsers instead of three different ones.
+ *
+ * The glyph is the same 1.5px stroke in `--dash-muted` the lucide icons use,
+ * inlined so it costs no request.
+ */
+.dash-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238fa3bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.25rem;
+}

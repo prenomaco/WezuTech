@@ -58,8 +58,12 @@ function IconPicker({ value }: { readonly value: string }) {
         Shown on the category card whenever there is no image.
       </span>
       <div className="flex items-center gap-3">
-        <span className="grid size-11 shrink-0 place-items-center rounded-[0.75rem] border border-[rgb(35_164_236/0.28)] bg-[linear-gradient(160deg,rgb(35_164_236/0.18),rgb(2_7_28/0.55))] text-[var(--dash-primary)]">
-          <CategoryIcon className="size-5" icon={icon} />
+        {/* `size-9`, matching the select beside it. At 44px the preview stood
+            8px taller than every other control on the form, so this field's
+            row sat lower than "Display order" next to it and the two grid
+            columns lost their shared baseline. */}
+        <span className="grid size-9 shrink-0 place-items-center rounded-[0.5rem] border border-[rgb(35_164_236/0.28)] bg-[linear-gradient(160deg,rgb(35_164_236/0.18),rgb(2_7_28/0.55))] text-[var(--dash-primary)]">
+          <CategoryIcon className="size-[1.125rem]" icon={icon} />
         </span>
         <Select
           aria-label="Icon"

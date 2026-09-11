@@ -86,8 +86,9 @@ export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTex
   return <textarea className={cn(FIELD, "min-h-[4.5rem]", className)} {...props} />;
 }
 
+/** `dash-select` supplies the chevron; see the note in `dashboard.css`. */
 export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(FIELD, "h-9", className)} {...props} />;
+  return <select className={cn(FIELD, "dash-select h-9", className)} {...props} />;
 }
 
 export function Label({ className, ...props }: HTMLAttributes<HTMLLabelElement>) {

@@ -233,16 +233,20 @@ export function MediaUpload({
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-md border border-[var(--dash-border)] bg-[var(--dash-subtle)]">
+        {/* 96px, not 64. These renders are wide line drawings on a dark
+            ground, and at thumbnail size a charger and a battery pack are the
+            same grey smudge: the preview has to be big enough to confirm the
+            right file went up. */}
+        <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-lg border border-[var(--dash-border)] bg-[rgb(2_7_28/0.45)]">
           {url ? (
             isPdf ? (
-              <FileText aria-hidden className="size-6 text-[var(--dash-muted)]" />
+              <FileText aria-hidden className="size-8 text-[var(--dash-muted)]" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element -- admin-uploaded Cloudinary URLs
-              <img alt="" className="h-full w-full object-cover" src={url} />
+              <img alt="" className="h-full w-full object-contain p-1" src={url} />
             )
           ) : (
-            <ImageOff aria-hidden className="size-5 text-[var(--dash-muted)]" />
+            <ImageOff aria-hidden className="size-7 text-[var(--dash-muted)]" />
           )}
         </div>
 

@@ -157,9 +157,10 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "Up to 22 kW per kiosk across 4–8 tethered guns at 3.3 kW each, with load-shared two-wheeler charging, integrated backup and AI-enabled load balancing.",
     media: {
-      hero: shot("multi-bike-charging-station", "hero", "Multi-Bike Charging Station with two-wheelers on charge"),
+      hero: shot("multi-bike-charging-station", "hero", "Multi-Bike Charging Station, four charge points with two-wheelers"),
       detail: shot("multi-bike-charging-station", "detail", "Multi-Bike Charging Station bay detail"),
       gallery: [
+        shot("multi-bike-charging-station", "product-photo", "Multi-Bike Charging Station with two-wheelers on charge"),
         shot("multi-bike-charging-station", "gallery-1", "Multi-Bike Charging Station at a bike rank"),
         shot("multi-bike-charging-station", "gallery-2", "Multi-Bike Charging Station charge points"),
       ],
@@ -225,7 +226,8 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "30 / 60 / 100 kW DC fast charging at up to 250 A per gun, with dual CCS-2 and CHAdeMO connectors, liquid-cooled cables and an optional 22 kW AC outlet.",
     media: {
-      hero: shot("dc-fast-charging-station", "hero", "DC Fast Charging Station at a highway forecourt"),
+      hero: shot("dc-fast-charging-station", "hero", "DC Fast Charging Station, dual-gun pedestal"),
+      gallery: [shot("dc-fast-charging-station", "product-photo", "DC Fast Charging Station at a highway forecourt")],
       detail: shot("dc-fast-charging-station", "detail", "DC Fast Charging Station front view"),
       applications: [
         shot("dc-fast-charging-station", "application-1", "DC fast charging on a highway corridor"),
@@ -283,9 +285,10 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "Lithium-ion mobility battery packs from 1.5 to 35 kWh at 48–320 V across 2W, 3W and 4W form factors, with IP67 enclosures, in-house BMS and CAN telemetry.",
     media: {
-      hero: shot("mobility-battery-packs", "hero", "Four-wheeler mobility battery pack"),
+      hero: shot("mobility-battery-packs", "hero", "Mobility battery pack with high-voltage connectors"),
       detail: shot("mobility-battery-packs", "detail", "Three-wheeler mobility battery pack"),
       gallery: [
+        shot("mobility-battery-packs", "product-photo", "Four-wheeler mobility battery pack"),
         shot("mobility-battery-packs", "gallery-1", "Two-wheeler mobility battery pack"),
         shot("mobility-battery-packs", "gallery-2", "Three-wheeler mobility battery pack"),
       ],
@@ -348,9 +351,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "Industrial and auxiliary lithium-ion packs from 0.25 to 60 kWh at 12 / 24 / 48 / 80 V, as drop-in lead-acid replacements and DIN-tray forklift packs for 2–5 ton handling.",
     media: {
-      hero: shot("industrial-auxiliary-battery-packs", "hero", "Forklift battery pack on a material handling floor"),
+      hero: shot("industrial-auxiliary-battery-packs", "hero", "Industrial battery pack enclosure with output connectors"),
       detail: shot("industrial-auxiliary-battery-packs", "detail", "Auxiliary 12 V battery pack"),
-      gallery: [shot("industrial-auxiliary-battery-packs", "gallery-1", "Auxiliary battery pack")],
+      gallery: [
+        shot("industrial-auxiliary-battery-packs", "product-photo", "Forklift battery pack on a material handling floor"),
+        shot("industrial-auxiliary-battery-packs", "gallery-1", "Auxiliary battery pack"),
+      ],
       applications: [
         shot("industrial-auxiliary-battery-packs", "application-1", "Forklift battery pack in a material handling bay"),
         shot("industrial-auxiliary-battery-packs", "application-2", "Auxiliary vehicle battery pack"),
@@ -407,9 +413,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
     seoDescription:
       "Portable energy storage from 1 to 5 kWh and medium systems from 10 to 100 kWh, covering suitcase-class backup and outdoor cabinets, site-ready and grid-ready.",
     media: {
-      hero: shot("portable-medium-energy-storage", "hero", "Portable energy storage unit"),
+      hero: shot("portable-medium-energy-storage", "hero", "Portable energy storage unit with retractable handle"),
       detail: shot("portable-medium-energy-storage", "detail", "Medium energy storage cabinet"),
-      gallery: [shot("portable-medium-energy-storage", "gallery-1", "Medium energy storage cabinet, open")],
+      gallery: [
+        shot("portable-medium-energy-storage", "product-photo", "Portable energy storage unit"),
+        shot("portable-medium-energy-storage", "gallery-1", "Medium energy storage cabinet, open"),
+      ],
       applications: [
         shot("portable-medium-energy-storage", "application-1", "Portable energy storage in field backup duty"),
         shot("portable-medium-energy-storage", "application-2", "Medium energy storage cabinet at a commercial site"),

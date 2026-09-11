@@ -202,6 +202,17 @@ async function revalidateCategories(goneSlug?: string) {
   revalidatePath("/products");
   revalidatePath("/admin/categories");
   revalidatePath("/admin/products");
+  /*
+   * The product form, too.
+   *
+   * Its category picker is built from these rows, and the form is a separate
+   * route from the list. Without these two the picker could keep offering the
+   * old set: the pages are `force-dynamic`, but the client router may reuse a
+   * recently visited one for `staleTimes.dynamic` (30s), so a category added
+   * and then immediately assigned would not be there to tick.
+   */
+  revalidatePath("/admin/products/new");
+  revalidatePath("/admin/products/[id]/edit", "page");
   revalidatePath("/sitemap.xml");
   revalidatePath("/products/category/[category]", "page");
   for (const slug of await getCategorySlugs()) revalidatePath(categoryPath(slug));

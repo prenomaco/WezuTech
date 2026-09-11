@@ -1,7 +1,7 @@
 "use client";
 
 import type { LeadStatus } from "@prisma/client";
-import { Building2, Mail, Package, Phone } from "lucide-react";
+import { Building2, ChevronRight, Mail, Package, Phone } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { updateLead } from "@/app/admin/actions";
@@ -29,16 +29,17 @@ const STATUSES: readonly LeadStatus[] = ["NEW", "CONTACTED", "QUALIFIED", "CLOSE
  * Enquiries, as a reading surface rather than a table.
  *
  * The old page put three columns in a row: sender, message, and a status
- * select with a notes box and a Save button stacked inside the third cell.
+ * select with a notes box and a Save button stacked inside the third cell,
+ * all of it open at once.
  * That made every row as tall as a form, wrapped the message into a narrow
  * column beside it, and repeated the caps status twice, once as a pill and
  * again as the first option of the select directly beneath it.
  *
- * An enquiry is a message, so each one is a card: who it is from and how to
- * reach them on the left, what they said in the middle at a readable measure,
- * and the two things that are actually editable — the state and the internal
- * note — gathered on the right under one Save. The status is stated once, as
- * text, and the select is the thing that changes it.
+ * An enquiry is a message, so each one is a card that opens: the closed row
+ * says who it is from, their address and what it is about, and opening it
+ * gives the full message with the contact details on the left and the two
+ * editable things, the state and the internal note, gathered on the right
+ * under one Save.
  */
 function SaveButton() {
   const { pending } = useFormStatus();
@@ -70,84 +71,125 @@ function Contact({ icon: Icon, children, href }: {
 }
 
 function LeadCard({ lead }: { readonly lead: LeadRow }) {
+  /*
+   * Collapsed by default.
+   *
+   * Every enquiry was a full-height card: contact block, message and editor
+   * side by side, about 200px tall whether it held two words or twenty lines.
+   * At the 200 this page fetches that is a very long scroll to find anything,
+   * and most of it is detail you only want for the one you are working on.
+   *
+   * The closed row carries what identifies an enquiry — who, their address,
+   * what it is about — plus its state and when it arrived. Opening one reveals
+   * exactly what the card showed before.
+   */
+  const [open, setOpen] = useState(false);
+
   return (
-    <article className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-card)]">
-      <div className="grid gap-5 p-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <p className="font-medium text-[var(--dash-fg)]">{lead.name}</p>
-          <Contact href={`mailto:${lead.email}`} icon={Mail}>
-            {lead.email}
-          </Contact>
-          {lead.phone ? (
-            <Contact href={`tel:${lead.phone}`} icon={Phone}>
-              {lead.phone}
-            </Contact>
-          ) : null}
-          {lead.company ? <Contact icon={Building2}>{lead.company}</Contact> : null}
-          <p className="mt-1 text-xs text-[var(--dash-muted)]">{lead.receivedAt}</p>
-        </div>
-
-        <div className="min-w-0">
-          {lead.subject ? (
-            <h2 className="text-sm font-semibold text-[var(--dash-fg)]">{lead.subject}</h2>
-          ) : null}
-          <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-line text-[var(--dash-muted)]">
-            {lead.message}
-          </p>
-          {lead.productName ? (
-            <p className="mt-3 inline-flex items-center gap-2 text-xs text-[var(--dash-muted)]">
-              <Package aria-hidden className="size-3.5" />
-              Enquired about {lead.productName}
-            </p>
-          ) : null}
-        </div>
-
-        {/*
-          * The editor, as its own labelled panel.
-          *
-          * It used to be a loose stack: the status as coloured text, then a
-          * select repeating that same status directly beneath it, then a
-          * three-row notes box, then a full-width Save. Four full-width
-          * blocks for two fields, with the state stated twice.
-          *
-          * Now the state is a label/value line at the top, the select is the
-          * thing that changes it rather than a second readout, the notes box
-          * is two rows, and Save sits right-aligned at its natural width the
-          * way a form's submit does.
-          */}
-        <form
-          action={updateLead}
-          className="flex flex-col gap-2.5 rounded-lg border border-[var(--dash-border)] bg-[rgb(2_7_28/0.35)] p-3.5"
+    <article className="overflow-hidden rounded-xl border border-[var(--dash-border)] bg-[var(--dash-card)]">
+      <h2>
+        <button
+          aria-expanded={open}
+          className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-[var(--dash-card-hover)]"
+          onClick={() => setOpen((current) => !current)}
+          type="button"
         >
-          <input name="id" type="hidden" value={lead.id} />
-
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-xs font-medium text-[var(--dash-muted)]">Status</span>
-            <StatusText tone={LEAD_STATUS_TONE[lead.status]}>{lead.status}</StatusText>
-          </div>
-
-          <Select aria-label={`Status for ${lead.name}`} defaultValue={lead.status} name="status">
-            {STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {titleCase(status)}
-              </option>
-            ))}
-          </Select>
-
-          <Textarea
-            aria-label={`Internal notes for ${lead.name}`}
-            className="min-h-0"
-            defaultValue={lead.internalNotes ?? ""}
-            name="internalNotes"
-            placeholder="Internal notes, never sent to the sender"
-            rows={2}
+          <ChevronRight
+            aria-hidden
+            className={`size-4 shrink-0 text-[var(--dash-muted)] transition-transform duration-200 ${open ? "rotate-90" : ""}`}
           />
 
-          <div className="flex justify-end">
-            <SaveButton />
+          <span className="min-w-0 flex-1 gap-4 sm:flex sm:items-baseline">
+            <span className="min-w-0 shrink-0 sm:w-[12rem]">
+              <span className="block truncate font-medium text-[var(--dash-fg)]">{lead.name}</span>
+              <span className="block truncate text-xs text-[var(--dash-muted)]">{lead.email}</span>
+            </span>
+            <span className="mt-1 block min-w-0 flex-1 truncate text-sm text-[var(--dash-muted)] sm:mt-0">
+              {lead.subject ?? "No subject"}
+            </span>
+          </span>
+
+          <span className="hidden shrink-0 sm:block">
+            <StatusText tone={LEAD_STATUS_TONE[lead.status]}>{lead.status}</StatusText>
+          </span>
+          <span className="hidden w-[9.5rem] shrink-0 text-right text-xs text-[var(--dash-muted)] lg:block">
+            {lead.receivedAt}
+          </span>
+        </button>
+      </h2>
+
+      {open ? (
+        <div className="grid gap-5 border-t border-[var(--dash-border)] p-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <Contact href={`mailto:${lead.email}`} icon={Mail}>
+              {lead.email}
+            </Contact>
+            {lead.phone ? (
+              <Contact href={`tel:${lead.phone}`} icon={Phone}>
+                {lead.phone}
+              </Contact>
+            ) : null}
+            {lead.company ? <Contact icon={Building2}>{lead.company}</Contact> : null}
+            <p className="mt-1 text-xs text-[var(--dash-muted)]">{lead.receivedAt}</p>
           </div>
-        </form>
-      </div>
+
+          <div className="min-w-0">
+            {lead.subject ? (
+              <h3 className="text-sm font-semibold text-[var(--dash-fg)]">{lead.subject}</h3>
+            ) : null}
+            <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-line text-[var(--dash-muted)]">
+              {lead.message}
+            </p>
+            {lead.productName ? (
+              <p className="mt-3 inline-flex items-center gap-2 text-xs text-[var(--dash-muted)]">
+                <Package aria-hidden className="size-3.5" />
+                Enquired about {lead.productName}
+              </p>
+            ) : null}
+          </div>
+
+          {/*
+            * The editor, as its own labelled panel.
+            *
+            * It used to be a loose stack: the status as coloured text, then a
+            * select repeating that same status directly beneath it, then a
+            * three-row notes box, then a full-width Save. Four full-width
+            * blocks for two fields, with the state stated twice.
+            */}
+          <form
+            action={updateLead}
+            className="flex flex-col gap-2.5 rounded-lg border border-[var(--dash-border)] bg-[rgb(2_7_28/0.35)] p-3.5"
+          >
+            <input name="id" type="hidden" value={lead.id} />
+
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-xs font-medium text-[var(--dash-muted)]">Status</span>
+              <StatusText tone={LEAD_STATUS_TONE[lead.status]}>{lead.status}</StatusText>
+            </div>
+
+            <Select aria-label={`Status for ${lead.name}`} defaultValue={lead.status} name="status">
+              {STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {titleCase(status)}
+                </option>
+              ))}
+            </Select>
+
+            <Textarea
+              aria-label={`Internal notes for ${lead.name}`}
+              className="min-h-0"
+              defaultValue={lead.internalNotes ?? ""}
+              name="internalNotes"
+              placeholder="Internal notes, never sent to the sender"
+              rows={2}
+            />
+
+            <div className="flex justify-end">
+              <SaveButton />
+            </div>
+          </form>
+        </div>
+      ) : null}
     </article>
   );
 }

@@ -76,7 +76,9 @@ export function FilterSelect<T extends string>({
     <select
       aria-label={label}
       className={cn(
-        "h-10 shrink-0 rounded-lg border border-[var(--dash-border-strong)] bg-[rgb(2_7_28/0.6)] px-3 text-sm text-[var(--dash-fg)]",
+        /* `dash-select` replaces the browser's arrow with our own, which is
+           the only way to control where it sits; see `dashboard.css`. */
+        "dash-select h-10 shrink-0 rounded-lg border border-[var(--dash-border-strong)] bg-[rgb(2_7_28/0.6)] pl-3 text-sm text-[var(--dash-fg)]",
         "focus-visible:border-[var(--dash-primary)] focus-visible:ring-2 focus-visible:ring-[rgb(9_133_204/0.22)] focus-visible:outline-none",
         value ? "text-[var(--dash-fg)]" : "text-[var(--dash-muted)]",
         className,
