@@ -1,7 +1,15 @@
 "use client";
 
 import { ChangeEvent, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, FileText, ImageOff, Loader2, Trash2, Upload } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  FileTextIcon,
+  ImageBrokenIcon,
+  SpinnerIcon,
+  TrashIcon,
+  UploadSimpleIcon,
+} from "@phosphor-icons/react/ssr";
 import { Label } from "@/components/dashboard/ui";
 
 /**
@@ -126,7 +134,7 @@ export function GalleryUpload({ initial }: { readonly initial: readonly GalleryI
                     onClick={() => move(index, -1)}
                     type="button"
                   >
-                    <ArrowLeft aria-hidden className="size-3.5" />
+                    <ArrowLeftIcon aria-hidden className="size-3.5" />
                   </button>
                   <button
                     aria-label={`Move image ${index + 1} later`}
@@ -135,7 +143,7 @@ export function GalleryUpload({ initial }: { readonly initial: readonly GalleryI
                     onClick={() => move(index, 1)}
                     type="button"
                   >
-                    <ArrowRight aria-hidden className="size-3.5" />
+                    <ArrowRightIcon aria-hidden className="size-3.5" />
                   </button>
                 </div>
                 <button
@@ -144,7 +152,7 @@ export function GalleryUpload({ initial }: { readonly initial: readonly GalleryI
                   onClick={() => setImages((current) => current.filter((_, i) => i !== index))}
                   type="button"
                 >
-                  <Trash2 aria-hidden className="size-3.5" />
+                  <TrashIcon aria-hidden className="size-3.5" />
                 </button>
               </div>
             </li>
@@ -160,9 +168,9 @@ export function GalleryUpload({ initial }: { readonly initial: readonly GalleryI
           type="button"
         >
           {busy ? (
-            <Loader2 aria-hidden className="size-3.5 animate-spin" />
+            <SpinnerIcon aria-hidden className="size-3.5 animate-spin" />
           ) : (
-            <Upload aria-hidden className="size-3.5" />
+            <UploadSimpleIcon aria-hidden className="size-3.5" />
           )}
           Add images
         </button>
@@ -240,13 +248,13 @@ export function MediaUpload({
         <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-lg border border-[var(--dash-border)] bg-[rgb(2_7_28/0.45)]">
           {url ? (
             isPdf ? (
-              <FileText aria-hidden className="size-8 text-[var(--dash-muted)]" />
+              <FileTextIcon aria-hidden className="size-8 text-[var(--dash-muted)]" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element -- admin-uploaded Cloudinary URLs
               <img alt="" className="h-full w-full object-contain p-1" src={url} />
             )
           ) : (
-            <ImageOff aria-hidden className="size-7 text-[var(--dash-muted)]" />
+            <ImageBrokenIcon aria-hidden className="size-7 text-[var(--dash-muted)]" />
           )}
         </div>
 
@@ -262,9 +270,9 @@ export function MediaUpload({
               type="button"
             >
               {busy ? (
-                <Loader2 aria-hidden className="size-3.5 animate-spin" />
+                <SpinnerIcon aria-hidden className="size-3.5 animate-spin" />
               ) : (
-                <Upload aria-hidden className="size-3.5" />
+                <UploadSimpleIcon aria-hidden className="size-3.5" />
               )}
               {url ? "Replace" : "Upload"}
             </button>
@@ -275,7 +283,7 @@ export function MediaUpload({
                 onClick={clear}
                 type="button"
               >
-                <Trash2 aria-hidden className="size-3.5" /> Remove
+                <TrashIcon aria-hidden className="size-3.5" /> Remove
               </button>
             ) : null}
           </div>

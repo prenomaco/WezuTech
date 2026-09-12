@@ -1,7 +1,13 @@
 "use client";
 
 import type { LeadStatus } from "@prisma/client";
-import { Building2, ChevronRight, Mail, Package, Phone } from "lucide-react";
+import {
+  BuildingOfficeIcon,
+  CaretRightIcon,
+  EnvelopeSimpleIcon,
+  PackageIcon,
+  PhoneIcon,
+} from "@phosphor-icons/react/ssr";
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { updateLead } from "@/app/admin/actions";
@@ -51,7 +57,7 @@ function SaveButton() {
 }
 
 function Contact({ icon: Icon, children, href }: {
-  readonly icon: typeof Mail;
+  readonly icon: typeof EnvelopeSimpleIcon;
   readonly children: string;
   readonly href?: string;
 }) {
@@ -94,7 +100,7 @@ function LeadCard({ lead }: { readonly lead: LeadRow }) {
           onClick={() => setOpen((current) => !current)}
           type="button"
         >
-          <ChevronRight
+          <CaretRightIcon
             aria-hidden
             className={`size-4 shrink-0 text-[var(--dash-muted)] transition-transform duration-200 ${open ? "rotate-90" : ""}`}
           />
@@ -121,15 +127,15 @@ function LeadCard({ lead }: { readonly lead: LeadRow }) {
       {open ? (
         <div className="grid gap-5 border-t border-[var(--dash-border)] p-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <Contact href={`mailto:${lead.email}`} icon={Mail}>
+            <Contact href={`mailto:${lead.email}`} icon={EnvelopeSimpleIcon}>
               {lead.email}
             </Contact>
             {lead.phone ? (
-              <Contact href={`tel:${lead.phone}`} icon={Phone}>
+              <Contact href={`tel:${lead.phone}`} icon={PhoneIcon}>
                 {lead.phone}
               </Contact>
             ) : null}
-            {lead.company ? <Contact icon={Building2}>{lead.company}</Contact> : null}
+            {lead.company ? <Contact icon={BuildingOfficeIcon}>{lead.company}</Contact> : null}
             <p className="mt-1 text-xs text-[var(--dash-muted)]">{lead.receivedAt}</p>
           </div>
 
@@ -142,7 +148,7 @@ function LeadCard({ lead }: { readonly lead: LeadRow }) {
             </p>
             {lead.productName ? (
               <p className="mt-3 inline-flex items-center gap-2 text-xs text-[var(--dash-muted)]">
-                <Package aria-hidden className="size-3.5" />
+                <PackageIcon aria-hidden className="size-3.5" />
                 Enquired about {lead.productName}
               </p>
             ) : null}

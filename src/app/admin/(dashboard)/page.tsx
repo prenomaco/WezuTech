@@ -1,12 +1,12 @@
 import Link from "next/link";
 import {
-  Inbox,
-  Layers,
-  MessageSquareQuote,
-  Package,
-  Plus,
-  TriangleAlert,
-} from "lucide-react";
+  ChatCenteredTextIcon,
+  PackageIcon,
+  PlusIcon,
+  StackIcon,
+  TrayIcon,
+  WarningIcon,
+} from "@phosphor-icons/react/ssr";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { LEAD_STATUS_TONE, StatusText } from "@/components/dashboard/status-text";
 import { Card, CardContent, CardHeader, CardTitle, Table, Td, Th } from "@/components/dashboard/ui";
@@ -35,7 +35,7 @@ function Stat({
   readonly value: number;
   readonly href: string;
   readonly hint?: string;
-  readonly icon: typeof Inbox;
+  readonly icon: typeof TrayIcon;
 }) {
   return (
     <Link
@@ -80,7 +80,7 @@ function NeedsAttention({
     <Card>
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle>Needs attention</CardTitle>
-        <TriangleAlert
+        <WarningIcon
           aria-hidden
           className={`size-4 ${items.length ? "text-[var(--dash-status-warning)]" : "text-[var(--dash-muted)]"}`}
         />
@@ -174,28 +174,28 @@ export default async function OverviewPage() {
         <Stat
           hint={newLeads ? `${newLeads} still new` : "All triaged"}
           href="/admin/leads"
-          icon={Inbox}
+          icon={TrayIcon}
           label="Enquiries"
           value={leadCount}
         />
         <Stat
           hint={`${publishedCount} published, ${draftCount} draft`}
           href="/admin/products"
-          icon={Package}
+          icon={PackageIcon}
           label="Products"
           value={productCount}
         />
         <Stat
           hint={emptyCategories.length ? `${emptyCategories.length} with no products` : "All in use"}
           href="/admin/categories"
-          icon={Layers}
+          icon={StackIcon}
           label="Categories"
           value={categories.length}
         />
         <Stat
           hint={hiddenTestimonials ? `${hiddenTestimonials} hidden` : "All live on the site"}
           href="/admin/testimonials"
-          icon={MessageSquareQuote}
+          icon={ChatCenteredTextIcon}
           label="Testimonials"
           value={testimonialCount}
         />
@@ -258,13 +258,13 @@ export default async function OverviewPage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <Link className={QUICK_ACTION} href="/admin/products/new">
-                <Plus aria-hidden className="size-4 text-[var(--dash-primary)]" /> New product
+                <PlusIcon aria-hidden className="size-4 text-[var(--dash-primary)]" /> New product
               </Link>
               <Link className={QUICK_ACTION} href="/admin/categories/new">
-                <Plus aria-hidden className="size-4 text-[var(--dash-primary)]" /> New category
+                <PlusIcon aria-hidden className="size-4 text-[var(--dash-primary)]" /> New category
               </Link>
               <Link className={QUICK_ACTION} href="/admin/testimonials/new">
-                <Plus aria-hidden className="size-4 text-[var(--dash-primary)]" /> New testimonial
+                <PlusIcon aria-hidden className="size-4 text-[var(--dash-primary)]" /> New testimonial
               </Link>
             </CardContent>
           </Card>

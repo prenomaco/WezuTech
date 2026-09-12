@@ -34,7 +34,7 @@ export const SEED_CATEGORIES: readonly SeedCategory[] = [
     name: "EV Charging",
     blurb:
       "AC and DC charging hardware for public, workplace and fleet sites, from compact wall kiosks up to high power corridor chargers.",
-    icon: "plug-zap",
+    icon: "plug-charging",
   },
   {
     slug: "battery-systems",
@@ -48,7 +48,7 @@ export const SEED_CATEGORIES: readonly SeedCategory[] = [
     name: "Energy Storage",
     blurb:
       "Storage that travels and storage that stays, from portable field units up to container class systems that balance load across a site.",
-    icon: "container",
+    icon: "shipping-container",
   },
   {
     slug: "thermal-management",
@@ -62,14 +62,14 @@ export const SEED_CATEGORIES: readonly SeedCategory[] = [
     name: "Power Electronics",
     blurb:
       "Conversion, distribution and protection along the whole power path, between a supply, a pack and the system being driven.",
-    icon: "circuit-board",
+    icon: "circuitry",
   },
   {
     slug: "diagnostics-connectivity",
     name: "Diagnostics and Connectivity",
     blurb:
       "Monitoring, telemetry and fault detection, so a deployed system reports its own condition before it turns into a callout.",
-    icon: "activity",
+    icon: "pulse",
   },
 ];
 

@@ -3,7 +3,11 @@
 import { FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  SpinnerIcon,
+} from "@phosphor-icons/react/ssr";
 
 export function LoginForm() {
   const router = useRouter();
@@ -64,7 +68,7 @@ export function LoginForm() {
             onClick={() => setShowPassword((current) => !current)}
             type="button"
           >
-            {showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}
+            {showPassword ? <EyeSlashIcon aria-hidden className="size-4" /> : <EyeIcon aria-hidden className="size-4" />}
           </button>
         </div>
       </label>
@@ -83,7 +87,7 @@ export function LoginForm() {
         disabled={pending}
         type="submit"
       >
-        {pending ? <Loader2 aria-hidden className="size-4 animate-spin" /> : null}
+        {pending ? <SpinnerIcon aria-hidden className="size-4 animate-spin" /> : null}
         {pending ? "Signing in" : "Sign in"}
       </button>
     </form>

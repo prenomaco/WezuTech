@@ -184,12 +184,13 @@
  * as a background image puts it where we say, and gives every select the same
  * arrow across browsers instead of three different ones.
  *
- * The glyph is the same 1.5px stroke in `--dash-muted` the lucide icons use,
- * inlined so it costs no request.
+ * The glyph is Phosphor's own CaretDown at regular weight, in `--dash-muted`,
+ * so a select's arrow is the same shape as every other caret in the panel.
+ * Inlined so it costs no request.
  */
 .dash-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238fa3bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256' fill='%238fa3bd'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1rem 1rem;

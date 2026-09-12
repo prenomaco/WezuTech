@@ -6,9 +6,10 @@ import type { Product, ProductMedia, ProductSection } from "@prisma/client";
 import { useFormStatus } from "react-dom";
 import { saveProduct } from "@/app/admin/actions";
 import { Button, Input, Label, Select, Textarea } from "@/components/dashboard/ui";
+import { IconPicker } from "@/components/dashboard/icon-picker";
 import { GalleryUpload, MediaUpload, type GalleryImage } from "@/components/media-upload";
 
-type Pair = { title: string; body: string };
+type Pair = { title: string; body: string; icon: string };
 
 function Field({
   children,
@@ -73,7 +74,11 @@ function itemArray(section: ProductSection | undefined): Pair[] {
   if (!Array.isArray(source)) return [];
   return source.map((item) => {
     const row = item && typeof item === "object" ? item as Record<string, unknown> : {};
-    return { title: String(row.title ?? row.value ?? row.specification ?? ""), body: String(row.body ?? row.label ?? row.details ?? "") };
+    return {
+      title: String(row.title ?? row.value ?? row.specification ?? ""),
+      body: String(row.body ?? row.label ?? row.details ?? ""),
+      icon: String(row.icon ?? ""),
+    };
   });
 }
 
@@ -82,9 +87,9 @@ function itemArray(section: ProductSection | undefined): Pair[] {
  * numbered cards rather than a grid of near-identical rows — each one reads
  * as "item 3 of the Key Features list", not as an anonymous table line.
  */
-function PairEditor({ name, title, firstLabel, secondLabel, initial }: { readonly name: string; readonly title: string; readonly firstLabel: string; readonly secondLabel: string; readonly initial: Pair[] }) {
+function PairEditor({ name, title, firstLabel, secondLabel, initial, withIcons = false }: { readonly name: string; readonly title: string; readonly firstLabel: string; readonly secondLabel: string; readonly initial: Pair[]; readonly withIcons?: boolean }) {
   const [items, setItems] = useState<Pair[]>(initial);
-  const payload = items.map(({ title: first, body: second }) => name === "metrics" ? { value: first, label: second } : name === "specifications" ? { specification: first, details: second } : { title: first, body: second });
+  const payload = items.map(({ title: first, body: second, icon }) => name === "metrics" ? { value: first, label: second } : name === "specifications" ? { specification: first, details: second } : withIcons ? { title: first, body: second, icon } : { title: first, body: second });
   return (
     <div className="sm:col-span-2">
       <span className="text-sm font-semibold">{title}</span>
@@ -92,7 +97,21 @@ function PairEditor({ name, title, firstLabel, secondLabel, initial }: { readonl
       <div className="mt-2 flex flex-col gap-2">
         {items.map((item, index) => (
           <div className="flex gap-3 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-subtle)] p-3" key={`${name}-${index}`}>
-            <span className="mt-2 shrink-0 text-xs font-medium text-[var(--dash-muted)]">#{index + 1}</span>
+            {/* For features, the glyph the public page draws above the
+                feature replaces the row number: the number was only ever a
+                position marker, and the icon says which row this is far
+                better than "#3" did. */}
+            {withIcons ? (
+              <IconPicker
+                label={`${firstLabel} ${index + 1} icon`}
+                name=""
+                onChange={(next) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, icon: next } : row))}
+                value={item.icon}
+                variant="compact"
+              />
+            ) : (
+              <span className="mt-2 shrink-0 text-xs font-medium text-[var(--dash-muted)]">#{index + 1}</span>
+            )}
             <div className="grid flex-1 gap-2 sm:grid-cols-[1fr_2fr]">
               <Input aria-label={`${firstLabel} ${index + 1}`} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, title: event.target.value } : row))} placeholder={firstLabel} value={item.title} />
               <Textarea aria-label={`${secondLabel} ${index + 1}`} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, body: event.target.value } : row))} placeholder={secondLabel} rows={2} value={item.body} />
@@ -100,7 +119,7 @@ function PairEditor({ name, title, firstLabel, secondLabel, initial }: { readonl
             <Button className="mt-0.5 self-start" onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))} type="button" variant="outline">Remove</Button>
           </div>
         ))}
-        <Button className="self-start" onClick={() => setItems((current) => [...current, { title: "", body: "" }])} type="button" variant="outline">
+        <Button className="self-start" onClick={() => setItems((current) => [...current, { title: "", body: "", icon: "" }])} type="button" variant="outline">
           Add {items.length ? "another" : "a"} row
         </Button>
       </div>
@@ -270,9 +289,9 @@ export function AdminProductForm({
         </div>
       </FormSection>
 
-      <FormSection title="Key Features" whereItAppears="The icon grid section below the Overview panel. Up to 6 items show, each with a fixed icon assigned by its position.">
+      <FormSection title="Key Features" whereItAppears="The icon grid section below the Overview panel. Up to 6 items show. The icon beside each row is the mark drawn above it on the page: click it to search the library.">
         <Field label="Section heading" wide><Input defaultValue={findSection("FEATURES")?.title ?? "Key Features"} name="featuresTitle" /></Field>
-        <PairEditor firstLabel="Feature title" initial={itemArray(findSection("FEATURES"))} name="features" secondLabel="Feature description" title="Features (first 6 show)" />
+        <PairEditor firstLabel="Feature" initial={itemArray(findSection("FEATURES"))} name="features" secondLabel="Feature description" title="Features (first 6 show)" withIcons />
       </FormSection>
 
       <FormSection title="Applications" whereItAppears="The 3-photo card section below Key Features. Each photo below pairs with the application item above it, in order.">

@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { CategoryGrid } from "@/components/products/category-grid";
+import { useState, type ReactNode } from "react";
 import { PRODUCT_GRID, ProductCard } from "@/components/products/product-card";
 import { SectionHeading } from "@/components/ui/typography";
 import type { CatalogProduct } from "@/lib/catalog";
-import type { ProductCategorySummary } from "@/lib/categories";
 
 /**
  * The index's two ways in: browse by application area, or see the whole
@@ -26,9 +24,19 @@ const TOGGLE_STATE = {
   off: "border-white/40 text-ice hover:border-white hover:bg-white/10",
 } as const;
 
-export function ProductIndex({ products, categories }: {
+export function ProductIndex({ products, categoryGrid }: {
   readonly products: readonly CatalogProduct[];
-  readonly categories: readonly ProductCategorySummary[];
+  /*
+   * The category grid arrives already rendered, rather than as the rows to
+   * render it from.
+   *
+   * Only the toggle needs to be interactive. Importing the grid here put it
+   * inside this client boundary, and with it the whole icon library: eighty
+   * Phosphor glyphs, each with six weights, which is around 300 kB of
+   * JavaScript for six marks that never change after paint. Taking it as a
+   * node keeps the grid and the library on the server and ships neither.
+   */
+  readonly categoryGrid: ReactNode;
 }) {
   const [showAll, setShowAll] = useState(false);
 
@@ -66,7 +74,7 @@ export function ProductIndex({ products, categories }: {
             </p>
           )
         ) : (
-          <CategoryGrid categories={categories} />
+          categoryGrid
         )}
       </div>
     </>

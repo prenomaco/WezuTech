@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   contentItemSchema,
   ctaSchema,
+  featureItemSchema,
   metricSchema,
   specificationSchema,
 } from "@/lib/product-detail";
@@ -57,7 +58,7 @@ export const productInputSchema = z.object({
   overviewIntro: z.string().trim().max(2000).optional(),
   overviewItems: z.array(contentItemSchema).max(12),
   featuresTitle: z.string().trim().max(160).optional(),
-  features: z.array(contentItemSchema).max(20),
+  features: z.array(featureItemSchema).max(20),
   applicationsTitle: z.string().trim().max(160).optional(),
   applications: z.array(contentItemSchema).max(20),
   specificationsTitle: z.string().trim().max(160).optional(),

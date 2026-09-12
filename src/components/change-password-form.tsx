@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { SpinnerIcon } from "@phosphor-icons/react/ssr";
 import { changePassword } from "@/app/admin/actions";
 
 export function ChangePasswordForm() {
@@ -59,7 +59,7 @@ export function ChangePasswordForm() {
         disabled={pending}
         type="submit"
       >
-        {pending ? <Loader2 aria-hidden className="size-4 animate-spin" /> : null}
+        {pending ? <SpinnerIcon aria-hidden className="size-4 animate-spin" /> : null}
         {pending ? "Saving" : "Save password"}
       </button>
     </form>

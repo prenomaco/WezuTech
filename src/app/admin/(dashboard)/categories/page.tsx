@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { CategoriesTable, type CategoryRow } from "@/components/dashboard/categories-table";
 import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
 import { getCategoriesForAdmin } from "@/lib/categories";
@@ -25,7 +25,7 @@ export default async function CategoriesPage() {
       <PageHeader
         action={
           <PrimaryActionLink href="/admin/categories/new">
-            <Plus aria-hidden className="size-4" /> Add category
+            <PlusIcon aria-hidden className="size-4" /> Add category
           </PrimaryActionLink>
         }
         description="The product families the catalogue is filed under. Each one gets its own page, and products can belong to several."

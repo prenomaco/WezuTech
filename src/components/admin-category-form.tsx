@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { saveCategory } from "@/app/admin/actions";
-import { Button, Input, Label, Select, Textarea } from "@/components/dashboard/ui";
+import { Button, Input, Label, Textarea } from "@/components/dashboard/ui";
+import { IconPicker } from "@/components/dashboard/icon-picker";
 import { MediaUpload } from "@/components/media-upload";
-import { CategoryIcon } from "@/components/category-icon";
-import { CATEGORY_ICON_OPTIONS } from "@/lib/category-icons";
+import { DEFAULT_ICON } from "@/lib/icon-library";
 
 export interface CategoryFormValues {
   readonly id: string;
@@ -37,49 +36,6 @@ function Field({
       {hint ? <span className="-mt-1 text-xs text-[var(--dash-muted)]">{hint}</span> : null}
       {children}
     </label>
-  );
-}
-
-/**
- * The icon picker, with the chosen glyph drawn beside the select.
- *
- * A category's artwork is optional and most will not have any for a while, so
- * the icon is what the public card actually shows. Picking from a list of
- * names with no preview would mean publishing to find out what "Monitoring"
- * looks like, so the panel next to it is the same panel the card renders.
- */
-function IconPicker({ value }: { readonly value: string }) {
-  const [icon, setIcon] = useState(value);
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>Icon</Label>
-      <span className="-mt-1 text-xs text-[var(--dash-muted)]">
-        Shown on the category card whenever there is no image.
-      </span>
-      <div className="flex items-center gap-3">
-        {/* `size-9`, matching the select beside it. At 44px the preview stood
-            8px taller than every other control on the form, so this field's
-            row sat lower than "Display order" next to it and the two grid
-            columns lost their shared baseline. */}
-        <span className="grid size-9 shrink-0 place-items-center rounded-[0.5rem] border border-[rgb(35_164_236/0.28)] bg-[linear-gradient(160deg,rgb(35_164_236/0.18),rgb(2_7_28/0.55))] text-[var(--dash-primary)]">
-          <CategoryIcon className="size-[1.125rem]" icon={icon} />
-        </span>
-        <Select
-          aria-label="Icon"
-          className="flex-1"
-          name="icon"
-          onChange={(event) => setIcon(event.target.value)}
-          value={icon}
-        >
-          {CATEGORY_ICON_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      </div>
-    </div>
   );
 }
 
@@ -137,7 +93,10 @@ export function AdminCategoryForm({
           <Textarea defaultValue={category?.blurb ?? ""} name="blurb" required rows={3} />
         </Field>
 
-        <IconPicker value={category?.icon ?? "package"} />
+        <IconPicker
+          hint="Shown on the category card whenever there is no image."
+          value={category?.icon ?? DEFAULT_ICON}
+        />
 
         <Field hint="Lowest first. Decides the order on the products index." label="Display order">
           <Input

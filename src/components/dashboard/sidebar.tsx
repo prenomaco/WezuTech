@@ -4,27 +4,27 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { signOut } from "next-auth/react";
+import type { Icon } from "@phosphor-icons/react/lib";
 import {
-  ChevronsLeft,
-  Inbox,
-  Layers,
-  LayoutDashboard,
-  LogOut,
-  MessageSquareQuote,
-  Package,
-  Settings,
-  type LucideIcon,
-} from "lucide-react";
+  CaretDoubleLeftIcon,
+  ChatCenteredTextIcon,
+  GearIcon,
+  PackageIcon,
+  SignOutIcon,
+  SquaresFourIcon,
+  StackIcon,
+  TrayIcon,
+} from "@phosphor-icons/react/ssr";
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
 import { RAIL_COOKIE, RAIL_COOKIE_MAX_AGE } from "@/lib/dashboard-rail";
 
-const NAV: readonly { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/leads", label: "Enquiries", icon: Inbox },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/categories", label: "Categories", icon: Layers },
-  { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
+const NAV: readonly { href: string; label: string; icon: Icon }[] = [
+  { href: "/admin", label: "Overview", icon: SquaresFourIcon },
+  { href: "/admin/leads", label: "Enquiries", icon: TrayIcon },
+  { href: "/admin/products", label: "Products", icon: PackageIcon },
+  { href: "/admin/categories", label: "Categories", icon: StackIcon },
+  { href: "/admin/testimonials", label: "Testimonials", icon: ChatCenteredTextIcon },
 ];
 
 /**
@@ -131,7 +131,7 @@ export function Sidebar({
             prefetch
             title={collapsed ? "Settings" : undefined}
           >
-            <Settings aria-hidden className="size-[1.125rem] shrink-0" />
+            <GearIcon aria-hidden className="size-[1.125rem] shrink-0" />
             <span className={cn("transition-opacity duration-200", collapsed && "lg:hidden")}>
               Settings
             </span>
@@ -144,7 +144,7 @@ export function Sidebar({
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             type="button"
           >
-            <ChevronsLeft
+            <CaretDoubleLeftIcon
               aria-hidden
               className={cn("size-[1.125rem] transition-transform duration-300", collapsed && "rotate-180")}
             />
@@ -182,7 +182,7 @@ export function Sidebar({
             title="Sign out"
             type="button"
           >
-            <LogOut aria-hidden className="size-4" />
+            <SignOutIcon aria-hidden className="size-4" />
           </button>
         </div>
       </div>

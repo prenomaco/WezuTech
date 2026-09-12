@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { CategoryIcon } from "@/components/category-icon";
+import { Glyph } from "@/components/glyph";
 import { categoryPath, type ProductCategorySummary } from "@/lib/categories";
 
 /**
@@ -48,7 +48,7 @@ function CategoryMark({ category }: { readonly category: ProductCategorySummary 
 
   return (
     <div className={ICON_PANEL}>
-      <CategoryIcon className="size-6" icon={category.icon} />
+      <Glyph className="size-6" icon={category.icon} />
     </div>
   );
 }

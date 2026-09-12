@@ -1,6 +1,9 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import {
+  MagnifyingGlassIcon,
+  XIcon,
+} from "@phosphor-icons/react/ssr";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
@@ -26,7 +29,7 @@ export function SearchField({
 }) {
   return (
     <div className="relative min-w-0 flex-1">
-      <Search
+      <MagnifyingGlassIcon
         aria-hidden
         className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--dash-muted)]"
       />
@@ -49,7 +52,7 @@ export function SearchField({
           onClick={() => onChange("")}
           type="button"
         >
-          <X aria-hidden className="size-3.5" />
+          <XIcon aria-hidden className="size-3.5" />
         </button>
       ) : null}
     </div>

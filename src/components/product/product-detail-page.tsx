@@ -7,21 +7,13 @@ import { SpecificationsTable } from "@/components/product/specifications-table";
 import { Contact } from "@/components/sections/contact";
 import { ButtonLink } from "@/components/ui/button";
 import type { CatalogProduct } from "@/lib/catalog";
-import type { ProductContentItem, ProductDetail } from "@/lib/product-detail";
+import { Glyph } from "@/components/glyph";
+import type { ProductDetail, ProductFeatureItem } from "@/lib/product-detail";
 
 const OTHER_PRODUCTS_LIMIT = 3;
 
 /* Dynamic CMS and Cloudinary media intentionally use native images. */
 /* eslint-disable @next/next/no-img-element */
-
-const FEATURE_ICONS = [
-  "/figma/9286f420995cfc41b137dcf85c4f3143a3f8f075.svg",
-  "/figma/4799b97f21cf8577256d024fdf1372c5f83003ab.svg",
-  "/figma/3d1d6d307b22842c952ef0f0e6ad7473d607c1d3.svg",
-  "/figma/33f96e29a9c5acc2f181e11d57a85fe94d6cc51b.svg",
-  "/figma/e047310f5f6e9a49f0449f004555d7a1f9e89c8d.svg",
-  "/figma/9ca6fc7babd790a521cfbd1f8aabed60d2ef6ed8.svg",
-] as const;
 
 const FALLBACK_APPLICATION_IMAGES = [
   "/figma/f244f86516f41aac4f54fdef2c7943b8e6413c4d.png",
@@ -29,12 +21,22 @@ const FALLBACK_APPLICATION_IMAGES = [
   "/figma/ee3aa089783daeb934cee841a5dca039bc96811f.png",
 ] as const;
 
-function FeatureRow({ items }: { readonly items: readonly ProductContentItem[] }) {
+/*
+ * The feature marks come from each feature's own icon key.
+ *
+ * They used to come from a list of six exported SVGs indexed by position, so
+ * every product in the catalogue showed the same six marks in the same order
+ * and a feature's icon had nothing to do with what the feature was: "Liquid
+ * Cooling" wore whichever glyph happened to be sixth. The key is chosen
+ * beside the feature in the dashboard now, and an unset one falls back to the
+ * library's default rather than to a coincidence.
+ */
+function FeatureRow({ items }: { readonly items: readonly ProductFeatureItem[] }) {
   return (
     <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
       {items.slice(0, 6).map((item, index) => (
         <article data-motion="product-feature-item" key={`${item.title}-${index}`}>
-          <img alt="" className="h-9 w-9" src={FEATURE_ICONS[index]} />
+          <Glyph className="size-9 text-sky-bright" icon={item.icon} />
           <h3 className="mt-5 font-bold leading-[1.4] text-white">{item.title}</h3>
           <p className="mt-2 font-book leading-[1.4] text-white">{item.body}</p>
         </article>

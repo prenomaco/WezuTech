@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react/ssr";
 import type { ReactNode } from "react";
 
 /**
@@ -52,7 +52,7 @@ export function BackLink({ href, children }: { readonly href: string; readonly c
       className="inline-flex w-fit items-center gap-1.5 text-sm text-[var(--dash-muted)] transition-colors hover:text-[var(--dash-fg)]"
       href={href}
     >
-      <ArrowLeft aria-hidden className="size-3.5" />
+      <ArrowLeftIcon aria-hidden className="size-3.5" />
       {children}
     </Link>
   );

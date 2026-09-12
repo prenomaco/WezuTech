@@ -8,11 +8,24 @@ export const contentItemSchema = z.object({ title: z.string().trim().min(1).max(
 export const specificationSchema = z.object({ specification: z.string().trim().min(1).max(120), details: z.string().trim().min(1).max(300) });
 export const overviewSchema = z.object({ intro: z.string().trim().max(2000).default(""), items: z.array(contentItemSchema).max(12).default([]) });
 export const listSectionSchema = z.object({ items: z.array(contentItemSchema).max(20).default([]) });
+/*
+ * A feature carries its own glyph.
+ *
+ * The product page drew the six feature marks from a fixed list indexed by
+ * position, so "Liquid Cooling" wore whichever icon happened to be sixth and
+ * every product in the catalogue showed the same six marks in the same order.
+ * The key is chosen per feature in the dashboard now. Empty means not chosen
+ * and resolves to the library's default rather than failing to parse, so rows
+ * written before the field existed still load.
+ */
+export const featureItemSchema = contentItemSchema.extend({ icon: z.string().trim().max(60).default("") });
+export const featureSectionSchema = z.object({ items: z.array(featureItemSchema).max(20).default([]) });
 export const specificationSectionSchema = z.object({ items: z.array(specificationSchema).max(30).default([]), note: z.string().trim().max(500).default("") });
 export const ctaSchema = z.object({ quoteLabel: z.string().trim().min(1).max(60).default("Request a Quote"), datasheetLabel: z.string().trim().min(1).max(60).default("Download Datasheet") });
 
 export type ProductMetric = z.infer<typeof metricSchema>;
 export type ProductContentItem = z.infer<typeof contentItemSchema>;
+export type ProductFeatureItem = z.infer<typeof featureItemSchema>;
 export type ProductSpecification = z.infer<typeof specificationSchema>;
 export type ProductCta = z.infer<typeof ctaSchema>;
 
@@ -35,7 +48,7 @@ export interface ProductDetail {
   readonly seoDescription: string | null;
   readonly metrics: readonly ProductMetric[];
   readonly overview: { readonly title: string; readonly intro: string; readonly items: readonly ProductContentItem[] };
-  readonly features: { readonly title: string; readonly items: readonly ProductContentItem[] };
+  readonly features: { readonly title: string; readonly items: readonly ProductFeatureItem[] };
   readonly applications: { readonly title: string; readonly items: readonly ProductContentItem[] };
   readonly specifications: { readonly title: string; readonly items: readonly ProductSpecification[]; readonly note: string };
   readonly cta: ProductCta;
@@ -61,6 +74,10 @@ export function normalizeProductSectionData(type: ProductSectionType, data: unkn
     if (Array.isArray(data)) return { items: legacyItems(data, z.array(specificationSchema)) ?? [], note: "" };
     return legacyItems(data, specificationSectionSchema) ?? { items: [], note: "" };
   }
+  if (type === ProductSectionType.FEATURES) {
+    if (Array.isArray(data)) return { items: legacyItems(data, z.array(featureItemSchema)) ?? [] };
+    return legacyItems(data, featureSectionSchema) ?? { items: [] };
+  }
   if (type === ProductSectionType.CTA) return legacyItems(data, ctaSchema) ?? ctaSchema.parse({});
   if (Array.isArray(data)) return { items: legacyItems(data, z.array(contentItemSchema)) ?? [] };
   return legacyItems(data, listSectionSchema) ?? { items: [] };
@@ -76,7 +93,7 @@ export const getProductDetail = cache(async (slug: string): Promise<ProductDetai
   const byType = new Map(product.sections.map((section) => [section.type, section]));
   const metrics = normalizeProductSectionData(ProductSectionType.METRICS, byType.get(ProductSectionType.METRICS)?.data) as ProductMetric[];
   const overviewData = normalizeProductSectionData(ProductSectionType.BENEFITS, byType.get(ProductSectionType.BENEFITS)?.data) as z.infer<typeof overviewSchema>;
-  const featureData = normalizeProductSectionData(ProductSectionType.FEATURES, byType.get(ProductSectionType.FEATURES)?.data) as z.infer<typeof listSectionSchema>;
+  const featureData = normalizeProductSectionData(ProductSectionType.FEATURES, byType.get(ProductSectionType.FEATURES)?.data) as z.infer<typeof featureSectionSchema>;
   const applicationData = normalizeProductSectionData(ProductSectionType.ENVIRONMENTS, byType.get(ProductSectionType.ENVIRONMENTS)?.data) as z.infer<typeof listSectionSchema>;
   const specificationData = normalizeProductSectionData(ProductSectionType.SPECIFICATIONS, byType.get(ProductSectionType.SPECIFICATIONS)?.data) as z.infer<typeof specificationSectionSchema>;
   const cta = normalizeProductSectionData(ProductSectionType.CTA, byType.get(ProductSectionType.CTA)?.data) as ProductCta;

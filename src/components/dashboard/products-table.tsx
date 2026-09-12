@@ -5,7 +5,11 @@
 
 import type { ProductStatus } from "@prisma/client";
 import Link from "next/link";
-import { ExternalLink, ImageOff, Pencil } from "lucide-react";
+import {
+  ArrowSquareOutIcon,
+  ImageBrokenIcon,
+  PencilSimpleIcon,
+} from "@phosphor-icons/react/ssr";
 import { useMemo, useState } from "react";
 import { deleteProduct } from "@/app/admin/actions";
 import { DeleteRowButton } from "@/components/dashboard/delete-row-button";
@@ -144,7 +148,7 @@ export function ProductsTable({
                             src={product.imageUrl}
                           />
                         ) : (
-                          <ImageOff aria-hidden className="size-4 text-[var(--dash-muted)]" />
+                          <ImageBrokenIcon aria-hidden className="size-4 text-[var(--dash-muted)]" />
                         )}
                       </span>
                       <div className="min-w-0">
@@ -180,7 +184,7 @@ export function ProductsTable({
                   <Td>
                     <div className="flex items-center justify-end gap-1.5">
                       <Link className={ACTION} href={`/admin/products/${product.id}/edit`}>
-                        <Pencil aria-hidden className="size-3.5" /> Edit
+                        <PencilSimpleIcon aria-hidden className="size-3.5" /> Edit
                       </Link>
                       {product.status === "PUBLISHED" ? (
                         <a
@@ -189,7 +193,7 @@ export function ProductsTable({
                           rel="noreferrer"
                           target="_blank"
                         >
-                          <ExternalLink aria-hidden className="size-3.5" /> View
+                          <ArrowSquareOutIcon aria-hidden className="size-3.5" /> View
                         </a>
                       ) : null}
                       <DeleteRowButton action={deleteProduct} id={product.id} name={product.name} />

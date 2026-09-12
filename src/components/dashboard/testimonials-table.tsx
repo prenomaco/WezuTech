@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { PencilSimpleIcon } from "@phosphor-icons/react/ssr";
 import { useMemo, useState } from "react";
 import { deleteTestimonial } from "@/app/admin/actions";
 import { DeleteRowButton } from "@/components/dashboard/delete-row-button";
@@ -127,7 +127,7 @@ export function TestimonialsTable({ testimonials }: { readonly testimonials: rea
                   <Td>
                     <div className="flex items-center justify-end gap-1.5">
                       <Link className={ACTION} href={`/admin/testimonials/${testimonial.id}/edit`}>
-                        <Pencil aria-hidden className="size-3.5" /> Edit
+                        <PencilSimpleIcon aria-hidden className="size-3.5" /> Edit
                       </Link>
                       <DeleteRowButton
                         action={deleteTestimonial}

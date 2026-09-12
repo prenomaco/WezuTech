@@ -3,6 +3,7 @@ import { AboutAtmosphere } from "@/components/atmosphere/about-atmosphere";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Section } from "@/components/layout/section";
+import { CategoryGrid } from "@/components/products/category-grid";
 import { ProductIndex } from "@/components/products/product-index";
 import { Contact } from "@/components/sections/contact";
 import { DisplayTitle, Prose } from "@/components/ui/typography";
@@ -62,7 +63,7 @@ export default async function ProductsIndexPage() {
         </Prose>
 
         <div className="mt-[3rem] lg:mt-[3.75rem]">
-          <ProductIndex categories={categories} products={products} />
+          <ProductIndex categoryGrid={<CategoryGrid categories={categories} />} products={products} />
         </div>
       </Section>
 

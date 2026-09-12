@@ -1,5 +1,5 @@
 import { ProductMediaKind } from "@prisma/client";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
 import { ProductsTable, type ProductRow } from "@/components/dashboard/products-table";
 import { getProductCategories } from "@/lib/categories";
@@ -65,7 +65,7 @@ export default async function ProductsPage() {
       <PageHeader
         action={
           <PrimaryActionLink href="/admin/products/new">
-            <Plus aria-hidden className="size-4" /> Add product
+            <PlusIcon aria-hidden className="size-4" /> Add product
           </PrimaryActionLink>
         }
         description="The catalogue behind the home page carousel, the products index and every category page."

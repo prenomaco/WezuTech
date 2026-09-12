@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react/ssr";
 import { useFormStatus } from "react-dom";
 
 /**
@@ -23,7 +23,7 @@ function SubmitButton({ label }: { readonly label: string }) {
   const { pending } = useFormStatus();
   return (
     <button className={DANGER} disabled={pending} type="submit">
-      <Trash2 aria-hidden className="size-3.5" />
+      <TrashIcon aria-hidden className="size-3.5" />
       {pending ? "Deleting…" : label}
     </button>
   );

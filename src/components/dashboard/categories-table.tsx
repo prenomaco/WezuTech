@@ -4,13 +4,13 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { PencilSimpleIcon } from "@phosphor-icons/react/ssr";
 import { useMemo, useState } from "react";
 import { deleteCategory } from "@/app/admin/actions";
 import { DeleteRowButton } from "@/components/dashboard/delete-row-button";
 import { EmptyState, ResultCount, SearchField, Toolbar } from "@/components/dashboard/toolbar";
 import { Table, Td, Th } from "@/components/dashboard/ui";
-import { CategoryIcon } from "@/components/category-icon";
+import { Glyph } from "@/components/glyph";
 
 export interface CategoryRow {
   readonly id: string;
@@ -48,7 +48,7 @@ function CategoryMark({ category }: { readonly category: CategoryRow }) {
   }
   return (
     <span className="grid size-9 shrink-0 place-items-center rounded-md border border-[rgb(9_133_204/0.3)] bg-[rgb(9_133_204/0.1)] text-[var(--dash-primary)]">
-      <CategoryIcon className="size-4" icon={category.icon} strokeWidth={1.7} />
+      <Glyph className="size-4" icon={category.icon} />
     </span>
   );
 }
@@ -122,7 +122,7 @@ export function CategoriesTable({ categories }: { readonly categories: readonly 
                   <Td>
                     <div className="flex items-center justify-end gap-1.5">
                       <Link className={ACTION} href={`/admin/categories/${category.id}/edit`}>
-                        <Pencil aria-hidden className="size-3.5" /> Edit
+                        <PencilSimpleIcon aria-hidden className="size-3.5" /> Edit
                       </Link>
                       <DeleteRowButton action={deleteCategory} id={category.id} name={category.name} />
                     </div>

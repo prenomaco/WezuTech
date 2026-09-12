@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { PageHeader, PrimaryActionLink } from "@/components/dashboard/page-header";
 import { TestimonialsTable, type TestimonialRow } from "@/components/dashboard/testimonials-table";
 import { prisma } from "@/lib/db";
@@ -25,7 +25,7 @@ export default async function TestimonialsAdminPage() {
       <PageHeader
         action={
           <PrimaryActionLink href="/admin/testimonials/new">
-            <Plus aria-hidden className="size-4" /> Add testimonial
+            <PlusIcon aria-hidden className="size-4" /> Add testimonial
           </PrimaryActionLink>
         }
         description="The quotes carried by the home page and About page carousels, in display order."

@@ -53,7 +53,8 @@ export interface PortfolioProduct {
   readonly media: MediaPlan;
   readonly metrics: readonly { value: string; label: string }[];
   readonly overview: { title: string; intro: string; items: readonly { title: string; body: string }[] };
-  readonly features: readonly { title: string; body: string }[];
+  /* Each feature carries the glyph the product page draws above it. */
+  readonly features: readonly { title: string; body: string; icon: string }[];
   readonly applications: readonly { title: string; body: string }[];
   readonly specifications: readonly { specification: string; details: string }[];
 }
@@ -117,12 +118,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "Active Touchscreen", body: "Toughened glass touchscreen showing all charging parameters." },
-      { title: "RFID & Bluetooth", body: "RFID, Bluetooth, Wi-Fi and LoRa-WAN communication." },
-      { title: "Weather-Sealed", body: "IP65 and IP68 rated construction for open-environment deployment." },
-      { title: "Gun Locking", body: "Receptacle and gun locking on the kiosk." },
-      { title: "Load Sharing", body: "Supports load-shared two-wheeler charging." },
-      { title: "Payment Integration", body: "IoT-enabled payment gateway systems." },
+      { title: "Active Touchscreen", body: "Toughened glass touchscreen showing all charging parameters.", icon: "monitor" },
+      { title: "RFID & Bluetooth", body: "RFID, Bluetooth, Wi-Fi and LoRa-WAN communication.", icon: "broadcast" },
+      { title: "Weather-Sealed", body: "IP65 and IP68 rated construction for open-environment deployment.", icon: "shield-check" },
+      { title: "Gun Locking", body: "Receptacle and gun locking on the kiosk.", icon: "lock" },
+      { title: "Load Sharing", body: "Supports load-shared two-wheeler charging.", icon: "scales" },
+      { title: "Payment Integration", body: "IoT-enabled payment gateway systems.", icon: "credit-card" },
     ],
     applications: [
       { title: "Public Spaces", body: "Charging infrastructure for streets, public areas, and mobility hubs." },
@@ -186,12 +187,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "Touchscreen", body: "On-station display for charging parameters and system information." },
-      { title: "RFID Access", body: "Card-based user access at every charge point." },
-      { title: "Load Sharing", body: "Available power balanced across four to eight two-wheelers." },
-      { title: "Integrated Backup", body: "On-board power backup keeps the station available during an outage." },
-      { title: "Thermal Management", body: "All-weather operation across Indian site conditions." },
-      { title: "Payment Integration", body: "IoT-enabled payment gateway systems." },
+      { title: "Touchscreen", body: "On-station display for charging parameters and system information.", icon: "monitor" },
+      { title: "RFID Access", body: "Card-based user access at every charge point.", icon: "identification-card" },
+      { title: "Load Sharing", body: "Available power balanced across four to eight two-wheelers.", icon: "scales" },
+      { title: "Integrated Backup", body: "On-board power backup keeps the station available during an outage.", icon: "battery-charging" },
+      { title: "Thermal Management", body: "All-weather operation across Indian site conditions.", icon: "thermometer" },
+      { title: "Payment Integration", body: "IoT-enabled payment gateway systems.", icon: "credit-card" },
     ],
     applications: [
       { title: "Two-Wheeler Fleets", body: "Delivery and ride-hailing operations charging several bikes from one kiosk." },
@@ -251,12 +252,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "100 kW Peak", body: "Specified at 30, 60, or 100 kW DC." },
-      { title: "250 A Per Gun", body: "High-current delivery for fast turnaround." },
-      { title: "CCS-2", body: "Dual CCS-2 connectors for standard DC fast charging." },
-      { title: "CHAdeMO", body: "CHAdeMO support alongside CCS-2." },
-      { title: "Optional AC", body: "A 22 kW AC outlet available beside the DC guns." },
-      { title: "Liquid Cooling", body: "Liquid-cooled cables for sustained high current." },
+      { title: "100 kW Peak", body: "Specified at 30, 60, or 100 kW DC.", icon: "lightning" },
+      { title: "250 A Per Gun", body: "High-current delivery for fast turnaround.", icon: "plug-charging" },
+      { title: "CCS-2", body: "Dual CCS-2 connectors for standard DC fast charging.", icon: "plugs-connected" },
+      { title: "CHAdeMO", body: "CHAdeMO support alongside CCS-2.", icon: "plug" },
+      { title: "Optional AC", body: "A 22 kW AC outlet available beside the DC guns.", icon: "power" },
+      { title: "Liquid Cooling", body: "Liquid-cooled cables for sustained high current.", icon: "drop" },
     ],
     applications: [
       { title: "Highway Corridors", body: "Charging points along intercity routes, where turnaround time is the constraint." },
@@ -314,12 +315,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "In-House BMS", body: "Battery management designed and built by Wezu." },
-      { title: "CAN Telemetry", body: "Pack data over CAN for vehicle and fleet systems." },
-      { title: "IP67 Enclosure", body: "Sealed against dust and water ingress." },
-      { title: "48 – 320 V", body: "Voltage options across the three form factors." },
-      { title: "1.5 – 35 kWh", body: "Capacity sized to the vehicle class." },
-      { title: "Common Platform", body: "Cell, BMS and power electronics shared across the range." },
+      { title: "In-House BMS", body: "Battery management designed and built by Wezu.", icon: "circuitry" },
+      { title: "CAN Telemetry", body: "Pack data over CAN for vehicle and fleet systems.", icon: "broadcast" },
+      { title: "IP67 Enclosure", body: "Sealed against dust and water ingress.", icon: "shield-check" },
+      { title: "48 – 320 V", body: "Voltage options across the three form factors.", icon: "lightning" },
+      { title: "1.5 – 35 kWh", body: "Capacity sized to the vehicle class.", icon: "battery-vertical-high" },
+      { title: "Common Platform", body: "Cell, BMS and power electronics shared across the range.", icon: "stack" },
     ],
     applications: [
       { title: "Two-Wheelers", body: "Scooter and bike packs for personal and delivery duty." },
@@ -379,12 +380,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "Drop-In Replacement", body: "Auxiliary packs replace lead-acid without rework." },
-      { title: "DIN-Tray Format", body: "Forklift packs built to standard tray dimensions." },
-      { title: "0.25 – 60 kWh", body: "Capacity across auxiliary and industrial duty." },
-      { title: "12 – 80 V", body: "12, 24, 48 and 80 V options." },
-      { title: "Material Handling", body: "Sized for 2 to 5 ton forklift classes." },
-      { title: "Continuous Duty", body: "Engineered for 24/7 shift cycles." },
+      { title: "Drop-In Replacement", body: "Auxiliary packs replace lead-acid without rework.", icon: "arrows-clockwise" },
+      { title: "DIN-Tray Format", body: "Forklift packs built to standard tray dimensions.", icon: "ruler" },
+      { title: "0.25 – 60 kWh", body: "Capacity across auxiliary and industrial duty.", icon: "battery-vertical-high" },
+      { title: "12 – 80 V", body: "12, 24, 48 and 80 V options.", icon: "lightning" },
+      { title: "Material Handling", body: "Sized for 2 to 5 ton forklift classes.", icon: "crane" },
+      { title: "Continuous Duty", body: "Engineered for 24/7 shift cycles.", icon: "clock" },
     ],
     applications: [
       { title: "Material Handling", body: "Forklifts and warehouse equipment on continuous shifts." },
@@ -441,12 +442,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "Suitcase Class", body: "A portable unit sized to be moved by hand." },
-      { title: "Outdoor Cabinet", body: "The medium system is built for outdoor installation." },
-      { title: "1 – 100 kWh", body: "Capacity across the two formats." },
-      { title: "Field Backup", body: "Power for sites without a reliable supply." },
-      { title: "Society Duty", body: "Sized for residential societies and small commercial buildings." },
-      { title: "Grid Ready", body: "Connects alongside an existing supply." },
+      { title: "Suitcase Class", body: "A portable unit sized to be moved by hand.", icon: "suitcase" },
+      { title: "Outdoor Cabinet", body: "The medium system is built for outdoor installation.", icon: "cube" },
+      { title: "1 – 100 kWh", body: "Capacity across the two formats.", icon: "battery-vertical-high" },
+      { title: "Field Backup", body: "Power for sites without a reliable supply.", icon: "battery-charging" },
+      { title: "Society Duty", body: "Sized for residential societies and small commercial buildings.", icon: "buildings" },
+      { title: "Grid Ready", body: "Connects alongside an existing supply.", icon: "plugs-connected" },
     ],
     applications: [
       { title: "Field & Home Backup", body: "Portable power for sites, events and homes." },
@@ -503,12 +504,12 @@ export const PORTFOLIO: readonly PortfolioProduct[] = [
       ],
     },
     features: [
-      { title: "ISO Container", body: "Container-class commercial system." },
-      { title: "Modular Scaling", body: "500 kWh to 50 MWh across modules." },
-      { title: "Grid Services", body: "Microgrid and utility load balancing." },
-      { title: "AI Enabled", body: "Load balancing handled by the system." },
-      { title: "Remote Servicing", body: "Serviced and monitored remotely." },
-      { title: "Energy Provisioning", body: "Power backup and energy provisioning for paired charging sites." },
+      { title: "ISO Container", body: "Container-class commercial system.", icon: "shipping-container" },
+      { title: "Modular Scaling", body: "500 kWh to 50 MWh across modules.", icon: "stack" },
+      { title: "Grid Services", body: "Microgrid and utility load balancing.", icon: "chart-line" },
+      { title: "AI Enabled", body: "Load balancing handled by the system.", icon: "cpu" },
+      { title: "Remote Servicing", body: "Serviced and monitored remotely.", icon: "wrench" },
+      { title: "Energy Provisioning", body: "Power backup and energy provisioning for paired charging sites.", icon: "sliders" },
     ],
     applications: [
       { title: "Utility & Grid Services", body: "Load balancing and grid-services duty." },
