@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { categoryPath, getCategorySlugs } from "@/lib/categories";
+import { parseProductJson, productJsonToInput } from "@/lib/product-json";
 import { categoryInputSchema, productInputSchema, testimonialInputSchema } from "@/lib/validation";
 
 const BCRYPT_ROUNDS = 12;
@@ -16,21 +17,30 @@ const productIdSchema = z.string().cuid();
 const nullable = (value: FormDataEntryValue | null) => typeof value === "string" && value.trim() ? value.trim() : null;
 const json = (value: FormDataEntryValue | null) => JSON.parse(typeof value === "string" && value ? value : "[]") as unknown;
 
-export async function saveProduct(formData: FormData) {
-  await requireAdmin();
-  const input = productInputSchema.parse({
-    id: nullable(formData.get("id")) ?? undefined,
+/**
+ * The written half of a product, from whichever of the two editors sent it.
+ *
+ * The form posts a field per value, as it always has. The JSON tab posts one
+ * `contentJson` document instead and no content fields at all, so the two are
+ * told apart by that field's presence rather than by a mode flag the client
+ * could get wrong. Media is read separately by the caller either way: uploads
+ * never travel in the JSON, so both routes converge on the same write.
+ */
+function productContent(formData: FormData) {
+  const contentJson = formData.get("contentJson");
+  if (typeof contentJson === "string" && contentJson.trim()) {
+    const parsed = parseProductJson(contentJson);
+    /* The client validates the same document against the same schema before
+       it will enable Save, so reaching this is a hand-rolled request — but an
+       editor who does hit it should read why, not a zod dump. */
+    if (!parsed.ok) throw new Error(`The product JSON could not be read. ${parsed.error}`);
+    return productJsonToInput(parsed.value);
+  }
+  return {
     name: formData.get("name"), slug: formData.get("slug"), status: formData.get("status"), sortOrder: formData.get("sortOrder"),
     tagline: nullable(formData.get("tagline")) ?? undefined, cardDescription: nullable(formData.get("cardDescription")) ?? undefined,
     introduction: nullable(formData.get("introduction")) ?? undefined, seoTitle: nullable(formData.get("seoTitle")) ?? undefined,
     seoDescription: nullable(formData.get("seoDescription")) ?? undefined,
-    heroUrl: nullable(formData.get("heroUrl")) ?? undefined, heroUrlPublicId: nullable(formData.get("heroUrlPublicId")) ?? undefined,
-    detailUrl: nullable(formData.get("detailUrl")) ?? undefined, detailUrlPublicId: nullable(formData.get("detailUrlPublicId")) ?? undefined,
-    gallery: json(formData.get("gallery")),
-    applicationOneUrl: nullable(formData.get("applicationOneUrl")) ?? undefined, applicationOneUrlPublicId: nullable(formData.get("applicationOneUrlPublicId")) ?? undefined,
-    applicationTwoUrl: nullable(formData.get("applicationTwoUrl")) ?? undefined, applicationTwoUrlPublicId: nullable(formData.get("applicationTwoUrlPublicId")) ?? undefined,
-    applicationThreeUrl: nullable(formData.get("applicationThreeUrl")) ?? undefined, applicationThreeUrlPublicId: nullable(formData.get("applicationThreeUrlPublicId")) ?? undefined,
-    datasheetUrl: nullable(formData.get("datasheetUrl")) ?? undefined, datasheetUrlPublicId: nullable(formData.get("datasheetUrlPublicId")) ?? undefined,
     metricsTitle: nullable(formData.get("metricsTitle")) ?? undefined, metrics: json(formData.get("metrics")),
     overviewTitle: nullable(formData.get("overviewTitle")) ?? undefined, overviewIntro: nullable(formData.get("overviewIntro")) ?? undefined,
     overviewItems: json(formData.get("overviewItems")), featuresTitle: nullable(formData.get("featuresTitle")) ?? undefined,
@@ -41,6 +51,23 @@ export async function saveProduct(formData: FormData) {
     /* `getAll`: the picker is a checkbox group, so an unchecked box sends
        nothing and several checked boxes send the same name repeatedly. */
     categorySlugs: formData.getAll("categorySlugs").map(String),
+  };
+}
+
+export async function saveProduct(formData: FormData) {
+  await requireAdmin();
+  const input = productInputSchema.parse({
+    id: nullable(formData.get("id")) ?? undefined,
+    ...productContent(formData),
+    /* Always from the upload controls, never from the JSON — see the note in
+       `product-json.ts` on why pictures stay out of the document. */
+    heroUrl: nullable(formData.get("heroUrl")) ?? undefined, heroUrlPublicId: nullable(formData.get("heroUrlPublicId")) ?? undefined,
+    detailUrl: nullable(formData.get("detailUrl")) ?? undefined, detailUrlPublicId: nullable(formData.get("detailUrlPublicId")) ?? undefined,
+    gallery: json(formData.get("gallery")),
+    applicationOneUrl: nullable(formData.get("applicationOneUrl")) ?? undefined, applicationOneUrlPublicId: nullable(formData.get("applicationOneUrlPublicId")) ?? undefined,
+    applicationTwoUrl: nullable(formData.get("applicationTwoUrl")) ?? undefined, applicationTwoUrlPublicId: nullable(formData.get("applicationTwoUrlPublicId")) ?? undefined,
+    applicationThreeUrl: nullable(formData.get("applicationThreeUrl")) ?? undefined, applicationThreeUrlPublicId: nullable(formData.get("applicationThreeUrlPublicId")) ?? undefined,
+    datasheetUrl: nullable(formData.get("datasheetUrl")) ?? undefined, datasheetUrlPublicId: nullable(formData.get("datasheetUrlPublicId")) ?? undefined,
   });
   const oldSlug = input.id ? (await prisma.product.findUnique({ where: { id: input.id }, select: { slug: true } }))?.slug : undefined;
   const product = await prisma.$transaction(async (tx) => {

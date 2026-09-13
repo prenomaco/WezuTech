@@ -130,8 +130,19 @@ export function Th({ className, ...props }: HTMLAttributes<HTMLTableCellElement>
   );
 }
 
+/**
+ * `align-middle`, not `align-top`.
+ *
+ * Every row in these tables is one record whose cells are all the same thing
+ * said different ways — a name, its categories, its state, its buttons. Only
+ * one cell decides the row's height (a product filed under four categories, a
+ * name that wraps to three lines), and topping everything out against it left
+ * the status, the count and the three action buttons floating at the ceiling
+ * with an inch of nothing beneath them, so a tall row read as four separate
+ * things rather than one. Centring ties the row back together.
+ */
 export function Td({ className, ...props }: HTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className={cn("border-b border-[var(--dash-border)] px-4 py-3 align-top", className)} {...props} />
+    <td className={cn("border-b border-[var(--dash-border)] px-4 py-3 align-middle", className)} {...props} />
   );
 }

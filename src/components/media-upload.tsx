@@ -53,6 +53,12 @@ async function uploadToCloudinary(file: File): Promise<{ url: string; publicId: 
   return { url: result.secure_url as string, publicId: result.public_id as string };
 }
 
+/** A single uploaded asset: what the form posts, as one value. */
+export interface MediaValue {
+  readonly url: string;
+  readonly publicId: string;
+}
+
 export interface GalleryImage {
   readonly url: string;
   readonly publicId: string;
@@ -71,8 +77,30 @@ export interface GalleryImage {
  * through it: which view a visitor sees first matters, and re-uploading in a
  * different sequence is not a reasonable way to ask for that.
  */
-export function GalleryUpload({ initial }: { readonly initial: readonly GalleryImage[] }) {
-  const [images, setImages] = useState<readonly GalleryImage[]>(initial);
+export function GalleryUpload({
+  initial,
+  value,
+  onChange,
+}: {
+  readonly initial: readonly GalleryImage[];
+  /**
+   * Hands ownership of the list to the surrounding form.
+   *
+   * The product form needs this because its two editors — the field-by-field
+   * one and the JSON one — are alternative views of the same product, and only
+   * one of them is mounted at a time. Left to its own state, an image uploaded
+   * on one tab would be gone the moment you looked at the other. When a `value`
+   * is supplied the parent also owns the hidden field, so the list posts once
+   * rather than once per mounted copy.
+   */
+  readonly value?: readonly GalleryImage[];
+  readonly onChange?: (next: readonly GalleryImage[]) => void;
+}) {
+  const [own, setOwn] = useState<readonly GalleryImage[]>(initial);
+  const controlled = value !== undefined;
+  const images = controlled ? value : own;
+  const setImages = (update: (current: readonly GalleryImage[]) => readonly GalleryImage[]) =>
+    controlled ? onChange?.(update(value)) : setOwn(update);
   const [state, setState] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -114,7 +142,7 @@ export function GalleryUpload({ initial }: { readonly initial: readonly GalleryI
         </p>
       </div>
 
-      <input name="gallery" type="hidden" value={JSON.stringify(images)} />
+      {controlled ? null : <input name="gallery" type="hidden" value={JSON.stringify(images)} />}
 
       {images.length ? (
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
@@ -189,6 +217,8 @@ export function MediaUpload({
   hint,
   name = "imageUrl",
   accept = "image/*",
+  value,
+  onChange,
 }: {
   readonly initialUrl?: string;
   readonly initialPublicId?: string;
@@ -197,9 +227,14 @@ export function MediaUpload({
   readonly hint?: string;
   readonly name?: string;
   readonly accept?: string;
+  /** See `GalleryUpload` above: supplied together, these hand the value to the parent. */
+  readonly value?: MediaValue;
+  readonly onChange?: (next: MediaValue) => void;
 }) {
-  const [url, setUrl] = useState(initialUrl);
-  const [publicId, setPublicId] = useState(initialPublicId);
+  const [own, setOwn] = useState<MediaValue>({ url: initialUrl, publicId: initialPublicId });
+  const controlled = value !== undefined;
+  const { url, publicId } = controlled ? value : own;
+  const set = (next: MediaValue) => (controlled ? onChange?.(next) : setOwn(next));
   const [state, setState] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -212,8 +247,7 @@ export function MediaUpload({
     setState(`Uploading ${file.name}…`);
     try {
       const uploaded = await uploadToCloudinary(file);
-      setUrl(uploaded.url);
-      setPublicId(uploaded.publicId);
+      set(uploaded);
       setState("Uploaded.");
     } catch (error) {
       setState(error instanceof Error ? error.message : "Upload failed.");
@@ -225,8 +259,7 @@ export function MediaUpload({
   }
 
   function clear() {
-    setUrl("");
-    setPublicId("");
+    set({ url: "", publicId: "" });
     setState("Removed. Save to apply.");
   }
 
@@ -259,8 +292,12 @@ export function MediaUpload({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <input name={name} type="hidden" value={url} />
-          <input name={`${name}PublicId`} type="hidden" value={publicId} />
+          {controlled ? null : (
+            <>
+              <input name={name} type="hidden" value={url} />
+              <input name={`${name}PublicId`} type="hidden" value={publicId} />
+            </>
+          )}
 
           <div className="flex flex-wrap items-center gap-1.5">
             <button
